@@ -13,3 +13,6 @@ sites/*/private
 *.cer
 encrypted.txt
 cacert.pem
+
+# Runtime log artifacts.
+*.log
