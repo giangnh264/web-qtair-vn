@@ -1,0 +1,47 @@
+<?php
+
+
+function cassiopeia_manager_init() {
+
+}
+
+/**
+ * Implements hook_menu()
+ */
+function cassiopeia_manager_menu() {
+  $items = array();
+
+  $items['admin/manager/issue-the-ticket'] = array(
+      'type'              => MENU_CALLBACK,
+      'page callback'     => 'cassiopeia_manager_admin_issue_the_ticket',
+      'title'             => t('Báo cáo xuất vé'),
+      'access arguments'  => array('access content'),
+      'file'              => 'cassiopeia_manager.inc',
+  );
+
+  $items['user/%uid/manager/add-booking'] = array(
+      'type'              => MENU_CALLBACK,
+      'page callback'     => 'cassiopeia_manager_user_issue_the_ticket',
+      'title'             => t('Báo cáo xuất vé'),
+      'access arguments'  => array('access content'),
+      'file'              => 'cassiopeia_manager.inc',
+  );
+
+  $items['admin/manager/pay'] = array(
+      'type'              => MENU_CALLBACK,
+      'page callback'     => 'cassiopeia_manager_admin_pay',
+      'title'             => t('Báo cáo thanh toán'),
+      'access arguments'  => array('access content'),
+      'file'              => 'cassiopeia_manager.inc',
+  );
+
+  $items['user/%uid/manager/pay'] = array(
+      'type'              => MENU_CALLBACK,
+      'page callback'     => 'cassiopeia_manager_user_pay',
+      'title'             => t('Báo cáo thanh toán'),
+      'access arguments'  => array('access content'),
+      'file'              => 'cassiopeia_manager.inc',
+  );
+
+  return $items;
+}

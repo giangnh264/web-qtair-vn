@@ -1,0 +1,241 @@
+<?php
+
+function cassiopeia_permission_menu(){
+    $items = array();
+    $items['admin/manager/modules'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_manager_modules_page_callback',
+        'title' => 'Modules',
+        'access arguments' => array('cassiopeia module'),
+        'file' => 'cassiopeia_permission.inc',
+    );
+    $items['admin/manager/modules/add'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Thêm mới module'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_module_form'),
+        'access arguments' => array('cassiopeia module'),
+    );
+    $items['admin/manager/modules/%module/edit'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Sửa module'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_module_form',3),
+        'access arguments' => array('cassiopeia module'),
+    );
+    $items['admin/manager/role/%role/config'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Phân quyền'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_role_config_form',3),
+        'access arguments' => array('cassiopeia module'),
+    );
+
+    return $items;
+}
+function role_load($rid){
+    $query = db_select("role","tbl_role");
+    $query->fields("tbl_role");
+    $query->condition("rid",$rid);
+    $role = $query->execute()->fetchObject();
+    return $role;
+}
+function cassiopeia_admin_module_form($form,&$form_state,$module=null){
+    $form = array();
+    $form['#module'] = $module;
+    $form['title'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Tên module'),
+    );
+    if(!empty($module)){
+        $form['title']['#default_value'] = $module->title;
+    }
+    $form['p_name'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Function'),
+    );
+    if(!empty($module)){
+        $form['p_name']['#default_value'] = $module->p_name;
+    }
+    $form['submit'] = array(
+        '#type'         => 'submit',
+        '#value'        => "Chấp nhận",
+    );
+    return $form;
+}
+function cassiopeia_admin_module_form_submit($form,&$form_state){
+    try{
+        if(!empty($form['#module'])){
+            db_update("tbl_module")->fields(array(
+                "title"     => $form_state['values']['title'],
+                "p_name"     => $form_state['values']['p_name'],
+            ))->condition("id",$form['#module']->id)->execute();
+        }else{
+            db_insert("tbl_module")->fields(array(
+                "title"     => $form_state['values']['title'],
+                "p_name"     => $form_state['values']['p_name'],
+            ))->execute();
+        }
+    }catch (Exception $e){
+
+    }
+}
+function cassiopeia_admin_role_config_form($form,&$form_state,$role){
+    $form['#role'] = $role;
+    try{
+
+        $query = db_select("tbl_module","tbl_module");
+        $query->fields("tbl_module");
+        $modules = $query->execute()->fetchAll();
+        $form['#modules'] = $modules;
+        $form['header-group'] = array(
+            '#type' => 'container',
+            '#attributes' => array(
+                'class' => array(
+                    'header-group'
+                ),
+            ),
+            '#prefix'   => "<div class='' id=''><label for=''>Module</label>",
+            '#suffix'   => "</div>"
+        );
+        $form['header-group']['header_view'] = array(
+            '#type'     => 'checkbox',
+            '#title'    => t('Xem'),
+        );
+        $form['header-group']['header_add'] = array(
+            '#type'     => 'checkbox',
+            '#title'    => t('Thêm'),
+        );
+        $form['header-group']['header_edit'] = array(
+            '#type'     => 'checkbox',
+            '#title'    => t('Sửa'),
+        );
+        $form['header-group']['header_delete'] = array(
+            '#type'     => 'checkbox',
+            '#title'    => t('Xóa'),
+        );
+        $form['module-group'] = array(
+            '#type' => 'container',
+            '#attributes' => array(
+                'class' => array(
+                    'module-group'
+                ),
+            ),
+        );
+        foreach($modules as $module){
+            $query = db_select("tbl_permissions","tbl_permissions");
+            $query->fields("tbl_permissions");
+            $query->condition("tbl_permissions.role",$role->rid);
+            $query->condition("tbl_permissions.module",$module->id);
+            $permission = $query->execute()->fetchObject();
+            $form['module-group']['module-group-'.$module->id] = array(
+                '#type' => 'container',
+                '#attributes' => array(
+                    'class' => array(
+                        'module-group'
+                    ),
+                ),
+                '#prefix'   => "<div class='' id=''><label for=''>".$module->title."</label>",
+                '#suffix'   => "</div>"
+            );
+            $form['module-group']['module-group-'.$module->id]['view_'.$module->id] = array(
+                '#type'             => 'checkbox',
+                '#title'            => t(''),
+                '#default_value'    => !empty($permission)?$permission->p_view:0,
+            );
+            $form['module-group']['module-group-'.$module->id]['add_'.$module->id] = array(
+                '#type'             => 'checkbox',
+                '#title'            => t(''),
+                '#default_value'    => !empty($permission)?$permission->p_add:0,
+            );
+            $form['module-group']['module-group-'.$module->id]['edit_'.$module->id] = array(
+                '#type'             => 'checkbox',
+                '#title'            => t(''),
+                '#default_value'    => !empty($permission)?$permission->p_edit:0,
+            );
+            $form['module-group']['module-group-'.$module->id]['delete_'.$module->id] = array(
+                '#type'             => 'checkbox',
+                '#title'            => t(''),
+                '#default_value'    => !empty($permission)?$permission->p_delete:0,
+            );
+        }
+    }catch (Exception $e){
+        _print_r($e);
+    }
+    $form['submit'] = array(
+        '#type'         => 'submit',
+        '#value'        => "Chấp nhận",
+    );
+    $form['#theme'][] = "cassiopeia_admin_role_config_form_theme";
+    return $form;
+}
+function cassiopeia_admin_role_config_form_submit($form,&$form_state){
+    try{
+        $query = db_select("tbl_permissions","tbl_permissions");
+        $query->fields("tbl_permissions");
+        $query->condition("role",$form['#role']->rid);
+        $check = $query->execute()->fetchAll();
+        if(!empty($check)){
+            db_delete("tbl_permissions")->condition("role",$form['#role']->rid)->execute();
+        }
+        $insert = db_insert("tbl_permissions");
+        $insert->fields(array("created","role","module","p_view","p_add","p_edit","p_delete"));
+        foreach($form['#modules'] as $module){
+            $insert->values(array(REQUEST_TIME,$form['#role']->rid,$module->id,$form_state['values']['view_'.$module->id],$form_state['values']['add_'.$module->id],$form_state['values']['edit_'.$module->id],$form_state['values']['delete_'.$module->id]));
+        }
+        $insert->execute();
+    }catch (Exception $e){
+        _print_r($e);
+        die;
+    }
+}
+function cassiopeia_permission_theme($existing, $type, $theme, $path) {
+    return array(
+        'cassiopeia_admin_role_config_form_theme' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_admin_role_config_form',
+            'path' => drupal_get_path('module', 'cassiopeia_permission') . '/templates/forms'
+        ),
+    );
+}
+function cassiopeia_check_permission($accept,$option){
+    global $user;
+
+    $query = db_select("users_roles","tbl");
+    $query->fields("tbl");
+    $query->condition("uid",$user->uid);
+    $result = $query->execute()->fetchAll();
+//    return true;
+    if(user_has_role(3)){
+        return true;
+    }
+    if(user_has_role(4)&&count($result)==1){
+        $query = db_select("users_roles","tbl_role");
+        $query->fields("tbl_role");
+        $query->condition("tbl_role.uid",$user->uid);
+        $query->addExpression("GROUP_CONCAT(tbl_role.rid SEPARATOR ',')","rids");
+        $role = $query->execute()->fetchObject();
+        if(!empty($role)){
+            try{
+                $query = db_select("tbl_permissions","tbl_permissions");
+                $query->fields("tbl_permissions");
+                $query->join("tbl_module","tbl_module","tbl_module.id=tbl_permissions.module");
+                $query->condition("tbl_module.p_name",$accept);
+                $query->condition("tbl_permissions.role",explode(",",$role->rids),"IN");
+                $query->condition("tbl_permissions.".$option,1);
+                $result = $query->execute()->fetchObject();
+                if(!empty($result)){
+                    return true;
+                }
+            }catch (Exception $e){
+                _print_r($e);
+            }
+        }
+    }else{
+        if(empty($user->uid)){
+            return false;
+        }
+        return true;
+    }
+    return false;
+}

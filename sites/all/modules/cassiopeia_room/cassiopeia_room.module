@@ -1,0 +1,1802 @@
+<?php
+
+function cassiopeia_room_menu() {
+	$items = [];
+	//    $items['cassiopeia/room/booking/update'] = array(
+	//        'type' => MENU_CALLBACK,
+	//        'page callback' => 'cassiopeia_room_booking_update_page_callback',
+	//        'title' => t('Thanh toán trực tuyến'),
+	//        'access arguments' => array('cassiopeia module'),
+	//        'file' => 'cassiopeia_room.inc',
+	//    );
+	$items['dat-phong/alepay/cancel'] = [
+		'type' => MENU_CALLBACK,
+		'page callback' => 'cassiopeia_room_booking_alepay_cancel_page_callback',
+		'title' => t('Thanh toán trực tuyến'),
+		'access arguments' => ['access content'],
+		'file' => 'cassiopeia_room.inc',
+	];
+	$items['dat-phong/alepay/complete'] = [
+		'type' => MENU_CALLBACK,
+		'page callback' => 'cassiopeia_room_booking_alepay_complete_page_callback',
+		'title' => t('Thanh toán trực tuyến'),
+		'access arguments' => ['access content'],
+		'file' => 'cassiopeia_room.inc',
+	];
+	return $items;
+}
+
+function cassiopeia_room_booking_save($booking) {
+	$return = NULL;
+	$db_transaction = db_transaction();
+	try {
+		if (!empty($booking->id)) {
+			$booking->changed = REQUEST_TIME;
+			$booking_saved = drupal_write_record("cassiopeia_room_booking", $booking, ["id"]);
+		}
+		else {
+			$booking->created = REQUEST_TIME;
+			$booking->changed = REQUEST_TIME;
+			$booking_saved = drupal_write_record("cassiopeia_room_booking", $booking);
+		}
+		if (!empty($booking->voucher)) {
+			db_delete("cassiopeia_voucher_transaction")
+				->condition("bid", $booking->id)
+				->execute();
+			$transaction = new stdClass();
+			$transaction->uid = $booking->uid;
+			$transaction->bid = $booking->id;
+			$transaction->vid = $booking->voucher;
+			$transaction->amount = $booking->discount_value;
+			$transaction->status = 0;
+			$transaction->product_type = 1;
+			cassiopeia_voucher_transaction_save($transaction);
+		}
+		db_delete("cassiopeia_room_booking_detail")
+			->condition("bid", $booking->id)
+			->execute();
+		if (!empty($booking->details)) {
+			foreach ($booking->details as $detail) {
+				$detail->bid = $booking->id;
+				$detail->code = $booking->code;
+				drupal_write_record("cassiopeia_room_booking_detail", $detail);
+			}
+		}
+		$return = $booking;
+	}
+	catch (Exception $E) {
+		$return = NULL;
+		$db_transaction->rollback();
+	}
+	return $return;
+}
+
+function cassiopeia_room_room_booking_code_load($code) {
+	$return = NULL;
+	try {
+		$query = db_select("cassiopeia_room_booking", "cassiopeia_room_booking");
+		$query->fields("cassiopeia_room_booking");
+		$query->condition("code", $code, "=");
+		$booking = $query->execute()->fetchObject();
+		if (!empty($booking)) {
+			$details = cassiopeia_room_detail_load($booking->id);
+			if (!empty($details)) {
+				$booking->details = $details;
+				$total_room = 0;
+				$total_night = 0;
+				$total_quantity_night = 0;
+				$total_guest = 0;
+				$from_date = 0;
+				foreach ($details as $detail) {
+					if (empty($from_date)) {
+						$from_date = $detail->from_date;
+					}
+					else {
+						if ($from_date > $detail->from_date) {
+							$from_date = $detail->from_date;
+						}
+					}
+					$total_guest += $detail->adult;
+					$total_room += $detail->number_of_room;
+					$total_night += $detail->number_of_night;
+					$total_quantity_night += $detail->number_of_night * $detail->number_of_room;
+				}
+				$booking->total_room = $total_room;
+				$booking->total_night = $total_night;
+				$booking->total_guest = $total_guest;
+				$booking->total_quantity_night = $total_quantity_night;
+				$booking->from_date = $from_date;
+			}
+		}
+
+		$return = $booking;
+	}
+	catch (Exception $e) {
+		_print_r($e);
+	}
+	return $return;
+}
+
+function cassiopeia_room_booking_load_by_code($code) {
+	$return = NULL;
+	try {
+		$query = db_select("cassiopeia_room_booking", "cassiopeia_room_booking");
+		$query->fields("cassiopeia_room_booking");
+		$query->condition("code", $code, "=");
+		$booking = $query->execute()->fetchObject();
+		if (!empty($booking)) {
+			$details = cassiopeia_room_detail_load($booking->id);
+			if (!empty($details)) {
+				$booking->details = $details;
+				$total_room = 0;
+				$total_night = 0;
+				$total_quantity_night = 0;
+				$total_guest = 0;
+				$from_date = 0;
+				foreach ($details as $detail) {
+					if (empty($from_date)) {
+						$from_date = $detail->from_date;
+					}
+					else {
+						if ($from_date > $detail->from_date) {
+							$from_date = $detail->from_date;
+						}
+					}
+					$total_guest += $detail->adult;
+					$total_room += $detail->number_of_room;
+					$total_night += $detail->number_of_night;
+					$total_quantity_night += $detail->number_of_night * $detail->number_of_room;
+				}
+				$booking->total_room = $total_room;
+				$booking->total_night = $total_night;
+				$booking->total_guest = $total_guest;
+				$booking->total_quantity_night = $total_quantity_night;
+				$booking->from_date = $from_date;
+			}
+		}
+
+		$return = $booking;
+	}
+	catch (Exception $e) {
+		_print_r($e);
+	}
+	return $return;
+}
+
+function cassiopeia_room_booking_load_by_transactionCode($transactionCode) {
+	$return = NULL;
+	try {
+		$query = db_select("cassiopeia_room_booking", "cassiopeia_room_booking");
+		$query->fields("cassiopeia_room_booking");
+		$query->condition("transactionCode", $transactionCode, "=");
+		$booking = $query->execute()->fetchObject();
+		if (!empty($booking)) {
+			$details = cassiopeia_room_detail_load($booking->id);
+			if (!empty($details)) {
+				$booking->details = $details;
+				$total_room = 0;
+				$total_night = 0;
+				$total_quantity_night = 0;
+				$total_guest = 0;
+				$from_date = 0;
+				foreach ($details as $detail) {
+					if (empty($from_date)) {
+						$from_date = $detail->from_date;
+					}
+					else {
+						if ($from_date > $detail->from_date) {
+							$from_date = $detail->from_date;
+						}
+					}
+					$total_guest += $detail->adult;
+					$total_room += $detail->number_of_room;
+					$total_night += $detail->number_of_night;
+					$total_quantity_night += $detail->number_of_night * $detail->number_of_room;
+				}
+				$booking->total_room = $total_room;
+				$booking->total_night = $total_night;
+				$booking->total_guest = $total_guest;
+				$booking->total_quantity_night = $total_quantity_night;
+				$booking->from_date = $from_date;
+			}
+		}
+
+		$return = $booking;
+	}
+	catch (Exception $e) {
+		_print_r($e);
+	}
+	return $return;
+}
+
+function cassiopeia_room_booking_load($id) {
+	$return = NULL;
+	try {
+		$query = db_select("cassiopeia_room_booking", "cassiopeia_room_booking");
+		$query->fields("cassiopeia_room_booking");
+		$query->condition("id", $id, "=");
+		$booking = $query->execute()->fetchObject();
+		if (!empty($booking)) {
+			$details = cassiopeia_room_detail_load($booking->id);
+			$booking->details = $details;
+		}
+
+		$return = $booking;
+	}
+	catch (Exception $e) {
+		_print_r($e);
+	}
+	return $return;
+}
+
+function cassiopeia_room_booking_delete($booking) {
+	return [];
+}
+
+function cassiopeia_room_detail_load($bid) {
+	$return = NULL;
+	try {
+		$query = db_select("cassiopeia_room_booking_detail", "cassiopeia_room_booking_detail");
+		$query->fields("cassiopeia_room_booking_detail");
+		$query->condition("bid", $bid, "=");
+		$query->orderBy("created", "ASC");
+		$rooms = $query->execute()->fetchAll();
+		$return = $rooms;
+	}
+	catch (Exception $e) {
+		_print_r($e);
+	}
+	return $return;
+}
+
+function cassiopeia_room_room_booking_form($form, &$form_state, $data = []) {
+	global $theme;
+	global $user;
+	$_user = !empty($user->uid) ? user_load($user->uid) : NULL;
+	$form['#room'] = $form_state['#room'] = !empty($data['room']) ? $data['room'] : NULL;
+	$form['#hotel'] = $form_state['#hotel'] = !empty($data['hotel']) ? $data['hotel'] : NULL;
+	$form['#tx_area'] = $form_state['#tx_area'] = !empty($data['tx_area']) ? $data['tx_area'] : NULL;
+	$form['#data'] = $form_state['#data'] = !empty($data['data']) ? $data['data'] : NULL;
+	$form_wrapper = "cassiopeia-room-room-booking-form-wrapper";
+	$form['#attributes']['class'][] = "cassiopeia-room-room-booking-form";
+	$form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+	$form['#suffix'] = "</div>";
+	$form['customer'] = [
+		'#type' => 'container',
+		'#tree' => TRUE,
+	];
+	$form['customer']['full_name'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+		'#attributes' => ["placeholder" => "Họ tên"],
+	];
+	$form['customer']['tel'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+		'#attributes' => ["placeholder" => "Số điện thoại"],
+	];
+	$form['customer']['mail'] = [
+		'#type' => 'textfield',
+		'#title' => '',
+		'#attributes' => ["placeholder" => "Email"],
+	];
+	$provinces = cassiopeia_address_province_load_all();
+	$options = [];
+	$options['_none'] = "Chọn Tỉnh/TP";
+	foreach ($provinces as $province) {
+		$options[$province->id] = $province->name;
+	}
+	$form['customer']['province'] = [
+		'#type' => 'select',
+		'#title' => t(''),
+		'#options' => $options,
+		'#attributes' => ["placeholder" => "Thành phố"],
+	];
+	$form['customer']['address'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+		'#attributes' => ["placeholder" => "Địa chỉ"],
+	];
+	$form['customer']['note'] = [
+		'#title' => t(''),
+		'#type' => 'textarea',
+		'#attributes' => ["placeholder" => "Nội dung yêu cầu đặc biệt"],
+	];
+	if (!empty($_user->uid)) {
+		$form['contact'] = [
+			'#type' => 'container',
+			'#tree' => TRUE,
+		];
+		$form['contact']['full_name'] = [
+			'#type' => 'textfield',
+			'#title' => t(''),
+			'#attributes' => ["placeholder" => "Họ tên đại lý"],
+			'#default_value' => !empty($_user->field_account_full_name['und'][0]['value']) ? $_user->field_account_full_name['und'][0]['value'] : "",
+		];
+		$form['contact']['tel'] = [
+			'#type' => 'textfield',
+			'#title' => t(''),
+			'#attributes' => ["placeholder" => "Số điện thoại"],
+			'#default_value' => $_user->name,
+		];
+		$form['contact']['mail'] = [
+			'#type' => 'textfield',
+			'#title' => '',
+			'#attributes' => ["placeholder" => "Email"],
+			'#default_value' => $_user->mail,
+		];
+	}
+	$form['payment'] = [
+		'#type' => 'container',
+		'#tree' => TRUE,
+	];
+	$form['#room_price'] = $form_state['#room_price'] = $room_price = getMinPriceByHotelRoomByDate(str_replace("/", "-", $form['#data']['check-in']), str_replace("/", "-", $form['#data']['check-out']), $form['#room']->nid, $form['#hotel']->nid);
+
+	$total_price = $form['#data']['quantity'] * $room_price->total_price;
+	$form['#total_price'] = $form_state['#total_price'] = $total_price;
+	$balance = $_user->field_account_balance['und'][0]['value'];
+	if ($room_price->total_price > $balance) {
+		$text = "<span>Số dư tài khoản không đủ, vui lòng nạp tiền để tiếp tục</span>";
+	}
+	$options = [];
+	if (!empty($user->uid)) {
+		$_options[QT_CREDIT] = "Quang Trang Credit";
+		//        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+	}
+	else {
+		$_options[QR_PAY] = "QR CODE";
+		$_options[INTERNET_BANKING] = "Chuyển khoản nhận ngay 24/7";
+		$_options[DOMESTIC_CARD] = "Thẻ nội địa";
+		$_options[INTERNATIONAL_CARD] = "Thẻ quốc tế";
+		//        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+	}
+	foreach ($_options as $_key => $_option) {
+		$alefee = 0;
+		$note = "Miễn phí";
+		$fee = cassiopeia_qt_alepay_fee_config_load($_key);
+		if (!empty($fee)) {
+			$alefee = $fee->percent * $total_price / 100 + $fee->amount;
+			if (!empty($alefee)) {
+				$note = "Thu thêm phụ phí: " . number_format($alefee, 0, ",", ".") . "đ";
+			}
+		}
+		if ($_key == QT_CREDIT) {
+			$note = $text;
+		}
+		$options[$_key] = _cassiopeia_render_theme("module", "cassiopeia_qt", "templates/parts/payment-method-label.tpl.php", [
+			"payment_method" => $_key,
+			"note" => $note,
+			"balance" => $balance,
+		]);
+	}
+	$form['payment']['method'] = [
+		'#type' => 'radios',
+		'#title' => t(''),
+		'#default_value' => PAYMENT_HOLD,
+		'#options' => $options,
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_room_booking_form_change_payment_method_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+		],
+	];
+	$alepay_fee = "Miễn phí";
+	$form['#alefee'] = $form_state['#alefee'] = $alefee = 0;
+	if (!empty($form_state['values']['payment']['method'])) {
+		$fee = cassiopeia_qt_alepay_fee_config_load($form_state['values']['payment']['method']);
+		if (!empty($fee)) {
+			$form['#alefee'] = $form_state['#alefee'] = $alefee = $fee->percent * $total_price / 100 + $fee->amount;
+		}
+	}
+
+	//    $cassiopeia_admin_room_payment_config_form_content = variable_get('cassiopeia_admin_room_payment_config_form_content', array(
+	//        'value' => '',
+	//        'format' => 'full_html'
+	//    ));
+	//    $cassiopeia_admin_room_payment_config_form_content_value = !empty($cassiopeia_admin_room_payment_config_form_content['value'])?$cassiopeia_admin_room_payment_config_form_content['value']:"";
+	//    $form['payment']['method'][HOLD]['#prefix'] = "<div class=\"box-form-payments bg-form-booking pd-2 mb-4\">
+	//                        <label for=\"edit-payment-method-3\">";
+	//    $form['payment']['method'][HOLD]['#suffix'] = "
+	//                            <div class=\"icon-payments ml-2\">
+	//                                <img src=\"/sites/all/themes/cassiopeia_theme/img/icons/option-pay-3.png\" alt=\"\">
+	//                            </div>
+	//                            <span>Thanh toán bằng chuyển khoản ngân hàng </span>
+	//                        </label>
+	//                        <div class=\"node-payments-op-3 mt-1\">
+	//                                ".$cassiopeia_admin_room_payment_config_form_content_value."
+	//                        </div>
+	//                    </div>
+	//                        ";
+	$banks = (array) cassiopeia_get_items_by_conditions([], "bank_info", "node");
+	$options = [];
+	$default_value = !empty($banks) ? array_values($banks)[0]->nid : NULL;
+	if (!empty($banks)) {
+		foreach ($banks as $bank) {
+			$options[$bank->nid] = _cassiopeia_render_theme("module", "cassiopeia", "templates/parts/bank-type-1.tpl.php", [
+				"node" => $bank,
+				"image_style" => "original",
+			]);
+		}
+	}
+	$form['bank'] = [
+		'#type' => 'radios',
+		'#title' => t(''),
+		'#options' => $options,
+		'#default_value' => $default_value,
+	];
+
+	$form['topup'] = [
+		'#type' => 'submit',
+		'#name' => 'topup',
+		'#value' => t('Nạp tiền'),
+		'#attributes' => ["class" => ["btn bg-secondary clr-white text ff-bold radius-36 mt-4"]],
+		'#submit' => ['cassiopeia_room_room_booking_form_topup_submit_callback'],
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_room_booking_form_topup_submit_ajax_callback',
+		],
+	];
+	$form['submit'] = [
+		'#type' => 'submit',
+		'#value' => t('Hoàn tất thanh toán'),
+		'#validate' => ["cassiopeia_room_room_booking_form_submit_validate"],
+		'#attributes' => ["class" => ["btn-ajax"]],
+		'#submit' => ["cassiopeia_room_room_booking_form_submit"],
+		//        '#ajax' => array(
+		//            'callback' => 'cassiopeia_room_room_booking_form_submit',
+		//        ),
+	];
+	$form['#attached']['js'] = [
+		drupal_get_path("module", "cassiopeia_room") . "/js/cassiopeia-room-room-booking-form.js",
+	];
+	return $form;
+}
+
+function cassiopeia_room_room_booking_form_change_payment_method_ajax_callback($form, &$form_state) {
+	return $form;
+}
+
+function cassiopeia_room_room_booking_form_topup_submit_callback($form, &$form_state) {
+	global $user;
+	try {
+		$query = db_select("tbl_top_up_request", "tbl_top_up_request");
+		$query->fields("tbl_top_up_request");
+		$query->range(0, 1);
+		$query->orderBy("created", "DESC");
+		$last = $query->execute()->fetchObject();
+		if (!empty($last)) {
+			$code_number = str_replace("T", "", $last->code);
+			$code_number++;
+		}
+		else {
+			$code_number = "100000";
+		}
+		$code = "T" . $code_number;
+		$s = new stdClass();
+		$s->uid = $user->uid;
+		$s->created = REQUEST_TIME;
+		$s->bank = $form_state['values']['bank'];
+		$s->code = $code;
+		$s->payment = 1;
+		$s->amount = $form_state['#total_price'];
+		$s->status = 0;
+		drupal_write_record("tbl_top_up_request", $s);
+
+		$data['message'] = ucfirst(SITE_DOMAIN) . " đã tiếp nhận thông tin, chúng tôi sẽ phản hồi trong thời gian sớm nhất!";
+	}
+	catch (Exception $e) {
+		print_r($e);
+		$data['message'] = "Đã xảy ra lỗi, vui lòng thử lại sau!";
+	}
+}
+
+function cassiopeia_room_room_booking_form_topup_submit_ajax_callback($form, &$form_state) {
+	ctools_include('ajax');
+	$commands[] = ajax_command_invoke("", "cassiopeiaAlert", [json_encode(["Chúng tôi đã nhận được yêu cầu của bạn, chúng tôi sẽ xử lý trong thời gian sớm nhất!"])]);
+	return [
+		'#type' => 'ajax',
+		'#commands' => $commands,
+	];
+}
+
+function cassiopeia_room_room_booking_form_submit_validate($form, &$form_state) {
+	global $user;
+	$_user = user_load($user->uid);
+	if ($form_state['values']['payment']['method'] == 1) {
+		if ($_user->field_account_balance['und'][0]['value'] < $form_state['#total_price']) {
+			form_error($form['submit'], "Tài khoản không đủ số dư, vui lòng nạp thêm tiền để tiếp tục!");
+		}
+	}
+	if (empty($form_state['values']['customer']['full_name'])) {
+		form_error($form['customer']['full_name'], "Bạn chưa nhập Họ tên khách hàng!");
+	}
+	if (empty($form_state['values']['customer']['tel'])) {
+		form_error($form['customer']['tel'], "Bạn chưa nhập Số điện thoại khách hàng!");
+	}
+	if (empty($form_state['values']['customer']['province']) || $form_state['values']['customer']['province'] == "_none") {
+		form_error($form['customer']['province'], "Bạn chưa chọn Tỉnh/TP!");
+	}
+	if (empty($form_state['values']['customer']['address'])) {
+		form_error($form['customer']['address'], "Bạn chưa nhập địa chỉ!");
+	}
+}
+
+function cassiopeia_room_room_booking_form_submit($form, &$form_state) {
+	global $user;
+	if (!empty($user->uid)) {
+		$_agent = user_load($user->uid);
+	}
+	$contact = $form_state['values']['contact'];
+	$customer = $form_state['values']['customer'];
+	//    print_r($form_state['values']);
+	//    die;
+	$db_transaction = db_transaction();
+
+	try {
+		$code = "KS" . REQUEST_TIME;
+		$booking = new stdClass();
+		$booking->contactName = !empty($contact['full_name']) ? $contact['full_name'] : "";
+		$booking->contactTel = !empty($contact['tel']) ? $contact['tel'] : "";
+		$booking->contactEmail = !empty($contact['mail']) ? $contact['mail'] : "";
+		$booking->room_price = $form_state['#data']['customer'];
+		$booking->surcharge_adult = 0;
+		$booking->surcharge_children = 0;
+		$booking->extraBed = 0;
+		$booking->surcharge_weekend = 0;
+		$booking->from_date = strtotime(str_replace("/", "-", $form_state['#data']['check-in']));
+		$booking->to_date = strtotime(str_replace("/", "-", $form_state['#data']['check-out']));
+		$booking->VAT = 0;
+		$booking->note = "";
+		$booking->voucher = "";
+		$booking->total_price = $form_state['#total_price'];
+
+		$booking->partner_price = $form_state['#total_price'];
+		$booking->net_price = $form_state['#room_price']->totalNetPrice;
+		$booking->room_code = "";
+		$booking->customer_name = !empty($customer['full_name']) ? $customer['full_name'] : "";
+		$booking->customer_tel = !empty($customer['tel']) ? $customer['tel'] : "";
+		$booking->customer_mail = !empty($customer['mail']) ? $customer['mail'] : "";
+		$booking->customer_province = !empty($customer['province']) ? $customer['province'] : 0;
+		$booking->customer_address = !empty($customer['address']) ? $customer['address'] : "";
+		$booking->customer_note = !empty($customer['note']) ? $customer['note'] : "";
+		$booking->history = "";
+		$room = $form_state['#room'];
+		$booking->details = [];
+		$detail = new stdClass();
+		$detail->room = $room->nid;
+		$detail->number_of_room = $form_state['#data']['quantity'];
+		$detail->from_date = strtotime(str_replace("/", "-", $form_state['#data']['check-in']));
+		$detail->to_date = strtotime(str_replace("/", "-", $form_state['#data']['check-out']));
+		$detail->number_of_night = $form_state['#data']['number_of_night'];
+		$detail->adult = $form_state['#data']['adult'];
+		$detail->children = $form_state['#data']['children'];
+		$detail->children_age = 0;
+		$detail->extraBed = 0;
+		$detail->room_price = $form_state['#room_price']->total_price;
+		$booking->details[] = $detail;
+
+		$booking->hotel = $form_state['#hotel']->nid;
+		$booking->status = 1;
+		$booking->code = $code;
+		$booking->uid = !empty($user->uid) ? $user->uid : 0;
+		$booking->tran_user = 0;
+		$booking->payment_method = $form_state['values']['payment']['method'];
+
+		if ($form_state['values']['payment']['method'] == 1 && !empty($_agent)) {
+			$balance = $_agent->field_account_balance['und'][0]['value'];
+			$balance -= $booking->partner_price;
+			db_insert("tbl_room_booking_report")->fields([
+				"created" => REQUEST_TIME,
+				"booking_code" => $booking->code,
+				"hotel" => $booking->hotel,
+				"guest" => $booking->guest,
+				"night" => $detail->number_of_night,
+				"price" => $booking->net_price,
+				"partner_price" => $booking->partner_price,
+				"revenue" => $booking->partner_price - $booking->net_price,
+				"agent" => $booking->uid,
+				"tran_user" => $user->uid,
+				"tran_kind" => 15,
+				"tran_code" => REQUEST_TIME,
+				"balance" => $balance,
+				"quantity_night" => $detail->number_of_room * $detail->number_of_night,
+				"category" => "room_booking",
+			])->execute();
+			db_insert("tbl_report")->fields([
+				"created" => REQUEST_TIME,
+				"tran_code" => REQUEST_TIME,
+				"type" => "room_booking",
+			])->execute();
+			$query = db_select("tbl_issue_report", "tbl_issue_report");
+			$query->fields("tbl_issue_report");
+			$query->condition("agent", $booking->uid);
+			$query->condition("date", strtotime(date("d-m-Y 00:00", strtotime("01-09-2020"))), ">=");
+			$query->addExpression("SUM(partner_price)", "total");
+			$query->groupBy("agent");
+			$result = $query->execute()->fetchObject();
+			$query1 = db_select("tbl_room_booking_report", "tbl_room_booking_report");
+			$query1->fields("tbl_room_booking_report");
+			$query1->condition("agent", $booking->uid);
+			$query1->addExpression("SUM(partner_price)", "total");
+			$query1->groupBy("agent");
+			$result1 = $query1->execute()->fetchObject();
+			$total = $result->total;
+			if (!empty($result1)) {
+				$total += $result1->total;
+			}
+			$point = ceil($total / 1000000);
+			$_agent->field_point['und'][0]['value'] = $point;
+			$_agent->field_account_balance['und'][0]['value'] = $balance;
+			if ($_agent->field_account_status['und'][0]['tid'] == 22) { //tiềm năng
+				$_agent->field_account_status['und'][0]['tid'] = 13;
+				$_agent->field_account_updated_date['und'][0]['value'] = REQUEST_TIME;
+			}
+			user_save($_agent);
+			$booking->status = 3;
+		}
+		if (in_array($form_state['values']['payment']['method'], [
+			DOMESTIC_CARD,
+			INTERNATIONAL_CARD,
+			INTERNET_BANKING,
+			QR_PAY,
+		])) {
+			$booking->alefee = !empty($form_state['#alefee']) ? $form_state['#alefee'] : 0;
+			$return = cassiopeia_room_alepay_request_payment($booking);
+			$booking->transactionCode = $return->transactionCode;
+			//            print_r($booking);
+			//            die;
+
+			if ($return->code == "000") {
+				$form_state['redirect'] = $return->checkoutUrl;
+			}
+			else {
+				drupal_set_message("Đã xảy ra lỗi!");
+			}
+		}
+		else {
+			$form_state['redirect'] = "dat-phong/hoan-tat/" . $code;
+		}
+		cassiopeia_room_booking_save($booking);
+	}
+	catch (Exception $e) {
+		_print_r($e);
+		$db_transaction->rollback();
+	}
+}
+
+function cassiopeia_room_alepay_request_payment($booking) {
+	$province = cassiopeia_address_province_load($booking->customer_province);
+	$fields = new stdClass();
+	$fields->amount = $booking->total_price + $booking->alefee;
+	$fields->buyerAddress = $booking->customer_address;
+	$fields->buyerCity = $province->name;
+	$fields->buyerCountry = "Viet Nam";
+
+	$fields->buyerEmail = $booking->customer_mail;
+	$fields->buyerName = $booking->customer_name;
+	$fields->buyerPhone = $booking->customer_tel;
+	$fields->cancelUrl = "https://qtair.vn/dat-phong/alepay/cancel";
+
+	$fields->currency = "VND";
+	$fields->customMerchantId = "";
+	$fields->orderCode = $booking->code;
+	$fields->orderDescription = $booking->code;
+
+	$fields->returnUrl = "https://qtair.vn/dat-phong/alepay/complete";
+	$fields->tokenKey = tokenKey;
+	$fields->totalItem = 1;
+	$firstValue = NULL;
+	switch ($booking->payment_method) {
+		case INTERNATIONAL_CARD :
+			$fields->checkoutType = 1;
+			//            $fields->allowDomestic = true;
+			//            $fields->paymentMethod  = "ATM_ON";
+			break;
+		case DOMESTIC_CARD :
+			$fields->checkoutType = 4;
+			$fields->allowDomestic = TRUE;
+			$fields->paymentMethod = "ATM_ON";
+			$firstValue = "true";
+			break;
+		case INTERNET_BANKING :
+			$fields->checkoutType = 4;
+			$fields->allowDomestic = TRUE;
+			$fields->paymentMethod = "VA";
+			$firstValue = "true";
+			break;
+		case QR_PAY :
+			$fields->checkoutType = 4;
+			$fields->allowDomestic = TRUE;
+			$fields->paymentMethod = "VIETQR";
+			$firstValue = "true";
+			break;
+	}
+	$fields = (array) $fields;
+	ksort($fields);
+	//    print_r($fields);
+	//    die;
+	$index = 1;
+	$data = "";
+	foreach ($fields as $key => $field) {
+		if ($index == 1) {
+			if (empty($firstValue)) {
+				$data .= $key . "=" . $field;
+			}
+			else {
+				$data .= $key . "=" . $firstValue;
+			}
+		}
+		else {
+			$data .= "&" . $key . "=" . $field;
+		}
+		$index++;
+	}
+	$fields['signature'] = hash_hmac('sha256', $data, ChecksumKey);
+	$curl = curl_init();
+
+	curl_setopt_array($curl, [
+		CURLOPT_URL => ALEPAY_ENPOINT . '/request-payment',
+		CURLOPT_RETURNTRANSFER => TRUE,
+		CURLOPT_ENCODING => '',
+		CURLOPT_MAXREDIRS => 10,
+		CURLOPT_TIMEOUT => 0,
+		CURLOPT_FOLLOWLOCATION => TRUE,
+		CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+		CURLOPT_CUSTOMREQUEST => 'POST',
+		CURLOPT_POSTFIELDS => json_encode($fields),
+		CURLOPT_HTTPHEADER => [
+			'Content-Type: application/json',
+		],
+	]);
+
+	$response = curl_exec($curl);
+
+	curl_close($curl);
+	return json_decode($response);
+}
+
+function cassiopeia_room_booking_report_save($report) {
+	$report->tran_code = !empty($report->tran_code) ? $report->tran_code : "KS" . REQUEST_TIME;
+	$_agent = user_load($report->agent);
+	if (empty($report->balance)) {
+		$report->balance = !empty($_agent->field_account_balance['und'][0]['value']) ? $_agent->field_account_balance['und'][0]['value'] : 0;
+		$report->balance -= (float) $report->partner_price;
+	}
+	try {
+		db_insert("tbl_room_booking_report")->fields([
+			"created" => REQUEST_TIME,
+			"booking_code" => $report->booking_code,
+			"hotel" => $report->hotel,
+			"price" => $report->price,
+			"partner_price" => $report->partner_price,
+			"revenue" => $report->revenue,
+			"agent" => $report->agent,
+			"room_code" => $report->room_code,
+			"tran_user" => $report->uid,
+			"tran_kind" => $report->tran_kind,
+			"note" => $report->note,
+			"tran_code" => $report->tran_code,
+			"balance" => $report->balance,
+			"quantity_night" => !empty($report->quantity_night) ? $report->quantity_night : 0,
+			"category" => "room_booking",
+		])->execute();
+		db_insert("tbl_report")->fields([
+			"created" => REQUEST_TIME,
+			"tran_code" => $report->tran_code,
+			"type" => "room_booking",
+		])->execute();
+	}
+	catch (Exception $e) {
+		_print_r($e);
+		die;
+	}
+	$query = db_select("tbl_issue_report", "tbl_issue_report");
+	$query->fields("tbl_issue_report");
+	$query->condition("agent", $_agent->uid);
+	$query->condition("date", strtotime(date("d-m-Y 00:00", strtotime("01-09-2020"))), ">=");
+	$query->addExpression("SUM(partner_price)", "total");
+	$query->groupBy("agent");
+	$result = $query->execute()->fetchObject();
+	$query1 = db_select("tbl_room_booking_report", "tbl_room_booking_report");
+	$query1->fields("tbl_room_booking_report");
+	$query1->condition("agent", $_agent->uid);
+	$query1->addExpression("SUM(partner_price)", "total");
+	$query1->groupBy("agent");
+	$result1 = $query1->execute()->fetchObject();
+	$total = $result->total;
+	if (!empty($result1)) {
+		$total += $result1->total;
+	}
+	$point = floor($total / 1000000);
+	$_agent->field_point['und'][0]['value'] = $point;
+	$_agent->field_account_balance['und'][0]['value'] = $report->balance;
+	if ($_agent->field_account_status['und'][0]['tid'] == 22) { //tiềm năng
+		$_agent->field_account_status['und'][0]['tid'] = 13;
+		$_agent->field_account_updated_date['und'][0]['value'] = REQUEST_TIME;
+	}
+	user_save($_agent);
+	$agent_status = new stdClass();
+	$agent_status->uid = $_agent->uid;
+	if (!empty($result)) {
+		$agent_status->status[2] = 2;
+		$agent_status->status[3] = 3;
+	}
+	if (!empty($result1)) {
+		$agent_status->status[2] = 2;
+		$agent_status->status[4] = 4;
+	}
+	cassiopeia_user_agent_status_save($agent_status);
+}
+
+function cassiopeia_room_theme($existing, $type, $theme, $path) {
+	return [
+		'cassiopeia_room_room_booking_form' => [
+			'render element' => 'form',
+			'template' => 'cassiopeia_room_room_booking_form',
+			'path' => drupal_get_path('module', 'cassiopeia_room') . '/templates/forms',
+		],
+		'cassiopeia_room_hotel_search_page_form' => [
+			'render element' => 'form',
+			'template' => 'cassiopeia_room_hotel_search_page_form',
+			'path' => drupal_get_path('module', 'cassiopeia_room') . '/templates/forms',
+		],
+		'cassiopeia_room_hotel_rating_form' => [
+			'render element' => 'form',
+			'template' => 'cassiopeia_room_hotel_rating_form',
+			'path' => drupal_get_path('module', 'cassiopeia_room') . '/templates/forms',
+		],
+		'cassiopeia_room_hotel_detail_form' => [
+			'render element' => 'form',
+			'template' => 'cassiopeia_room_hotel_detail_form',
+			'path' => drupal_get_path('module', 'cassiopeia_room') . '/templates/forms',
+		],
+	];
+}
+
+function cassiopeia_room_booking_update_form($form, &$form_state) {
+	$form = [];
+	$form['start'] = [
+
+		'#type' => 'textfield',
+
+		'#title' => t('Subject'),
+
+		'#size' => 60,
+
+		'#maxlength' => 128,
+
+		'#required' => TRUE,
+
+	];
+	$form['submit'] = ['#type' => 'submit', '#value' => t('update')];
+	return $form;
+}
+
+function cassiopeia_room_booking_update_form_submit($form, &$form_state) {
+	$query = db_select("tbl_room_booking", "tbl_room_booking");
+	$query->fields("tbl_room_booking");
+	$query->orderBy("created", "DESC");
+	$query->range($form_state['values']['start'], 10000);
+	$result = $query->execute()->fetchALl();
+
+	foreach ($result as $item) {
+		$operations[] = [
+			'_batch_cassiopeia_room_booking_update_form_excel',
+			[
+				'item' => $item,
+			],
+		];
+	}
+	if (!empty($operations)) {
+		$batch = [
+			'title' => 'Import trademark conflict',
+			'operations' => $operations,
+			'progress_message' => t('Import @current of @total.'),
+			'error_message' => t('Error!'),
+			'finished' => '_batch_cassiopeia_room_booking_update_form_excel_finished',
+		];
+		batch_set($batch);
+	}
+}
+
+function _batch_cassiopeia_room_booking_update_form_excel($item, &$context) {
+	$query = db_select("tbl_room_booking_detail", "tbl_room_booking_detail");
+	$query->fields("tbl_room_booking_detail");
+	$query->condition("code", $item->code);
+	$booking_detail = $query->execute()->fetchAll();
+
+	$booking = new stdClass();
+	$booking->contactName = $item->contactName;
+	$booking->contactTel = $item->contactTel;
+	$booking->contactEmail = $item->contactEmail;
+	$booking->room_price = $item->room_price;
+	$booking->surcharge_adult = $item->surcharge_adult;
+	$booking->surcharge_children = $item->surcharge_children;
+	$booking->extraBed = $item->extraBed;
+	$booking->surcharge_weekend = $item->surcharge_weekend;
+	$booking->from_date = $item->from_date;
+	$booking->to_date = $item->to_date;
+	$booking->VAT = $item->VAT;
+	$booking->note = $item->note;
+	$booking->voucher = "";
+	$booking->total_price = $item->total_price;
+
+	$booking->partner_price = $item->partner_price;
+	$booking->net_price = $item->net_price;
+	$booking->room_code = $item->room_code;
+	$booking->customer_name = $item->customer_name;
+	$booking->history = $item->history;
+	$booking->details = [];
+	foreach ($booking_detail as $_index => $_detail) {
+		$detail = new stdClass();
+		$detail->room = $_detail->room;
+		$detail->number_of_room = $_detail->number_of_room;
+		$detail->from_date = $_detail->from_date;
+		$detail->to_date = $_detail->to_date;
+		$detail->number_of_night = $_detail->number_of_night;
+		$detail->adult = $_detail->adult;
+		$detail->children = $_detail->children;
+		$detail->children_age = $_detail->children_age;
+		$detail->extraBed = $_detail->extraBed;
+		$detail->room_price = $_detail->room_price;
+		$booking->details[] = $detail;
+	}
+
+	$booking->hotel = $item->hotel;
+	$booking->created = $item->created;
+	$booking->status = $item->status;
+	$booking->code = $item->code;
+	$booking->uid = $item->uid;
+	$booking->tran_user = $item->tran_user;
+	cassiopeia_room_booking_save($booking);
+}
+
+function cassiopeia_room_form_room_node_form_alter(&$form, &$form_state) {
+	$form['roomPrice'] = [
+		'#type' => 'container',
+		'#prefix' => '<div id="roomPriceContainer"><label for="">Giá phòng</label>',
+		'#suffix' => '</div>',
+		'#tree' => TRUE,
+		//        '#weight' => 5,
+	];
+	$original_nid = !empty($form['nid']['#value']) ? $form['nid']['#value'] : $form['clone_from_original_nid']['#value'];
+	if (!empty($original_nid)) {
+		$query = db_select("cassiopeia_room_room_price", "cassiopeia_room_room_price");
+		$query->fields("cassiopeia_room_room_price");
+		$query->condition("nid", $original_nid);
+		$result = $query->execute()->fetchAll();
+		if (empty($result)) {
+			$result = [0 => []];
+		}
+		$form_state['roomPriceList'] = !empty($form_state['roomPriceList']) ? $form_state['roomPriceList'] : $result;
+	}
+	else {
+		$form_state['roomPriceList'] = !empty($form_state['roomPriceList']) ? $form_state['roomPriceList'] : [0 => []];
+	}
+	foreach ($form_state['roomPriceList'] as $key => $value) {
+		$form['roomPrice'][$key] = [
+			'#type' => 'container',
+			'#prefix' => '<div id="roomPriceGroup" class="room-price-group">',
+			'#suffix' => '</div>',
+			'#tree' => TRUE,
+		];
+		$form['roomPrice'][$key]['roomPriceFromDate'] = [
+			'#type' => 'date_popup',
+			'#date_type' => DATE_DATETIME,
+			'#date_timezone' => date_default_timezone(),
+			'#date_format' => 'd/m/Y',
+			'#date_increment' => 1,
+			'#date_year_range' => '-3:+3',
+			'#required' => FALSE,
+			'#attributes' => ["class" => ["fromDate"]],
+			'#default_value' => !empty($value) ? date("Y-m-d H:i:s", $value->from_date) : date("Y-m-d H:i:s", REQUEST_TIME),
+		];
+		$form['roomPrice'][$key]['roomPriceToDate'] = [
+			'#type' => 'date_popup',
+			'#date_type' => DATE_DATETIME,
+			'#date_timezone' => date_default_timezone(),
+			'#date_format' => 'd/m/Y',
+			'#date_increment' => 1,
+			'#date_year_range' => '-3:+3',
+			'#required' => FALSE,
+			'#attributes' => ["class" => ["toDate"]],
+			'#default_value' => !empty($value) ? date("Y-m-d H:i:s", $value->to_date) : date("Y-m-d H:i:s", REQUEST_TIME),
+		];
+		$form['roomPrice'][$key]['roomPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Giá phòng'),
+			'#required' => FALSE,
+			// '#default_value' => !empty($value) ? $value->price : 0,
+		];
+		$form['roomPrice'][$key]['roomPriceValue']['#default_value'] = !empty($value) ? $value->price : 0;
+		$form['roomPrice'][$key]['original_price'] = [
+			'#type' => 'textfield',
+			'#title' => t('Giá gốc'),
+			'#required' => FALSE,
+		];
+		$form['roomPrice'][$key]['original_price']['#default_value'] = !empty($value) ? $value->original_price : 0;
+		$form['roomPrice'][$key]['roomWeekendPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Phụ thu cuối tuần'),
+			'#required' => FALSE,
+			// '#default_value' => !empty($value) ? $value->weekend : 0,
+		];
+		$form['roomPrice'][$key]['roomWeekendPriceValue']['#default_value'] = !empty($value) ? $value->weekend : 0;
+		$form['roomPrice'][$key]['roomExtraBedPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Extra bed'),
+			'#required' => FALSE,
+			'#default_value' => !empty($value) ? $value->extra_bed : 0,
+		];
+		$form['roomPrice'][$key]['roomAdultPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Phụ người lớn'),
+			'#default_value' => !empty($value) ? $value->adult : 0,
+			'#required' => FALSE,
+		];
+		$form['roomPrice'][$key]['roomChildrenPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Phụ thu trẻ em'),
+			'#default_value' => !empty($value) ? $value->children : 0,
+			'#required' => FALSE,
+		];
+		$form['roomPrice'][$key]['roomInfantPriceValue'] = [
+			'#type' => 'textfield',
+			'#title' => t('Phụ thu em bé'),
+			'#default_value' => !empty($value) ? $value->infant : 0,
+			'#required' => FALSE,
+		];
+		$form['roomPrice'][$key]['roomPriceGroupRemove'] = [
+			'#type' => 'submit',
+			'#submit' => ['cassiopeia_room_remove_room_price_remove_one'],
+			'#text' => '<span class="icon glyphicon glyphicon-trash" aria-hidden="true"></span>',
+			'#value' => 'roomPriceGroupRemove_' . $key,
+			'#attributes' => [
+				'class' => ['close teaRoomPriceItemRemove'],
+				// insert space before attribute name :)
+			],
+			'#ajax' => [
+				'callback' => 'cassiopeia_room_remove_room_price_ajax_callback',
+				'wrapper' => 'roomPriceContainer',
+				'method' => 'replace',
+				'effect' => 'fade',
+			],
+		];
+		$form['roomPrice']['roomPriceID'] = [
+			'#type' => 'hidden',
+			'#title' => t('Giá trẻ em'),
+			'#default_value' => !empty($value) ? $value->id : 0,
+			'#required' => FALSE,
+		];
+	}
+	if (!empty($form_state['test'])) {
+		print_r($form_state['test']);
+	}
+
+	$form['roomPrice']['price_addMore'] = [
+		'#type' => 'submit',
+		'#submit' => ['cassiopeia_room_add_room_price_add_one'],
+		'#value' => 'Thêm giá',
+		'#text' => '<span class="icon glyphicon glyphicon-plus" ></span> ',
+		'#attributes' => [
+			'class' => ['btn close teaTimeAddMore'],
+			'type' => 'button',
+		],
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_add_room_price_ajax_callback',
+			'wrapper' => 'roomPriceContainer',
+			'method' => 'replace',
+			'effect' => 'fade',
+		],
+	];
+	$form['roomPriceCount'] = [
+		'#type' => 'hidden',
+		'#title' => t('Giá trẻ em'),
+		'#default_value' => "0",
+		'#required' => FALSE,
+	];
+	$form['actions']['submit']['#submit'][] = "cassiopeia_room_form_room_node_form_alter_submit";
+}
+
+function cassiopeia_room_form_room_node_form_alter_submit(&$form, &$form_state) {
+	global $user;
+	try {
+		db_delete("cassiopeia_room_room_price")
+			->condition("nid", $form_state['values']['nid'])
+			->execute();
+		if (!empty($form_state['values']['roomPrice'])) {
+			foreach ($form_state['values']['roomPrice'] as $key => $value) {
+				if (is_numeric($key)) {
+					$room_price = new stdClass();
+					$room_price->nid = $form_state['values']['nid'];
+					$room_price->uid = $user->uid;
+					$room_price->from_date = strtotime($value['roomPriceFromDate']);
+					$room_price->to_date = strtotime($value['roomPriceToDate']);
+					$room_price->price = $value['roomPriceValue'];
+					$room_price->original_price = $value['original_price'];
+					$room_price->adult = $value['roomAdultPriceValue'];
+					$room_price->children = $value['roomChildrenPriceValue'];
+					$room_price->infant = $value['roomInfantPriceValue'];
+					$room_price->extra_bed = $value['roomExtraBedPriceValue'];
+					$room_price->weekend = $value['roomWeekendPriceValue'];
+					cassiopeia_room_room_price_save($room_price);
+				}
+			}
+		}
+	}
+	catch (Exception $e) {
+	}
+}
+
+function cassiopeia_room_add_room_price_add_one(&$form, &$form_state) {
+	$form_state['roomPriceList'][] = [];
+	drupal_get_messages();
+	$form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_room_add_room_price_ajax_callback($form, &$form_state) {
+	return $form['roomPrice'];
+}
+
+function cassiopeia_room_remove_room_price_ajax_callback($form, &$form_state) {
+	return $form['roomPrice'];
+}
+
+function cassiopeia_room_remove_room_price_remove_one(&$form, &$form_state) {
+	$delta_remove = !empty($form_state['values']['op']) ? $form_state['values']['op'] : NULL;
+	$delta_remove_array = !empty($delta_remove) ? explode('_', $delta_remove) : NULL;
+	$childIndex = $delta_remove_array[1];
+	unset($form_state['roomPriceList'][$childIndex]);
+	$form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_room_room_price_save($room_price) {
+	try {
+		if (!empty($room_price->id)) {
+			$room_price->changed = REQUEST_TIME;
+			drupal_write_record("cassiopeia_room_room_price", $room_price, ["id"]);
+		}
+		else {
+			$room_price->created = REQUEST_TIME;
+			$room_price->changed = REQUEST_TIME;
+			drupal_write_record("cassiopeia_room_room_price", $room_price);
+		}
+	}
+	catch (Exception $e) {
+	}
+}
+
+function cassiopeia_room_hotel_search_page_form($form, &$form_state, $data = []) {
+	$form_wrapper = "cassiopeia-room-hotel-search-page-form-wrapper";
+	$form['#tx_area'] = $data['tx_area'];
+	$form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+	$form['#suffix'] = "</div>";
+	$form['#attributes']['class'][] = "cassiopeia-room-hotel-search-page-form";
+	$form['page'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+		'#default_value' => 1,
+		'#attributes' => ["class" => ["hidden"]],
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_search_page_form_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+		],
+	];
+	$form['filter'] = [
+		'#type' => 'container',
+	];
+	$form['filter']['rating'] = [
+		'#type' => 'checkboxes',
+		'#options' => [
+			1 => '<span class="fake-check"></span><i class="fa fa-star"></i>',
+			2 => '<span class="fake-check"></span><i class="fa fa-star"></i><i class="fa fa-star"></i>',
+			3 => '<span class="fake-check"></span><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>',
+			4 => '<span class="fake-check"></span><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>',
+			5 => '<span class="fake-check"></span><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i>',
+		],
+		'#title' => '',
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_search_page_form_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+			'progress' => 'fullscreen',
+		],
+	];
+	$form['filter']['from_price'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+		//        '#attributes' => array("class"=>array("sliderValue fromPrice"),"data-index"=>0)
+	];
+	$form['filter']['to_price'] = [
+		'#type' => 'textfield',
+		'#title' => t(''),
+	];
+	$vocal = taxonomy_vocabulary_machine_name_load("tx_hotel");
+	$tx_hotels = taxonomy_get_tree($vocal->vid, 0, 1);
+	$options = [];
+	if (!empty($tx_hotels)) {
+		foreach ($tx_hotels as $tx_hotel) {
+			$options[$tx_hotel->tid] = $tx_hotel->name;
+		}
+	}
+	$form['filter']['tx_hotel'] = [
+		'#type' => 'checkboxes',
+		'#options' => $options,
+		'#title' => '',
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_search_page_form_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+			'progress' => 'fullscreen',
+		],
+	];
+	$convenient_items = cassiopeia_get_nodes_by_category("hotel_convenient");
+	$options = [];
+	if (!empty($convenient_items)) {
+		foreach ($convenient_items as $convenient_item) {
+			$options[$convenient_item->nid] = $convenient_item->title;
+		}
+	}
+	$form['filter']['convenient'] = [
+		'#type' => 'checkboxes',
+		'#options' => $options,
+		'#title' => '',
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_search_page_form_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+			'progress' => 'fullscreen',
+		],
+	];
+	$form['sort'] = [
+		'#type' => 'radios',
+		'#title' => t(''),
+		'#options' => [
+			1 => '<span class="fake-check"></span>' . "Phổ biến nhất",
+			2 => '<span class="fake-check"></span>' . "Giá thấp nhất",
+			3 => '<span class="fake-check"></span>' . "Giá cao nhất",
+			4 => '<span class="fake-check"></span>' . "Đánh giá cao",
+		],
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_search_page_form_ajax_callback',
+			'wrapper' => $form_wrapper,
+			'method' => 'replace',
+			'effect' => 'fade',
+			'progress' => 'fullscreen',
+		],
+		'#default_value' => 1,
+	];
+	$form['#attached']['js'] = [
+		drupal_get_path("module", "cassiopeia_room") . "/js/cassiopeia-room-hotel-search-page-form.js",
+	];
+	return $form;
+}
+
+function cassiopeia_room_hotel_search_page_form_ajax_callback($form, &$form_sate) {
+	return $form;
+}
+
+function cassiopeia_room_hotels_load($conditions) {
+	$featured = !empty($conditions['featured']) ? $conditions['featured'] : FALSE;
+	$adult = !empty($conditions['adult']) ? $conditions['adult'] : NULL;
+	$tx_area = !empty($conditions['tx_area']) ? $conditions['tx_area'] : NULL;
+	$rooms = !empty($conditions['rooms']) ? $conditions['rooms'] : NULL;
+	$hotels = !empty($conditions['hotels']) ? $conditions['hotels'] : NULL;
+	$start = !empty($conditions['start']) ? $conditions['start'] : 0;
+	$limit = !empty($conditions['limit']) ? $conditions['limit'] : NULL;
+	$from_price = !empty($conditions['from_price']) ? $conditions['from_price'] : NULL;
+	$to_price = !empty($conditions['to_price']) ? $conditions['to_price'] : NULL;
+	$check_in = $conditions['check_in'];
+	$check_out = $conditions['check_out'];
+	$sort = !empty($conditions['sort']) ? $conditions['sort'] : 1;
+	$rating = !empty($conditions['rating']) ? $conditions['rating'] : NULL;
+	$tx_hotel = !empty($conditions['tx_hotel']) ? $conditions['tx_hotel'] : NULL;
+	$convenient = !empty($conditions['convenient']) ? $conditions['convenient'] : NULL;
+	try{
+    $cassiopeia_room_room_price_query = db_select("cassiopeia_room_room_price", "cassiopeia_room_room_price");
+    $cassiopeia_room_room_price_query->addField("cassiopeia_room_room_price", "nid", "room_nid");
+    $cassiopeia_room_room_price_query->orderBy("cassiopeia_room_room_price.price", "ASC");
+    $cassiopeia_room_room_price_query->addExpression("MIN(cassiopeia_room_room_price.price)", "min_price");
+    $cassiopeia_room_room_price_query->addExpression("MIN(cassiopeia_room_room_price.original_price)", "min_original_price");
+    $cassiopeia_room_room_price_query->groupBy("nid");
+    //    if(!empty($from_price)){
+    //        $cassiopeia_room_room_price_query->condition("price",$from_price,">=");
+    //    }
+    //    if(!empty($to_price)){
+    //        $cassiopeia_room_room_price_query->condition("price",$to_price,"<=");
+    //    }
+    $or = db_or();
+    $or->condition("cassiopeia_room_room_price.from_date", [
+      ($check_in),
+      ($check_out),
+    ], "BETWEEN");
+    $or->condition("cassiopeia_room_room_price.to_date", [
+      ($check_in),
+      ($check_out),
+    ], "BETWEEN");
+    $and = db_and();
+    $and->condition("cassiopeia_room_room_price.from_date", ($check_in), "<=");
+    $and->condition("cassiopeia_room_room_price.to_date", ($check_out), ">=");
+    $or->condition($and);
+    $cassiopeia_room_room_price_query->condition($or);
+
+    $room_query = db_select("node", "tbl_node");
+    $room_query->condition("tbl_node.type", "room");
+
+    $room_query->join($cassiopeia_room_room_price_query, "cassiopeia_room_room_price", "cassiopeia_room_room_price.room_nid=tbl_node.nid");
+    $room_query->fields("cassiopeia_room_room_price");
+    $room_query->join("field_data_field_hotel", "field_hotel", "field_hotel.entity_id=tbl_node.nid");
+    $room_query->addField("field_hotel", "field_hotel_nid", "hotel_nid");
+    $room_query->groupBy("field_hotel.field_hotel_nid");
+    if (!empty($rooms)) {
+      $room_query->condition("tbl_node.nid", $rooms, "IN");
+    }
+    if (!empty($adult)) {
+      $room_query->join("field_data_field_max_people", "field_max_people", "field_max_people.entity_id=tbl_node.nid");
+      $room_query->condition("field_max_people.field_max_people_value", $adult, ">=");
+    }
+
+    $query = db_select("node", "tbl_node");
+    $query->condition("tbl_node.status", 1);
+    $query->condition("tbl_node.type", "hotel");
+    $query->join($room_query, "tbl_room", "tbl_room.hotel_nid=tbl_node.nid");
+    $query->fields("tbl_room");
+    if ($featured) {
+      $query->join("field_data_field_featured", "field_featured", "field_featured.entity_id=tbl_node.nid");
+      $query->condition("field_featured.bundle", "hotel");
+      $query->condition("field_featured.field_featured_value", 1);
+    }
+
+    if (!empty($tx_area)) {
+//      _print_r($tx_area);
+      $query->join("field_data_field_tx_area", "field_tx_area", "field_tx_area.entity_id=tbl_node.nid");
+      $query->condition("field_tx_area.field_tx_area_tid", $tx_area);
+    }
+    if (!empty($rating)) {
+      $query->join("field_data_field_hotel_ranking", "field_hotel_ranking", "field_hotel_ranking.entity_id=tbl_node.nid");
+      $query->condition("field_hotel_ranking.field_hotel_ranking_value", $rating, "IN");
+    }
+    if (!empty($tx_hotel)) {
+      $query->join("field_data_field_tx_hotel", "field_tx_hotel", "field_tx_hotel.entity_id=tbl_node.nid");
+      $query->condition("field_tx_hotel.field_tx_hotel_tid", $tx_hotel, "IN");
+    }
+    if (!empty($convenient)) {
+      $query->join("field_data_field_convenient", "field_convenient", "field_convenient.entity_id=tbl_node.nid");
+      $query->condition("field_convenient.field_convenient_nid", $convenient, "IN");
+    }
+    if (!empty($hotels)) {
+      $query->condition("tbl_node.nid", $hotels, "IN");
+    }
+    $query->groupBy("tbl_node.nid");
+    switch ($sort) {
+      case 1: // phổ biến nhất
+        $query->orderBy("tbl_node.created", "DESC");
+        break;
+      case 2: // giá thấp nhất
+        $query->orderBy("min_price", "ASC");
+        break;
+      case 3: // giá cao nhất
+        $query->orderBy("min_price", "DESC");
+        break;
+      case 4: // đánh giá cao
+
+        break;
+      default:
+        $query->orderBy("tbl_node.created", "DESC");
+    }
+    $total_query = db_select($query, "tbl_count");
+    $total_query->addExpression("COUNT(hotel_nid)", "total_count");
+    $total_query->addExpression("MIN(min_price)", "min_price");
+    $total_query->addExpression("MAX(min_price)", "max_price");
+    $total_result = $total_query->execute()->fetchObject();
+    if (!empty($limit)) {
+      $query->range($start, $limit);
+    }
+    $result = $query->execute()->fetchAll();
+  }catch (Exception $e){
+    _print_r($e);
+  }
+  _print_r($result);
+	$new_result = [];
+	if (!empty($result)) {
+		foreach ($result as $item) {
+			$hotel = node_load($item->hotel_nid);
+			$booking_fee = cassiopeia_room_room_booking_fee_load_by_hotel($hotel, $item->min_price);
+			$price = $item->min_price + $booking_fee;
+			$_booking_fee = cassiopeia_room_room_booking_fee_load_by_hotel($hotel, $item->min_original_price);
+			$original_price = $item->min_original_price + $_booking_fee;
+			if (!empty($from_price)) {
+				if ($price < $from_price) {
+					continue;
+				}
+			}
+			if (!empty($to_price)) {
+				if ($price > $to_price) {
+					continue;
+				}
+			}
+			$item->price = $price;
+			$item->original_price = $original_price;
+			$new_result[] = $item;
+		}
+	}
+	return [
+		"result" => $new_result,
+		"total_result" => $total_result,
+	];
+}
+
+function cassiopeia_room_room_price_load($conditions) {
+	$adult = !empty($conditions['adult']) ? $conditions['adult'] : NULL;
+	$tx_area = !empty($conditions['tx_area']) ? $conditions['tx_area'] : NULL;
+	$rooms = !empty($conditions['rooms']) ? $conditions['rooms'] : NULL;
+	$hotels = !empty($conditions['hotels']) ? $conditions['hotels'] : NULL;
+	$start = !empty($conditions['start']) ? $conditions['start'] : 0;
+	$limit = !empty($conditions['limit']) ? $conditions['limit'] : NULL;
+	$from_price = !empty($conditions['from_price']) ? $conditions['from_price'] : NULL;
+	$to_price = !empty($conditions['to_price']) ? $conditions['to_price'] : NULL;
+	$check_in = $conditions['check_in'];
+	$check_out = $conditions['check_out'];
+	$sort = !empty($conditions['sort']) ? $conditions['sort'] : 1;
+	$rating = !empty($conditions['rating']) ? $conditions['rating'] : NULL;
+	$tx_hotel = !empty($conditions['tx_hotel']) ? $conditions['tx_hotel'] : NULL;
+	$convenient = !empty($conditions['convenient']) ? $conditions['convenient'] : NULL;
+	$cassiopeia_room_room_price_query = db_select("cassiopeia_room_room_price", "cassiopeia_room_room_price");
+	$cassiopeia_room_room_price_query->addField("cassiopeia_room_room_price", "nid", "room_nid");
+	$cassiopeia_room_room_price_query->orderBy("cassiopeia_room_room_price.price", "ASC");
+	$cassiopeia_room_room_price_query->addExpression("MIN(cassiopeia_room_room_price.price)", "min_price");
+	$cassiopeia_room_room_price_query->groupBy("nid");
+	//    $cassiopeia_room_room_price_query->fields("cassiopeia_room_room_price")
+	if (!empty($from_price)) {
+		$cassiopeia_room_room_price_query->condition("price", $from_price, ">=");
+	}
+	if (!empty($to_price)) {
+		$cassiopeia_room_room_price_query->condition("price", $to_price, "<=");
+	}
+	$or = db_or();
+	$or->condition("cassiopeia_room_room_price.from_date", [
+		($check_in),
+		($check_out),
+	], "BETWEEN");
+	$or->condition("cassiopeia_room_room_price.to_date", [
+		($check_in),
+		($check_out),
+	], "BETWEEN");
+	$and = db_and();
+	$and->condition("cassiopeia_room_room_price.from_date", ($check_in), "<=");
+	$and->condition("cassiopeia_room_room_price.to_date", ($check_out), ">=");
+	$or->condition($and);
+	$cassiopeia_room_room_price_query->condition($or);
+
+	$room_query = db_select("node", "tbl_node");
+	$room_query->condition("tbl_node.type", "room");
+	$room_query->join($cassiopeia_room_room_price_query, "cassiopeia_room_room_price", "cassiopeia_room_room_price.room_nid=tbl_node.nid");
+	$room_query->fields("cassiopeia_room_room_price");
+	$room_query->join("field_data_field_hotel", "field_hotel", "field_hotel.entity_id=tbl_node.nid");
+	$room_query->addField("field_hotel", "field_hotel_nid", "hotel_nid");
+	$room_query->groupBy("field_hotel.field_hotel_nid");
+	if (!empty($rooms)) {
+		$room_query->condition("tbl_node.nid", $rooms, "IN");
+	}
+	if (!empty($adult)) {
+		$room_query->join("field_data_field_max_people", "field_max_people", "field_max_people.entity_id=tbl_node.nid");
+		$room_query->condition("field_max_people.field_max_people_value", $adult, ">=");
+	}
+
+	$query = db_select("node", "tbl_node");
+	$query->condition("tbl_node.status", 1);
+	$query->condition("tbl_node.type", "hotel");
+	$query->join($room_query, "tbl_room", "tbl_room.hotel_nid=tbl_node.nid");
+	$query->fields("tbl_room");
+
+	if (!empty($tx_area)) {
+		$query->join("field_data_field_tx_area", "field_tx_area", "field_tx_area.entity_id=tbl_node.nid");
+		$query->condition("field_tx_area.field_tx_area_tid", $tx_area);
+	}
+	if (!empty($rating)) {
+		$query->join("field_data_field_hotel_ranking", "field_hotel_ranking", "field_hotel_ranking.entity_id=tbl_node.nid");
+		$query->condition("field_hotel_ranking.field_hotel_ranking_value", $rating, "IN");
+	}
+	if (!empty($tx_hotel)) {
+		$query->join("field_data_field_tx_hotel", "field_tx_hotel", "field_tx_hotel.entity_id=tbl_node.nid");
+		$query->condition("field_tx_hotel.field_tx_hotel_tid", $tx_hotel, "IN");
+	}
+	if (!empty($convenient)) {
+		$query->join("field_data_field_convenient", "field_convenient", "field_convenient.entity_id=tbl_node.nid");
+		$query->condition("field_convenient.field_convenient_nid", $convenient, "IN");
+	}
+	if (!empty($hotels)) {
+		$query->condition("tbl_node.nid", $hotels, "IN");
+	}
+	$query->groupBy("tbl_node.nid");
+	switch ($sort) {
+		case 1: // phổ biến nhất
+			$query->orderBy("tbl_node.created", "DESC");
+			break;
+		case 2: // giá thấp nhất
+			$query->orderBy("price", "ASC");
+			break;
+		case 3: // giá cao nhất
+			$query->orderBy("price", "DESC");
+			break;
+		case 4: // đánh giá cao
+
+			break;
+		default:
+			$query->orderBy("tbl_node.created", "DESC");
+	}
+	$total_query = db_select($query, "tbl_count");
+	$total_query->addExpression("COUNT(hotel_nid)", "total_count");
+	$total_query->addExpression("MIN(min_price)", "min_price");
+	$total_query->addExpression("MAX(min_price)", "max_price");
+	$total_result = $total_query->execute()->fetchObject();
+	if (!empty($limit)) {
+		$query->range($start, $limit);
+	}
+	$result = $query->execute()->fetchAll();
+	//    _print_r($result);
+	return [
+		"result" => $result,
+		"total_result" => $total_result,
+	];
+}
+
+function cassiopeia_room_hotel_rating_save($rating) {
+	try {
+		if (!empty($rating->id)) {
+			$rating->changed = REQUEST_TIME;
+			drupal_write_record("cassiopeia_room_hotel_rating", $rating, ["id"]);
+		}
+		else {
+			$rating->created = REQUEST_TIME;
+			$rating->changed = REQUEST_TIME;
+			drupal_write_record("cassiopeia_room_hotel_rating", $rating);
+		}
+	}
+	catch (Exception $e) {
+	}
+}
+
+function cassiopeia_room_hotel_rating_load($hotel_nid) {
+	try {
+		$query = db_select("cassiopeia_room_hotel_rating", "cassiopeia_room_hotel_rating");
+		$query->fields("cassiopeia_room_hotel_rating");
+		$query->condition("cassiopeia_room_hotel_rating.status", 1);
+		$query->condition("cassiopeia_room_hotel_rating.nid", $hotel_nid);
+
+		$count_query = db_select($query, "tbl_count");
+		$count_query->fields("tbl_count");
+		$count_query->addExpression("COUNT(tbl_count.id)", "count");
+		$count_query->groupBy("tbl_count.point");
+		$count_result = $count_query->execute()->fetchAll();
+
+		$total_query = db_select($query, "tbl_total");
+		$total_query->fields("tbl_total");
+		$total_query->addExpression("AVG(tbl_total.point)", "point");
+		$total_query->addExpression("COUNT(tbl_total.id)", "total");
+		$total_result = $total_query->execute()->fetchObject();
+
+		$result = $query->execute()->fetchAll();
+		$ratings = [];
+		if (!empty($count_result)) {
+			foreach ($count_result as $item) {
+				$ratings[$item->point] = $item;
+			}
+		}
+		return [
+			"result" => $result,
+			"ratings" => $ratings,
+			"total_result" => $total_result,
+		];
+	}
+	catch (Exception $e) {
+	}
+}
+
+function cassiopeia_room_hotel_rating_form($form, &$form_state, $data = ["nid"]) {
+	global $user;
+	$form['#nid'] = $form_state['#nid'] = !empty($data['nid']) ? $data['nid'] : 0;
+	$_user = !empty($user) ? user_load($user->uid) : NULL;
+	$form['name'] = [
+		'#required' => TRUE,
+		'#type' => 'textfield',
+		'#title' => t('Họ và tên'),
+		'#default_value' => !empty($_user->field_account_full_name['und'][0]['value']) ? $_user->field_account_full_name['und'][0]['value'] : "",
+		//        '#attributes' => array("disabled"=>"disabled"),
+	];
+	$form['mail'] = [
+		'#required' => TRUE,
+		'#type' => 'textfield',
+		'#title' => t('Email'),
+		'#default_value' => $_user->mail,
+		//        '#attributes' => array("disabled"=>"disabled"),
+	];
+	$form['point'] = [
+		'#type' => 'radios',
+		'#title' => t(''),
+		'#default_value' => 5,
+		'#options' => [
+			5 => '',
+			4 => '',
+			3 => '',
+			2 => '',
+			1 => '',
+		],
+		'#attributes' => ["class" => []],
+		'#theme_wrappers' => [],
+	];
+	for ($i = 1; $i <= 5; $i++) {
+		$form['point'][$i]['#suffix'] = "<label for='edit-point-" . $i . "'><i class=\"fa-light fa-star fa-solid\"></i></label>";
+		$form['point'][$i]['#theme_wrappers'] = [];
+	}
+	$form['comment'] = [
+		'#title' => t('Viết đánh giá'),
+		'#type' => 'textarea',
+	];
+	$form['submit'] = [
+		'#type' => 'submit',
+		'#value' => t('Đánh giá'),
+		'#attributes' => ["class" => ["btn bg-secondary clr-white text ff-bold radius-36 mt-4"]],
+	];
+
+	return $form;
+}
+
+function cassiopeia_room_hotel_rating_form_submit($form, &$form_state) {
+	global $user;
+	try {
+		$rating = new stdClass();
+		$rating->point = $form_state['values']['point'];
+		$rating->comment = !empty($form_state['values']['comment']) ? $form_state['values']['comment'] : "";
+		$rating->status = 0;
+		$rating->uid = !empty($user->uid) ? $user->uid : 0;
+		$rating->nid = $form_state['#nid'];
+		$rating->full_name = $form_state['value']['full_name'];
+		$rating->email = $form_state['value']['email'];
+		cassiopeia_room_hotel_rating_save($rating);
+		drupal_set_message("Cảm ơn bạn đã để lại đánh giá, ý kiến của bạn đang được xét duyệt!");
+	}
+	catch (Exception $e) {
+	}
+}
+
+function cassiopeia_room_room_booking_fee_load_by_star($star) {
+	try {
+		$query = db_select("cassiopeia_room_room_booking_fee", "cassiopeia_room_room_booking_fee");
+		$query->fields("cassiopeia_room_room_booking_fee");
+		$query->condition("star", $star);
+		$result = $query->execute()->fetchObject();
+		return $result;
+	}
+	catch (Exception $e) {
+		return NULL;
+	}
+}
+
+function cassiopeia_room_room_booking_fee_load_by_hotel($hotel, $price) {
+	try {
+		if (!empty(variable_get("room_booking_fee_by_start"))) {
+			$star = $hotel->field_hotel_ranking['und'][0]['value'];
+		}
+		else {
+			$star = 0;
+		}
+		$result = cassiopeia_room_room_booking_fee_load_by_star($star);
+		$booking_fee = 0;
+		if (!empty($result)) {
+			$booking_fee = $price * $result->percent / 100 + $result->amount;
+		}
+		return $booking_fee;
+	}
+	catch (Exception $e) {
+		return 0;
+	}
+}
+
+function cassiopeia_room_hotel_detail_form($form, &$form_state, $data = ["hotel"]) {
+	$form['#hotel'] = $form_state['#hotel'] = !empty($data['hotel']) ? $data['hotel'] : NULL;
+	$check_in = $_SESSION['hotel-search']['check-in'];
+	$check_out = $_SESSION['hotel-search']['check-out'];
+	$adult = $_SESSION['hotel-search']['adult'];
+	$children = $_SESSION['hotel-search']['children'];
+	$room_count = $_SESSION['hotel-search']['room'];
+	$date1 = date_create(date("Y-m-d", $check_in));
+	$date2 = date_create(date("Y-m-d", $check_out));
+	$diff = date_diff($date1, $date2);
+	$night_count = $diff->format("%a");
+	$form_wrapper = "cassiopeia-room-hotel-detail-form-wrapper";
+	$form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+	$form['#suffix'] = "</div>";
+	$form['#attributes']['class'][] = "cassiopeia-room-hotel-detail-form";
+	$form['check-in'] = [
+		'#type' => 'textfield',
+		'#theme_wrappers' => [],
+		'#attributes' => ["autocomplete" => "off", "readonly" => "readonly"],
+		'#default_value' => date("d/m/Y", $check_in),
+	];
+	$form['night_count'] = [
+		'#type' => 'textfield',
+		'#title' => t('Số đêm'),
+		'#default_value' => $night_count,
+		'#size' => 60,
+		'#maxlength' => 128,
+		'#required' => TRUE,
+		'#theme_wrappers' => [],
+	];
+	$form['check-out'] = [
+		'#type' => 'textfield',
+		'#theme_wrappers' => [],
+		'#attributes' => ["autocomplete" => "off", "readonly" => "readonly"],
+		'#default_value' => date("d/m/Y", $check_out),
+	];
+	$form['adult'] = [
+		'#type' => 'textfield',
+		'#title' => t('Người lớn'),
+		'#default_value' => $adult,
+		'#size' => 60,
+		'#maxlength' => 128,
+		'#required' => TRUE,
+		'#theme_wrappers' => [],
+		'#attributes' => ["autocomplete" => "off"],
+	];
+	$form['children'] = [
+		'#type' => 'textfield',
+		'#title' => t('Trẻ em'),
+		'#default_value' => $children,
+		'#size' => 60,
+		'#maxlength' => 128,
+		'#required' => TRUE,
+		'#theme_wrappers' => [],
+	];
+	$form['room_count'] = [
+		'#type' => 'textfield',
+		'#title' => t('Em bé'),
+		'#default_value' => $room_count,
+		'#size' => 60,
+		'#maxlength' => 128,
+		'#required' => TRUE,
+		'#theme_wrappers' => [],
+	];
+	$form['review'] = [
+		'#type' => 'submit',
+		'#name' => 'review',
+		'#value' => t('Xem giá'),
+		'#attributes' => ["class" => ["btn bg-secondary clr-white text ff-bold radius-36 btn-ajax"]],
+		'#submit' => ['cassiopeia_room_hotel_detail_form_submit_callback'],
+		'#ajax' => [
+			'callback' => 'cassiopeia_room_hotel_detail_form_submit_ajax_callback',
+			'wrapper' => $form_wrapper,
+			//            'method' => 'replace',
+			//            'effect' => 'faded',
+		],
+	];
+	$form['#attached']['js'] = [
+		drupal_get_path("module", "cassiopeia_room") . "/js/cassiopeia-room-hotel-detail-form.js",
+	];
+	return $form;
+}
+
+function cassiopeia_room_hotel_detail_form_submit_ajax_callback($form, &$form_state) {
+	return $form;
+}
+
+function cassiopeia_room_hotel_detail_form_submit_callback($form, &$form_state) {
+	$_SESSION['hotel-search']['check-in'] = strtotime(str_replace("/", "-", $form_state['values']['check-in']));
+	$_SESSION['hotel-search']['check-out'] = strtotime(str_replace("/", "-", $form_state['values']['check-out']));
+	$_SESSION['hotel-search']['room'] = $form_state['values']['room_count'];
+	$_SESSION['hotel-search']['adult'] = $form_state['values']['adult'];
+	$_SESSION['hotel-search']['children'] = $form_state['values']['children'];
+}
+
+function cassiopeia_room_date_popup_process_alter(&$element, &$form_state, $context) {
+	//    print_r($element);
+	//    _print_r($element);
+	if (!empty($element['#attributes']['class'][0]) && in_array("hidden-label", $element['#attributes']['class'])) {
+		$element['date']['#theme_wrappers'] = [];
+	}
+}

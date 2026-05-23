@@ -1,0 +1,35 @@
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="60" height="60" viewBox="0 0 60 60">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-2 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-3 {
+        fill: url(#linear-gradient-3);
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="9.42" y1="30.14" x2="76.01" y2="29.68" gradientUnits="userSpaceOnUse">
+      <stop offset="0.03" stop-color="#4673c0"/>
+      <stop offset="0.32" stop-color="#3e97d1"/>
+      <stop offset="0.97" stop-color="#2bf2fd"/>
+      <stop offset="1" stop-color="#2af6ff"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="9.43" y1="24.17" x2="50.29" y2="24.17" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#9ddef2"/>
+      <stop offset="1" stop-color="#ddf1f8"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-3" x1="9.41" y1="37.35" x2="50.27" y2="37.35" xlink:href="#linear-gradient-2"/>
+  </defs>
+  <title>Icon redo</title>
+  <g>
+    <path class="cls-1" d="M46.1,16.3H13.9a4.5,4.5,0,0,0-4.5,4.4V39.3a4.5,4.5,0,0,0,4.5,4.4H46.1a4.5,4.5,0,0,0,4.5-4.4V20.7a4.5,4.5,0,0,0-4.5-4.4Z"/>
+    <rect class="cls-2" x="9.4" y="21.5" width="41.1" height="5.31"/>
+    <path class="cls-3" d="M45.1,36.2H38.9c-.6,0-1,.5-1,1.2a1,1,0,0,0,1,1.1h6.2a1.1,1.1,0,0,0,1-1.1,1.1,1.1,0,0,0-1-1.2Zm0,0"/>
+    <path class="cls-3" d="M35.2,36.2H29a1.1,1.1,0,0,0-1,1.2,1.1,1.1,0,0,0,1,1.1h6.2a1,1,0,0,0,1-1.1c0-.7-.4-1.2-1-1.2Zm0,0"/>
+  </g>
+</svg>

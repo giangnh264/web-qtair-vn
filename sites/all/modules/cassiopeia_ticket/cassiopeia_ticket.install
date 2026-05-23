@@ -1,0 +1,858 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function cassiopeia_ticket_install() {
+
+}
+function cassiopeia_ticket_schema() {
+    $schema = array();
+    $schema['cassiopeia_ticket_meta_request_log'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'function' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'client_ip' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_t_meta_request_client_ip'     => array('client_ip'),
+            'c_t_meta_request_function'     => array('function'),
+            'c_t_meta_request_uid'     => array('uid'),
+            'c_t_meta_request_created' => array('created'),
+            'c_t_meta_request_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_ticket_issue_log'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'booking_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'message' => array(
+                'type' => 'varchar',
+                'length' => 1000,
+                'default' => '',
+            ),
+            'booking_image' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            // 1 xuat thuong
+            'issue_type' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 1,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_t_i_l_booking_code'    => array('booking_code'),
+            'c_t_i_l_pnr_code'    => array('pnr_code'),
+            'c_t_i_l_status'    => array('status'),
+            'c_t_i_l_issue_type'    => array('issue_type'),
+            'c_t_i_l_uid'     => array('uid'),
+            'c_t_i_l_created' => array('created'),
+            'c_t_i_l_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_ticket_booking'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'booking_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'airline' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'book_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'customFee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'silverFee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'agent_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_type'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'DO'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'version'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'adt'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'chd'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'inf'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'trip_type' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'ExpiryDt'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'payment_method'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'history' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'booking' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'start_point' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'end_point' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'departure_date' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'return_date' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_message' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Gender' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_FirstName' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_LastName' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Phone' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Email' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Address' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_company' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_tax_number' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_address' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_mail' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'additional' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'bank' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_t_booking_booking_code'    => array('booking_code'),
+            'c_t_booking_pnr_code'    => array('pnr_code'),
+            'c_t_booking_airline'    => array('airline'),
+            'c_t_booking_price'    => array('price'),
+            'c_t_booking_book_price'    => array('book_price'),
+            'c_t_booking_agent_code'    => array('agent_code'),
+            'c_t_booking_booking_name'    => array('booking_name'),
+            'c_t_booking_DO'    => array('DO'),
+            'c_t_booking_booking_type'    => array('booking_type'),
+            'c_t_booking_version'    => array('version'),
+            'c_t_booking_trip_type'    => array('trip_type'),
+            'c_t_booking_ExpiryDt'    => array('ExpiryDt'),
+            'c_t_booking_uid'     => array('uid'),
+            'c_t_booking_created' => array('created'),
+            'c_t_booking_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_ticket_passenger'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Email' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Phone' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FirstName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'LastName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Type' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Gender' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Birthday' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageDeparture' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageReturn' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'passenger_index' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'ticket_c_b_bid'    => array('bid'),
+            'ticket_c_b_uid'     => array('uid'),
+            'ticket_c_b_created' => array('created'),
+            'ticket_c_b_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_ticket_ticket'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'TransactionCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            // 0 nội địa, 1 quốc tế
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'StartPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'EndPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FlightNumber' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'AirlineCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'StartDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'EndDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Stops' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Duration' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'FlightSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Itinerary' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FareOptionSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Class' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'service_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'agent_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'infant_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TotalPrice' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'ServiceFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'IssueFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'LastTkDate' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'SeatsAvailable' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'leg' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'ticket_ticket_bid'     => array('bid'),
+            'ticket_ticket_Itinerary'     => array('Itinerary'),
+            'ticket_ticket_uid'     => array('uid'),
+            'ticket_ticket_created' => array('created'),
+            'ticket_ticket_changed' => array('changed'),
+        ),
+    );
+    return $schema;
+}
+/**
+ * Implements hook_uninstall().
+ */
+function cassiopeia_ticket_uninstall() {
+    db_drop_table('cassiopeia_ticket_booking');
+    db_drop_table('cassiopeia_ticket_passenger');
+    db_drop_table('cassiopeia_ticket_ticket');
+}
+
+function cassiopeia_ticket_update_7101() {
+   $schema['cassiopeia_ticket_issue_log'] = array(
+       'fields' => array(
+           'id'=> array(
+               'type' => 'serial',
+               'unsigned' => TRUE,
+               'not null' => TRUE,
+           ),
+           'booking_code' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'pnr_code' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'status' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'error_code' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'message' => array(
+               'type' => 'varchar',
+               'length' => 1000,
+               'default' => '',
+           ),
+           'booking_image' => array(
+               'type' => 'text',
+               'size' => 'normal', // tiny | small | normal | medium | big
+               'not null' => FALSE,
+               'default' => '',
+           ),
+           'note' => array(
+               'type' => 'text',
+               'size' => 'normal', // tiny | small | normal | medium | big
+               'not null' => FALSE,
+               'default' => '',
+           ),
+           // 1 xuat thuong
+           'issue_type' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 1,
+           ),
+           'uid' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'created' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'changed' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+       ),
+       'primary key' => array('id'),
+       'unique keys' => array(
+
+       ),
+       'indexes' => array(
+           'c_t_i_l_booking_code'    => array('booking_code'),
+           'c_t_i_l_pnr_code'    => array('pnr_code'),
+           'c_t_i_l_status'    => array('status'),
+           'c_t_i_l_issue_type'    => array('issue_type'),
+           'c_t_i_l_uid'     => array('uid'),
+           'c_t_i_l_created' => array('created'),
+           'c_t_i_l_changed' => array('changed'),
+       ),
+   );
+    db_create_table('cassiopeia_ticket_issue_log', $schema['cassiopeia_ticket_issue_log']);
+}
+function cassiopeia_ticket_update_7102() {
+   $schema['cassiopeia_ticket_meta_request_log'] = array(
+       'fields' => array(
+           'id'=> array(
+               'type' => 'serial',
+               'unsigned' => TRUE,
+               'not null' => TRUE,
+           ),
+           'function' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'client_ip' => array(
+               'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+           ),
+           'uid' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'created' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'changed' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+       ),
+       'primary key' => array('id'),
+       'unique keys' => array(
+
+       ),
+       'indexes' => array(
+           'c_t_meta_request_client_ip'     => array('client_ip'),
+           'c_t_meta_request_function'     => array('function'),
+           'c_t_meta_request_uid'     => array('uid'),
+           'c_t_meta_request_created' => array('created'),
+           'c_t_meta_request_changed' => array('changed'),
+       ),
+   );
+    db_create_table('cassiopeia_ticket_meta_request_log', $schema['cassiopeia_ticket_meta_request_log']);
+}

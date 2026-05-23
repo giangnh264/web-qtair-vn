@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="vi-VN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Thông tin vé điện tử</title>
+    <meta name="description" content="">
+    <meta name="keyword" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="matve/bootstrap.css" rel="stylesheet">
+    <link href="matve/jqueryui.css" rel="stylesheet">
+    <link href="matve/site.css" rel="stylesheet">
+    <link href="matve/print.css" rel="stylesheet">
+</head>
+<body class="sidebar-collapse Box-MatVe-A4">
+    <div class="wrapper">
+        <main id="main-content" class="content-wrapper">
+            <section class="content-header no-print">
+                <div class="row justify-content-center" id="group-config-mv">
+                    <div class="col-3 row  no-gutters">
+                        <div class="custom-control custom-switch col-12">
+                            <input class="custom-control-input" data-val="true" data-val-required="The ShowAG field is required." id="ShowAG" name="ShowAG" type="checkbox" value="true">
+                            <input name="ShowAG" type="hidden" value="false">
+                            <label class="custom-control-label" for="ShowAG"> Thông tin AG</label>
+                        </div>
+                        <div class="custom-control custom-switch col-12">
+                            <input class="custom-control-input" data-val="true" data-val-required="The HidenPriceAG field is required." id="HidenPriceAG" name="HidenPriceAG" type="checkbox" value="true">
+                            <input name="HidenPriceAG" type="hidden" value="false">
+                            <label class="custom-control-label" for="HidenPriceAG"> Ẩn giá tiền</label>
+                        </div>
+                        <div class="custom-control custom-switch col-12">
+                            <input class="custom-control-input" data-val="true" data-val-required="The ShowTimeLimit field is required." id="ShowTimeLimit" name="ShowTimeLimit" type="checkbox" value="true">
+                            <input name="ShowTimeLimit" type="hidden" value="false">
+                            <label class="custom-control-label" for="ShowTimeLimit"> Thời gian giữ</label>
+                        </div>
+                    </div>
+                    <div class="col-3 row">
+                        <div class="custom-control custom-switch col-12">
+                            <input class="custom-control-input" id="NutEdit" name="NutEdit" type="checkbox" value="true">
+                            <input name="NutEdit" type="hidden" value="false">
+                            <label class="custom-control-label" for="NutEdit"> Hiện (-)(+)</label>
+                        </div>
+                        <div class="custom-control custom-switch col-12">
+                            <input class="custom-control-input" id="CHKBusiness" name="CHKBusiness" type="checkbox" value="true">
+                            <input name="CHKBusiness" type="hidden" value="false">
+                            <label class="custom-control-label" for="CHKBusiness"> Hạng Business</label>
+                        </div>
+                        <div class="custom-control custom-switch col-12">
+                            <div class="row no-gutters">
+                                <div class="custom-control custom-switch col-auto">
+                                    <input class="custom-control-input" id="CHKPaymented" name="CHKPaymented" type="checkbox" value="true">
+                                    <input name="CHKPaymented" type="hidden" value="false">
+                                    <label class="custom-control-label" for="CHKPaymented"> Đã thanh toán</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-3">
+                        <div class="row">
+                            <div class="col-12">
+                                <a class="btn btn-outline-danger btn-sm ml-2 mt-2" href="#">English</a> <a class="btn btn-outline-danger btn-sm ml-2 mt-2" onclick="resizePagePrint();window.print();">Print PDF</a> 
+                            <select class="custom-select text-warning" data-original-title="Tùy chỉnh kích thước" data-placement="top" data-toggle="tooltip" id="ShowWidthPage" name="ShowWidthPage" style="max-width: 120px; height: 40px; margin-left: 20px">
+                                <option value="A4">Mẫu A4</option>
+                                <option value="A5">Mẫu A5</option>
+                            </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="content container-fluid">
+                <div class="print-box">
+                    <div id="listbooking" class="row">
+                        <div class="col-12">
+                            <div class="row no-print" style="display: none;">
+                                <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                <div class="col-12">
+                                    <span class="text-danger">Đây là mặt vé trao đổi thông tin giữa đại lý và khách hàng,</span>
+                                    <br>
+                                    <span class="text-danger">Thông tin không hoàn toàn chính xác 100% với booking trên hãng , Đại lý vui lòng kiểm tra trước khi gửi khách hàng</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12" id="EditPro">
+                            <div class="card-form">
+                                <div class="card pb-0" id="Info-AG" style="display: none;">
+                                    <div class="card-body pb-0">
+                                        <div class="row">
+                                            <div class="col-auto">
+                                            </div>
+                                            <div class="col">
+                                                <div class="row">
+                                                    <div class="col-12 text-right">
+                                                        <h5 class="mb-0">
+                                        <input type="text" class="border-0 w-100 info-name-ag font-weight-bold text-right text-success" name="field_name[]">
+                                    </h5>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                    <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                    <div class="col-12 text-right">
+                                                        <input type="text" class="border-0 w-100 text-right" name="field_name[]">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row no-gutters">
+                                    <div class="col-12 border-success">
+                                        <div class="card box-solid card-success">
+                                            <div class="card-header">
+                                                <h3 class="card-title font-weight-bold">THÔNG TIN VÉ ĐIỆN TỬ</h3>
+                                                <div class="card-tools">
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="vn" style="display: none;">VNA</span>
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="vj" style="display: none;">VJ</span>
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="bba" style="display: none;">BAM</span>
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="bl" style="display: none;">BL</span>
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="jet" style="display: none;">JET</span>
+                                                    <span class="btn btn-sm btn-add-pnr btn-danger no-print mr-2" data-air="vu" style="display: none;">VU</span>
+                                                </div>
+                                            </div>
+                                            <div class="card-body pb-3">
+
+                                                <div id="info-Passenger" class="row">
+                                                    <div class="col-5">
+                                                        <div class="row">
+                                                            <div class="col-12">
+                                                                <div class="callout callout-pnr border-success">
+                                                                    <div class="ribbon-pnr-pay chk-paymented" style="display: none;">
+                                                                        <div class="ribbon bg-success">
+                                                                            Đã thanh toán
+                                                                        </div>
+                                                                    </div>
+                                                                    <h6 class="font-weight-bold"><i class="icon fa fa-check text-success"></i> Mã đặt chỗ</h6>
+                                                                    <div class="text-center list-pnr sortable">
+
+                                                                        <div class="row">
+                                                                            <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                                            <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                                            <div class="col-12">
+                                                                                <div class="input-group">
+                                                                                    <input type="text" class="border-0 text-uppercase text-info text-center text-pnr font-weight-bold form-control" name="field_pnr[]" value="ABCDEF">
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-7 list-logo sortable">
+                                                        <div class="row">
+                                                            <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                            <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                            <div class="col-12 text-center mt-2 info-logo">
+                                                                <img src="matve/logo-VN.png" class="air-logo" alt="logo">
+                                                                <select class="no-print btn-change-logo" data-original-title="Chọn logo hãng bay" data-placement="top" data-toggle="tooltip" id="ChangeAirlines" name="ChangeAirlines" style="max-width: 20px; display: none;">
+                                                                    <option selected="selected" value="VN">Vietnam Airlines</option>
+                                                                    <option value="VJ">Vietjet Air</option>
+                                                                    <option value="BL">Pacific Airlines</option>
+                                                                    <option value="QH">Bamboo Airways</option>
+                                                                    <option value="JET">Jetstar</option>
+                                                                    <option value="VU">Vietravel Airlines</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="Info-TimeLimit" class="col-12" style="display: none;">
+                                                        <input type="text" class="border-0 text-center text-danger" value="Vé đặt giữ chỗ, Quý khách vui lòng thanh toán trước " style="width:100%">
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                </div>
+                                                <div id="list-Passengers">
+                                                    <div class="row mb-2 text-dark no-gutters" style="background-color: #1d5f4d; height: 35px">
+                                                        <div class="col-auto mr-3 text-center" style="color: #faa90d; margin-top: 5px">&nbsp;TT</div>
+                                                        <div class="col row no-gutters">
+                                                            <div class="col-12" style="color: #faa90d; margin-top: 5px">HÀNH KHÁCH</div>
+                                                        </div>
+                                                        <div class="col-5" style="color: #faa90d; margin-top: 5px">HÀNH LÝ / SỐ VÉ</div>
+                                                    </div>
+                                                    <div class="row no-gutters  border-bottom">
+                                                        <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                        <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                        <div class="col-auto">
+                                                            <input type="text" class="border-0 text-center" name="field_name[0]" value="1." style="width:32px;">
+                                                        </div>
+                                                        <div class="col row no-gutters">
+                                                            <div class="col-12">
+                                                                <input type="text" class="border-0 w-100" name="field_name[0]" value="(Ông)  TRAN VAN ABC" style="font-size: 14pt;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="">
+                                                                        <input type="text" class="border-0 w-100" name="field_name[0]" value="SGN-HAN: 23KG ký gửi">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row no-gutters  border-bottom">
+                                                        <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                        <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                        <div class="col-auto">
+                                                            <input type="text" class="border-0 text-center" name="field_name[1]" value="2." style="width:32px;">
+                                                        </div>
+                                                        <div class="col row no-gutters">
+                                                            <div class="col-12">
+                                                                <input type="text" class="border-0 w-100" name="field_name[1]" value="(Bé gái)  TRAN THI XYZ" style="font-size: 14pt;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="">
+                                                                        <input type="text" class="border-0 w-100" name="field_name[1]" value="">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row no-gutters">
+                                                        <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                        <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                        <div class="col-auto">
+                                                            <input type="text" class="border-0 text-center" name="field_name[2]" value="3." style="width:32px;">
+                                                        </div>
+                                                        <div class="col row no-gutters">
+                                                            <div class="col-12">
+                                                                <input type="text" class="border-0 w-100" name="field_name[2]" value="(Bé trai) TRAN TUAN H2O" style="font-size: 14pt;">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col">
+                                                            <div class="row">
+                                                                <div class="col-12">
+                                                                    <div class="">
+                                                                        <input type="text" class="border-0 w-100" name="field_name[2]" value="">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="card box-solid">
+                                            <div class="card-body result pt-2">
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <h4 class="card-title"><b class="color-change-text text-success">THÔNG TIN CHUYẾN BAY</b></h4>
+                                                    </div>
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-12 sortable2">
+                                                        <div class="FlightInfoDetails row mb-2" style="cursor:move">
+                                                            <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                            <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                            <div class="FlightInfoDetailsTitle col-12 no-padding bg-success-gradient">
+                                                                <div class="Title text-center mt-1">
+                                                                    <div class="CarrierLogo mr-2 mb-1 pull-left info-logo">
+                                                                        <img src="matve/logo-VN.png" class="img-thumbnail air-logo" alt="logo">
+                                                                        <select class="no-print btn-change-logo" data-original-title="Chọn logo hãng bay" data-placement="top" data-toggle="tooltip" id="ChangeAirlines" name="ChangeAirlines" style="max-width: 20px; display: none;">
+                                                                            <option selected="selected" value="VN">Vietnam Airlines</option>
+                                                                            <option value="VJ">Vietjet Air</option>
+                                                                            <option value="BL">Pacific Airlines</option>
+                                                                            <option value="BBA">Bamboo Airways</option>
+                                                                            <option value="JET">Jetstar</option>
+                                                                            <option value="VU">Vietravel Airlines</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <input type="text" style="color:#faa90d; letter-spacing: 2px" class="text-center w-75 font-weight-bold" name="field_flight[0]" value="THỨ BA | 20/06/2023 | HỒ CHÍ MINH - HÀ NỘI">
+                                                                </div>
+                                                            </div>
+                                                            <div class="FlightInfoDetailsContent col-12">
+                                                                <div class="DetailsContent row">
+                                                                    <div class="Depart col-4 no-padding pl-3 border-right border-3 border-success">
+                                                                        <input type="text" class="w-100 font-weight-bold border-bottom border-success" name="field_flightLeg[0]" value="Hồ Chí Minh (SGN)">
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="Cất cánh: 13:56">
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="20/06/2023 (Thứ Ba)">
+                                                                        <div class="row chk-Business" style="display: none;">
+                                                                            <div class="col-12">
+                                                                                <input type="text" style="text-decoration: underline overline; " class="w-100 text-center text-danger text-sm font-weight-bold font-italic" name="field_flightLeg[0]" value="B U S I N E S S    C L A S S">
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="Arrival col-4 no-padding pl-3 border-right border-3 border-success">
+                                                                        <input type="text" class="w-100 font-weight-bold border-bottom border-success" name="field_flightLeg[0]" value="Hà Nội (HAN)">
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="Hạ cánh: 08:56">
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="20/06/2023 (Thứ Ba)">
+
+                                                                    </div>
+                                                                    <div class="Detail col-4 no-padding">
+                                                                        <div>
+                                                                            Hãng vận chuyển <span class="CarrierLogo info-logo">
+                                                                                <img src="matve/logo-VN.png" class="img-thumbnail air-logo" alt="logo">
+<select class="no-print btn-change-logo" data-original-title="Chọn logo hãng bay" data-placement="top" data-toggle="tooltip" id="ChangeAirlines0" name="ChangeAirlines0" style="max-width: 20px; display: none;"><option selected="selected" value="VN">Vietnam Airlines</option>
+<option value="VJ">Vietjet Air</option>
+<option value="BL">Pacific Airlines</option>
+<option value="BBA">Bamboo Airways</option>
+<option value="JET">Jetstar</option>
+<option value="VU">Vietravel Airlines</option>
+</select>                                                                            </span>
+                                                                        </div>
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="Chuyến bay: VN123">
+                                                                        <input type="text" class="w-100" name="field_flightLeg[0]" value="Máy bay: 321">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-12 sortable2">
+                                                        <div class="FlightInfoFareTitle text-right row info-price-ag alert-success" style="cursor: move;">
+                                                            <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                            <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                            <div class="col-12 text-left bg-success">
+                                                                <input type="text" style="color: #faa90d" class="w-75" name="field_flightPrice[0]" value="Giá vé SGN - HAN">
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="row border-bottom">
+                                                                    <div class="lpassenger col-3 no-padding"><b>Hành khách</b>
+                                                                    </div>
+                                                                    <div class="lprice col-3"><b>Giá vé</b>
+                                                                    </div>
+                                                                    <div class="ltax col-3"><b>Thuế &amp; Phí</b>
+                                                                    </div>
+                                                                    <div class="ltotal col-3"><b>Tổng</b>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="row border-bottom">
+                                                                    <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                                    <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                                    <div class="tpassenger col-3 no-padding">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1 Người lớn">
+                                                                    </div>
+                                                                    <div class="tprice col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1,000,000">
+                                                                    </div>
+                                                                    <div class="ttax col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="100,000">
+                                                                    </div>
+                                                                    <div class="ttotal col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1,100,000">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="row border-bottom">
+                                                                    <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                                    <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                                    <div class="tpassenger col-3 no-padding">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1 Trẻ em">
+                                                                    </div>
+                                                                    <div class="tprice col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1,000,000">
+                                                                    </div>
+                                                                    <div class="ttax col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="100,000">
+                                                                    </div>
+                                                                    <div class="ttotal col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1,100,000">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12">
+                                                                <div class="row border-bottom">
+                                                                    <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                                    <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                                    <div class="tpassenger col-3 no-padding">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="1 Em bé">
+                                                                    </div>
+                                                                    <div class="tprice col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="100,000">
+                                                                    </div>
+                                                                    <div class="ttax col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="10,000">
+                                                                    </div>
+                                                                    <div class="ttotal col-3">
+                                                                        <input type="text" class="w-100 text-right" name="field_flightPrice[0]" value="110,000">
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 no-padding">
+                                                                <div class="row">
+                                                                    <span class="text-danger btn-remove no-print" style="display: none;"><i class="fa fa-minus-circle"></i></span>
+                                                                    <span class="text-success btn-add no-print" style="display: none;"><i class="fa fa-plus-circle"></i></span>
+                                                                    <div class="SumPriceTC col-12 text-right">
+                                                                        <b>
+                                                                                <input type="text" class="w-75 font-weight-bold text-right" name="field_flightPrice[0]" value="Tổng: 9,999,000 VNĐ">
+                                                                            </b>
+
+                                                                    </div>
+                                                                </div>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <hr>
+                                                <div class="row">
+                                                    <div class="col-12">
+                                                        <div class="toolbar-container"></div>
+                                                        <div class="text-danger font-weight-bold mt-2">QUÝ KHÁCH XIN LƯU Ý</div>
+                                                        <textarea id="NoteAG" name="NoteAG" class="border-0" rows="2" style="width: 100%; height: 408px; font-size: 16px; line-height: 1.5">
+- Quý khách vui lòng tới sân bay trước 90 phút chuyến bay nội địa, và 3 tiếng cho chuyến bay quốc tế để làm thủ tục check-in, quầy thủ tục sẽ kết thúc trước 60 phút so với giờ khởi hành chuyến bay. Quý khách sẽ mất tiền vé nếu không thực hiện đúng quy định làm thủ tục check-in.
+- Đối với chặng bay Quốc nội: Quý khách lưu ý mang theo CCCD, Hộ chiếu, Bằng lái xe... còn hiệu lực để làm thủ tục.
+-  Đối với chặng bay Quốc tế: Quý khách lưu ý mang theo hộ chiếu và giấy tờ theo quy định hãng hàng không, còn hiệu lực trước 6 tháng so với ngày khởi hành chuyến bay.
+QUÝ KHÁCH VUI LÒNG CÓ MẶT Ở SÂN BAY TRƯỚC 3 TIẾNG CHO CHUYẾN BAY QUỐC TẾ
+                                                        </textarea>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="overlay" style="display:none;">
+                                                <i class="fa fa-refresh fa-spin"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="matve/jquery.js"></script>
+    <script src="matve/bootstrapbundle.js"></script>
+    <script src="matve/jqueryui.css"></script>
+    <script src="matve/bookingprint.js"></script>
+    <script>
+        resizePagePrint();
+    </script>
+    <meta id="spine_extension">
+</body>
+
+</html>

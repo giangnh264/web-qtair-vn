@@ -1,0 +1,2559 @@
+<?php
+define("META_REQUEST_TYPE", serialize(
+    array(
+        1 => "Search",
+        2 => "Book",
+    )
+));
+function cassiopeia_ticket_menu()
+{
+    $items = array();
+//    $items['cassiopeia/ticket/booking/update'] = array(
+//        'type' => MENU_CALLBACK,
+//        'page callback' => 'cassiopeia_ticket_booking_update_page_callback',
+//        'title' => t('Thanh toán trực tuyến'),
+//        'access arguments' => array('cassiopeia module'),
+//        'file' => 'cassiopeia_ticket.inc',
+//    );
+    $items['admin/manager/ticket/issue'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticket_issue_page_callback',
+        'title' => t('Xuất vé'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_ticket_issue', 'p_view'),
+        'file' => 'cassiopeia_ticket.inc',
+    );
+    $items['ticket/alepay/cancel'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticket_booking_alepay_cancel_page_callback',
+        'title' => t('Thanh toán trực tuyến'),
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_ticket.inc',
+    );
+    $items['ticket/alepay/complete'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticket_booking_alepay_complete_page_callback',
+        'title' => t('Thanh toán trực tuyến'),
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_ticket.inc',
+    );
+    return $items;
+}
+
+function cassiopeia_ticket_booking_save($booking)
+{
+    $return = null;
+    $db_transaction = db_transaction();
+    try {
+        $booking_saved = drupal_write_record("cassiopeia_ticket_booking", $booking);
+        if (!empty($booking->passengers)) {
+            foreach ($booking->passengers as $passenger) {
+                $passenger->bid = $booking->id;
+                drupal_write_record("cassiopeia_ticket_passenger", $passenger);
+            }
+        }
+        if (!empty($booking->tickets)) {
+            foreach ($booking->tickets as $ticket) {
+                $ticket->bid = $booking->id;
+                drupal_write_record("cassiopeia_ticket_ticket", $ticket);
+            }
+        }
+    } catch (Exception $E) {
+        _print_r($E);
+        die;
+        $db_transaction->rollback();
+    }
+    return $return;
+}
+
+function cassiopeia_ticket_booking_load_by_code($code)
+{
+    $return = null;
+    try {
+        $query = db_select("cassiopeia_ticket_booking", "cassiopeia_ticket_booking");
+        $query->fields("cassiopeia_ticket_booking");
+        $query->condition("booking_code", $code, "=");
+        $booking = $query->execute()->fetchObject();
+        if (!empty($booking)) {
+            $tickets = cassiopeia_ticket_load_by_bid($booking->id);
+            $booking->tickets = $tickets;
+            $passengers = cassiopeia_passenger_load_by_bid($booking->id);
+            $booking->passengers = $passengers;
+        }
+
+        $return = $booking;
+    } catch (Exception $e) {
+        _print_r($e);
+    }
+    return $return;
+}
+
+function cassiopeia_ticket_booking_load_by_PNR($pnr_code)
+{
+    $return = null;
+    try {
+        $ticket_query = db_select("cassiopeia_ticket_ticket", "cassiopeia_ticket_ticket");
+        $ticket_query->fields("cassiopeia_ticket_ticket", array("bid"));
+        $ticket_query->condition("cassiopeia_ticket_ticket.pnr_code", $pnr_code);
+
+        $query = db_select("cassiopeia_ticket_booking", "cassiopeia_ticket_booking");
+        $query->fields("cassiopeia_ticket_booking");
+        $query->join($ticket_query, "cassiopeia_ticket_ticket", "cassiopeia_ticket_ticket.bid=cassiopeia_ticket_booking.id");
+
+        $booking = $query->execute()->fetchObject();
+        if (!empty($booking)) {
+            $tickets = cassiopeia_ticket_load_by_bid($booking->id);
+            $booking->tickets = $tickets;
+            $passengers = cassiopeia_passenger_load_by_bid($booking->id);
+            $booking->passengers = $passengers;
+        }
+
+        $return = $booking;
+    } catch (Exception $e) {
+        _print_r($e);
+    }
+    return $return;
+}
+
+function cassiopeia_ticket_load_by_PNR($pnr_code)
+{
+    $pnr_code = trim($pnr_code);
+    $return = null;
+    try {
+        $ticket_query = db_select("cassiopeia_ticket_ticket", "cassiopeia_ticket_ticket");
+        $ticket_query->fields("cassiopeia_ticket_ticket");
+        $ticket_query->condition("cassiopeia_ticket_ticket.pnr_code", $pnr_code);
+
+        $tickets = $ticket_query->execute()->fetchAll();
+//        _print_r($pnr_code);
+//        _print_r($tickets);
+        $return = $tickets;
+    } catch (Exception $e) {
+        _print_r($e);
+    }
+    return $return;
+}
+
+function cassiopeia_ticket_booking_load($id)
+{
+    $return = null;
+    try {
+        $query = db_select("cassiopeia_ticket_booking", "cassiopeia_ticket_booking");
+        $query->fields("cassiopeia_ticket_booking");
+        $query->condition("id", $id, "=");
+        $booking = $query->execute()->fetchObject();
+        if (!empty($booking)) {
+            $tickets = cassiopeia_ticket_load_by_bid($booking->id);
+            $booking->tickets = $tickets;
+            $passengers = cassiopeia_passenger_load_by_bid($booking->id);
+            $booking->passengers = $passengers;
+        }
+
+        $return = $booking;
+    } catch (Exception $e) {
+        _print_r($e);
+    }
+    return $return;
+}
+
+function cassiopeia_ticket_booking_delete($booking)
+{
+    return array();
+}
+
+function cassiopeia_ticket_load_by_bid($bid)
+{
+    $return = null;
+    try {
+        $query = db_select("cassiopeia_ticket_ticket", "cassiopeia_ticket_ticket");
+        $query->fields("cassiopeia_ticket_ticket");
+        $query->condition("bid", $bid, "=");
+        $query->orderBy("leg", "ASC");
+        $tickets = $query->execute()->fetchAll();
+        $return = $tickets;
+    } catch (Exception $e) {
+        _print_r($e);
+    }
+    return $return;
+}
+
+function cassiopeia_passenger_load_by_bid($bid)
+{
+    $return = null;
+    try {
+        $query = db_select("cassiopeia_ticket_passenger", "cassiopeia_ticket_passenger");
+        $query->fields("cassiopeia_ticket_passenger");
+        $query->condition("bid", $bid, "=");
+        $tickets = $query->execute()->fetchAll();
+        $return = $tickets;
+    } catch (Exception $e) {
+
+    }
+    return $return;
+}
+
+function cassiopeia_agent_fee_config_save($config)
+{
+    global $user;
+    $return = null;
+    try {
+        if (!empty($config->id)) {
+            $config->changed = REQUEST_TIME;
+            $saved = drupal_write_record("cassiopeia_ticket_agent_fee_config", $config, array("id"));
+        } else {
+            $config->created = REQUEST_TIME;
+            $config->changed = REQUEST_TIME;
+            $saved = drupal_write_record("cassiopeia_ticket_agent_fee_config", $config);
+        }
+        $return = $saved;
+    } catch (Exception $E) {
+
+    }
+    return $return;
+}
+
+function cassiopeia_service_fee_config_save($config)
+{
+    global $user;
+    $return = null;
+    try {
+        if (!empty($config->id)) {
+            $config->changed = REQUEST_TIME;
+            $saved = drupal_write_record("cassiopeia_ticket_service_fee_config", $config, array("id"));
+        } else {
+            $config->created = REQUEST_TIME;
+            $config->changed = REQUEST_TIME;
+            $saved = drupal_write_record("cassiopeia_ticket_service_fee_config", $config);
+        }
+        $return = $saved;
+    } catch (Exception $E) {
+
+    }
+    return $return;
+}
+
+function cassiopeia_agent_fee_config_load($user)
+{
+    try {
+        if (!empty($user->uid)) {
+            $_user = user_load($user->uid);
+            $rank = !empty($_user->field_tx_rank['und'][0]['tid']) ? $_user->field_tx_rank['und'][0]['tid'] : 0;
+            $query = db_select("cassiopeia_ticket_agent_fee_config", "cassiopeia_ticket_agent_fee_config");
+            $query->fields("cassiopeia_ticket_agent_fee_config");
+            $query->condition("uid", $user->uid);
+            $query->condition("tid", $rank);
+            $config = $query->execute()->fetchObject();
+            if (empty($config)) {
+                $query = db_select("cassiopeia_ticket_agent_fee_config", "cassiopeia_ticket_agent_fee_config");
+                $query->fields("cassiopeia_ticket_agent_fee_config");
+                $query->condition("uid", 0);
+                $query->condition("tid", $rank);
+                $config = $query->execute()->fetchObject();
+            }
+        } else {
+            $query = db_select("cassiopeia_ticket_agent_fee_config", "cassiopeia_ticket_agent_fee_config");
+            $query->fields("cassiopeia_ticket_agent_fee_config");
+            $query->condition("uid", 0);
+            $query->condition("tid", KHACH_THUONG);
+            $config = $query->execute()->fetchObject();
+        }
+        return $config;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function cassiopeia_airline_class_load($Airline, $class)
+{
+    $text = "";
+    switch ($Airline) {
+        case "VN" :
+            switch (strtoupper($class)) {
+                case "J" :
+                case "C" :
+                case "I" :
+                    $text = "Thương gia";
+                    break;
+                default :
+                    $text = "Phổ thông";
+            }
+            break;
+        case "QH" :
+            switch (strtoupper($class)) {
+                case "BUSINESS" :
+                    $text = "Thương gia";
+                    break;
+                default :
+                    $text = "Phổ thông";
+            }
+            break;
+        case "VJ" :
+            switch (strtoupper($class)) {
+                case "ECO" :
+                case "DELUXE" :
+                    $text = "Phổ thông";
+                    break;
+                default:
+                    $text = "Thương gia";
+            }
+            break;
+        case "VU" :
+            $text = "Phổ thông";
+            break;
+        case "9G" :
+            $text = "Phổ thông";
+            break;
+    }
+    return $text;
+}
+
+function cassiopeia_customer_load($id)
+{
+    try {
+        $query = db_select("cassiopeia_ticket_customer", "cassiopeia_ticket_customer");
+        $query->fields("cassiopeia_ticket_customer");
+        $query->condition("id", $id);
+        $customer = $query->execute()->fetchObject();
+        return $customer;
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function cassiopeia_customer_save($customer)
+{
+    global $user;
+    try {
+        if (!empty($customer->id)) {
+            $customer->changed = REQUEST_TIME;
+            drupal_write_record("cassiopeia_ticket_customer", $customer, array("id"));
+        } else {
+            $customer->uid = $user->uid;
+            $customer->created = REQUEST_TIME;
+            $customer->changed = REQUEST_TIME;
+            drupal_write_record("cassiopeia_ticket_customer", $customer);
+        }
+    } catch (Exception $e) {
+        return null;
+    }
+}
+
+function cassiopeia_node_counter($node)
+{
+    try {
+        $query = db_select("node_counter", "node_counter");
+        $query->fields("node_counter");
+        $query->condition("nid", $node->nid);
+        $result = $query->execute()->fetchObject();
+        return $result;
+    } catch (Exception $e) {
+        return 0;
+    }
+}
+
+function cassiopeia_partner_change_status_accept()
+{
+    if (user_has_role(3) || user_has_role(ROLE_SALE)) {
+        return true;
+    }
+    return false;
+}
+
+function cassiopeia_ticket_booking_update_form($form, &$form_state)
+{
+//    $_SESSION['start'] = 0;
+    $_SESSION['start'] = !empty($_SESSION['start']) ? $_SESSION['start'] : 0;
+    $form = array();
+    $form['start'] = array(
+
+        '#type' => 'textfield',
+
+        '#title' => t('Subject'),
+
+
+        '#default_value' => $_SESSION['start'],
+        '#size' => 60,
+
+        '#maxlength' => 128,
+
+        '#required' => TRUE,
+
+    );
+    $form['submit'] = array('#type' => 'submit', '#value' => t('update'));
+    return $form;
+}
+
+function cassiopeia_ticket_booking_update_form_submit($form, &$form_state)
+{
+    $query = db_select("tbl_booking", "tbl_booking");
+    $query->fields("tbl_booking");
+    $query->orderBy("created", "DESC");
+    $query->range($form_state['values']['start'], 10000);
+    $result = $query->execute()->fetchALl();
+    foreach ($result as $item) {
+        $operations[] = array(
+            '_batch_cassiopeia_ticket_booking_update_form_excel',
+            array(
+                'item' => $item
+            ),
+        );
+    }
+    if (!empty($operations)) {
+        $batch = array(
+            'title' => 'Import trademark conflict',
+            'operations' => $operations,
+            'progress_message' => t('Import @current of @total.'),
+            'error_message' => t('Error!'),
+            'finished' => '_batch_cassiopeia_ticket_booking_update_form_excel_finished',
+        );
+        batch_set($batch);
+    }
+//    print_r(count($result));
+    $item = new stdClass();
+    $data = new stdClass();
+
+}
+
+function _batch_cassiopeia_ticket_booking_update_form_excel($item, &$context)
+{
+    global $user;
+    $data = unserialize($item->data);
+    if ($item->DO == 1) {
+        $fbooking = new stdClass();
+        $fbooking->contact_Gender = $data->DepartureFlights->ContactInfo['Gender'];
+        $fbooking->contact_FirstName = $data->DepartureFlights->ContactInfo['FirstName'];
+        $fbooking->contact_LastName = $data->DepartureFlights->ContactInfo['LastName'];
+        $fbooking->contact_Phone = $data->DepartureFlights->ContactInfo['Phone'];
+        $fbooking->contact_Email = $data->DepartureFlights->ContactInfo['Email'];
+        $fbooking->uid = !empty($item->uid) ? $item->uid : "";
+        $fbooking->created = $item->created;
+        $fbooking->changed = $item->created;
+        $fbooking->booking_code = $item->booking_code;
+        $fbooking->pnr_code = $item->pnr_code;
+        $fbooking->airline = $item->airline;
+        $fbooking->price = $item->price;
+        $fbooking->book_price = $item->book_price;
+        $fbooking->agent_code = "";
+        $fbooking->booking_name = "";
+        $fbooking->status = $item->status;
+        $fbooking->history = $item->history;
+        $fbooking->error_code = $item->error_code;
+        $fbooking->error_message = $item->error_message;
+        $fbooking->adt = $item->adt;
+        $fbooking->chd = $item->chd;
+        $fbooking->inf = $item->inf;
+        $fbooking->payment_method = $item->payment_method;
+        $fbooking->ExpiryDt = $item->ExpiryDt;
+        $fbooking->trip_type = $item->trip_type;
+        $fbooking->version = 2;
+        $fbooking->booking = $item->booking;
+        $fbooking->start_point = $item->start_point;
+        $fbooking->end_point = $item->end_point;
+        $fbooking->departure_date = $item->departure_date;
+        $fbooking->return_date = $item->return_date;
+        $fbooking->DO = $item->DO;
+        $fbooking->additional = "";
+        $fbooking->bill_company = "";
+        $fbooking->bill_tax_number = "";
+        $fbooking->bill_address = "";
+        $fbooking->bill_mail = "";
+        $fbooking->bank = "";
+        $fbooking->customFee = $item->customFee;
+        $fbooking->silverFee = $item->silverFee;
+
+        if (!empty($data->DepartureFlights->ListPassengers)) {
+            foreach ($data->DepartureFlights->ListPassengers as $Passenger) {
+                $passenger = new stdClass();
+                $passenger->Email = "";
+                $passenger->Phone = "";
+                $passenger->passenger_index = $Passenger['Index'];
+                $passenger->FirstName = $Passenger['FirstName'];
+                $passenger->LastName = $Passenger['LastName'];
+                $passenger->Type = $Passenger['Type'];
+                $passenger->Gender = $Passenger['Gender'];
+                $passenger->Birthday = !empty($Passenger['Birthday']) ? strtotime(str_replace("/", "-", $Passenger['Birthday'])) : 0;
+                $passenger->BaggageDeparture = $Passenger['BaggageDeparture'];
+                $passenger->BaggageReturn = $Passenger['BaggageReturn'];
+                $passenger->uid = $item->uid;
+                $passenger->created = $item->created;
+                $passenger->changed = $item->created;
+                $fbooking->passengers[] = $passenger;
+            }
+        }
+        $sup_query = db_select("tbl_ticket", "tbl_ticket");
+        $sup_query->fields("tbl_ticket");
+        $sup_query->orderBy("id", "ASC");
+        $sup_query->condition("booking_code", $item->booking_code);
+        $tickets = $sup_query->execute()->fetchAll();
+        foreach ($tickets as $leg => $_ticket) {
+            $ticket_detail = unserialize($_ticket->ticket);
+            $FlightDetail = cassiopeia_meta_FareOptionSession_load($ticket_detail, $_ticket->FareOptionSession);
+            $ticket = new stdClass();
+            $ticket->status = "";
+            $ticket->TransactionCode = "";
+            $ticket->type = $item->DO == 1 ? 0 : 1; // nội địa
+            $ticket->StartPoint = $ticket_detail->StartPoint;
+            $ticket->EndPoint = $ticket_detail->EndPoint;;
+            $ticket->FlightNumber = $ticket_detail->FlightNumber;;
+            $ticket->AirlineCode = $ticket_detail->AirlineCode;;
+            $ticket->StartDate = strtotime($ticket_detail->StartDate);;
+            $ticket->EndDate = strtotime($ticket_detail->EndDate);;
+            $ticket->Stops = $ticket_detail->Stops;;
+            $ticket->Duration = $ticket_detail->Duration;;
+            $ticket->FlightSession = $ticket_detail->FlightSession;;
+            $ticket->pnr_code = $_ticket->PNR;;
+            $ticket->Itinerary = $leg == 0 ? "DepartureFlights" : "ReturnFlights";
+            $ticket->FareOptionSession = $_ticket->FareOptionSession;
+            $ticket->Class = $FlightDetail->Class;
+            $ticket->PriceAdult = $FlightDetail->PriceAdult;
+            $ticket->PriceChild = $FlightDetail->PriceChild;
+            $ticket->PriceInfant = $FlightDetail->PriceInfant;
+            $ticket->FeeAdult = $FlightDetail->FeeAdult;
+            $ticket->FeeChild = $FlightDetail->FeeChild;
+            $ticket->FeeInfant = $FlightDetail->FeeInfant;
+            $ticket->TaxAdult = $FlightDetail->TaxAdult;
+            $ticket->TaxChild = $FlightDetail->TaxChild;
+            $ticket->TaxInfant = $FlightDetail->TaxInfant;
+            $ticket->TotalPrice = $FlightDetail->TotalPrice;
+            $ticket->ServiceFee = $FlightDetail->ServiceFee;
+            $ticket->IssueFee = $FlightDetail->IssueFee;
+            $ticket->LastTkDate = strtotime($FlightDetail->LastTkDate);
+            $ticket->SeatsAvailable = $FlightDetail->SeatsAvailable;
+            $ticket->leg = $leg;
+            $ticket->uid = $item->uid;
+            $ticket->created = $item->created;
+            $ticket->changed = $item->created;
+            $fbooking->tickets[] = $ticket;
+        }
+
+        $saved = cassiopeia_ticket_booking_save($fbooking);
+    } else {
+
+        $fbooking = new stdClass();
+        $fbooking->contact_Gender = $data->ContactInfo['Gender'];
+        $fbooking->contact_FirstName = $data->ContactInfo['FirstName'];
+        $fbooking->contact_LastName = $data->ContactInfo['LastName'];
+        $fbooking->contact_Phone = $data->ContactInfo['Phone'];
+        $fbooking->contact_Email = $data->ContactInfo['Email'];
+        $fbooking->uid = !empty($item->uid) ? $item->uid : "";
+        $fbooking->created = $item->created;
+        $fbooking->changed = $item->created;
+        $fbooking->booking_code = $item->booking_code;
+        $fbooking->pnr_code = $item->pnr_code;
+        $fbooking->airline = $item->airline;
+        $fbooking->price = $item->price;
+        $fbooking->book_price = $item->book_price;
+        $fbooking->agent_code = "";
+        $fbooking->booking_name = "";
+        $fbooking->status = $item->status;
+        $fbooking->history = $item->history;
+        $fbooking->error_code = $item->error_code;
+        $fbooking->error_message = $item->error_message;
+        $fbooking->adt = $item->adt;
+        $fbooking->chd = $item->chd;
+        $fbooking->inf = $item->inf;
+        $fbooking->payment_method = $item->payment_method;
+        $fbooking->ExpiryDt = $item->ExpiryDt;
+        $fbooking->trip_type = $item->trip_type;
+        $fbooking->version = 2;
+        $fbooking->booking = $item->booking;
+        $fbooking->start_point = $item->start_point;
+        $fbooking->end_point = $item->end_point;
+        $fbooking->departure_date = $item->departure_date;
+        $fbooking->return_date = $item->return_date;
+        $fbooking->DO = $item->DO;
+        $fbooking->additional = "";
+        $fbooking->bill_company = "";
+        $fbooking->bill_tax_number = "";
+        $fbooking->bill_address = "";
+        $fbooking->bill_mail = "";
+        $fbooking->bank = "";
+        $fbooking->customFee = $item->customFee;
+        $fbooking->silverFee = $item->silverFee;
+
+        $sup_query = db_select("tbl_ticket", "tbl_ticket");
+        $sup_query->fields("tbl_ticket");
+        $sup_query->condition("booking_code", $item->booking_code);
+        $tickets = $sup_query->execute()->fetchAll();
+        foreach ($tickets as $_ticket) {
+            $ticket_detail = unserialize($_ticket->ticket);
+            $ticket = new stdClass();
+            $ticket->status = "";
+            $ticket->TransactionCode = "";
+            $ticket->type = $item->DO == 1 ? 0 : 1; // nội địa
+            $ticket->StartPoint = $ticket_detail->StartPoint;
+            $ticket->EndPoint = $ticket_detail->EndPoint;;
+            $ticket->FlightNumber = $ticket_detail->FlightNumber;;
+            $ticket->AirlineCode = $ticket_detail->AirlineCode;;
+            $ticket->StartDate = strtotime($ticket_detail->StartDate);;
+            $ticket->EndDate = strtotime($ticket_detail->EndDate);;
+            $ticket->Stops = $ticket_detail->Stops;;
+            $ticket->Duration = $ticket_detail->Duration;;
+            $ticket->FlightSession = $ticket_detail->FlightSession;;
+            $ticket->pnr_code = $ticket_detail->PNR;;
+            $ticket->Itinerary = $_ticket->Itinerary;
+            $ticket->FareOptionSession = $ticket_detail->FlightSession;
+            $ticket->Class = $ticket_detail->ListSegment[0]->ClassAdult;
+            $ticket->PriceAdult = $data->FlightData->FlightGroups->PriceAdult;
+            $ticket->PriceChild = $data->FlightData->FlightGroups->PriceChild;
+            $ticket->PriceInfant = $data->FlightData->FlightGroups->PriceInfant;
+            $ticket->FeeAdult = "";
+            $ticket->FeeChild = "";
+            $ticket->FeeInfant = "";
+            $ticket->TaxAdult = "";
+            $ticket->TaxChild = "";
+            $ticket->TaxInfant = "";
+            $ticket->TotalPrice = "";
+            $ticket->ServiceFee = "";
+            $ticket->IssueFee = "";
+            $ticket->LastTkDate = strtotime($ticket_detail->LastTkDate);
+            $ticket->SeatsAvailable = "";
+            $ticket->leg = $_ticket->Itinerary == "DepartureFlights" ? 0 : 1;
+            $ticket->uid = $item->uid;
+            $ticket->created = $item->created;
+            $ticket->changed = $item->created;
+            $fbooking->tickets[] = $ticket;
+        }
+        if (!empty($data->ListPassengers)) {
+            foreach ($data->ListPassengers as $Passenger) {
+                $passenger = new stdClass();
+                $passenger->Email = "";
+                $passenger->Phone = "";
+                $passenger->passenger_index = $Passenger['Index'];
+                $passenger->FirstName = $Passenger['FirstName'];
+                $passenger->LastName = $Passenger['LastName'];
+                $passenger->Type = $Passenger['Type'];
+                $passenger->Gender = $Passenger['Gender'];
+                $passenger->Birthday = !empty($Passenger['Birthday']) ? strtotime(str_replace("/", "-", $Passenger['Birthday'])) : 0;
+                $passenger->BaggageDeparture = $Passenger['BaggageDeparture'];
+                $passenger->BaggageReturn = $Passenger['BaggageReturn'];
+                $passenger->uid = $item->uid;
+                $passenger->created = $item->created;
+                $passenger->changed = $item->created;
+                $fbooking->passengers[] = $passenger;
+            }
+        }
+        $saved = cassiopeia_ticket_booking_save($fbooking);
+    }
+
+}
+
+function _batch_cassiopeia_ticket_booking_update_form_excel_finished($success, $results, $operations)
+{
+    $_SESSION['start'] += 10000;
+    drupal_set_message('Import successful.');
+}
+
+function cassiopeia_ticket_flight_search_form($form, &$form_state, $data)
+{
+    $form = array();
+    $form['#data'] = $data;
+    $form_wrapper = "cassiopeia-ticket-flight-search-form-wrapper";
+    $form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes'] = array("class" => array("cassiopeia-ticket-flight-search-form"));
+    if (!empty($form_state['#search_result'])) {
+        $DataSession = $form_state['#search_result']->Data->DataSession;
+        $form['#search_result'] = $form_state['#search_result'];
+        $form['#DataSession'] = $form_state['#DataSession'] = $DataSession;
+        $form['#DepartureFlights'] = $DepartureFlights = $form_state['#search_result']->Data->DepartureFlights;
+        $form['#Adult'] = $form_state['#search_result']->Data->Adult;
+        $form['#Children'] = $form_state['#search_result']->Data->Children;
+        $form['#Infant'] = $form_state['#search_result']->Data->Infant;
+        $form['#ChoseDepartureFlightSession'] = !empty($form_state['#ChoseDepartureFlightSession']) ? $form_state['#ChoseDepartureFlightSession'] : null;
+        $form['#ChoseDepartureFareOptionSession'] = !empty($form_state['#ChoseDepartureFareOptionSession']) ? $form_state['#ChoseDepartureFareOptionSession'] : null;
+        if (!empty($form['#ChoseDepartureFareOptionSession'])) {
+            $form['#ChoseDepatureFlight'] = cassiopeia_meta_FareOptionSession_load($DepartureFlights->{$form['#ChoseDepartureFlightSession']}, $form['#ChoseDepartureFareOptionSession']);;
+        }
+        foreach ($DepartureFlights as $FlightSession => $Flight) {
+            $key = $DataSession . "-" . $FlightSession;
+            $form['DepartureFlight'][$key] = array(
+                '#type' => 'container',
+                '#tree' => true
+            );
+            $options = array();
+            $index = 1;
+            $default_value = 0;
+            foreach ($Flight->FareOptions as $FareOption) {
+                $Price = $FareOption->PriceAdult + $FareOption->FeeAdult + $FareOption->TaxAdult;
+                $options[$FareOption->FareOptionSession] = "<div><span class='airline-class'>" . $FareOption->Class . "</span><span class='price'>" . number_format($Price, 0, ",", ".") . "</span></div>";
+                $index++;
+            }
+            $MostCheapFlight = cassiopeia_meta_get_most_cheap_flight($Flight->FareOptions);
+            $form['DepartureFlight'][$key]['FareOption'] = array(
+                '#type' => 'radios',
+                '#title' => t(''),
+                '#options' => $options,
+                '#default_value' => $MostCheapFlight->FareOptionSession,
+                '#ajax' => array(
+                    'callback' => 'cassiopeia_ticket_search_flight_form_change_fareoption_ajax_submit',
+                    'wrapper' => "test_" . $key,
+                    'progress' => array('type' => 'fullscreen'),
+                    'method' => 'replace',
+                    'effect' => 'fade',
+                ),
+            );
+
+
+            if (empty($form['#ChoseDepartureFlightSession'])) {
+                $form['DepartureFlight'][$key]['choose'] = array(
+                    '#type' => 'submit',
+                    '#value' => "chose_" . $key,
+                    '#attributes' => array('class' => array('btn-primary btn-choose-flight')),
+                    '#ajax' => array(
+                        'callback' => 'cassiopeia_ticket_search_flight_form_ajax_choose',
+                        'wrapper' => 'RightDet2ail',
+                        'progress' => array('type' => 'fullscreen')
+                    ),
+                    '#submit' => array('cassiopeia_ticket_search_flight_form_departure_choose'),
+                    '#prefix' => "<div id='choose_'.$key>",
+                    '#suffix' => "</div>"
+                );
+            } else {
+                if ($form['#ChoseDepartureFlightSession'] == $FlightSession) {
+                    $form['DepartureFlight'][$key]['un_choose'] = array(
+                        '#type' => 'submit',
+                        '#value' => "un_choose_" . $key,
+                        '#attributes' => array('class' => array('btn-primary btn-un-choose-flight')),
+                        '#ajax' => array(
+                            'callback' => 'cassiopeia_ticket_search_flight_form_ajax_un_choose',
+                            'wrapper' => 'Righ2tDetail',
+                            'progress' => array('type' => 'fullscreen')
+                        ),
+                        '#submit' => array('cassiopeia_ticket_search_flight_form_departure_un_choose'),
+                        '#prefix' => "<div id='choose_'.$key>",
+                        '#suffix' => "</div>"
+                    );
+                }
+            }
+
+            if (!empty($form_state['values'][$key]['FareOption'])) {
+                $form['#FareOption'][$key] = $FareOption = cassiopeia_meta_FareOptionSession_load($Flight, $form_state['values'][$key]['FareOption']);
+            } else {
+                $form['#FareOption'][$key] = $FareOption = cassiopeia_meta_FareOptionSession_load($Flight, $MostCheapFlight->FareOptionSession);
+            }
+            $form['DepartureFlight'][$key]['detail'] = array(
+                '#markup' => _cassiopeia_render_theme("module", "cassiopeia_ticket", "templates/parts/search-flight-detail.tpl.php", array("Flight" => $Flight, "FareOption" => $FareOption, "PNR" => $form_state['values']['code'], "Adult" => $form['#Adult'], "Children" => $form['#Children'], "Infant" => $form['#Infant'], "custom_fee" => $form['#data']->custom_fee)),
+                '#prefix' => "<div id='test_" . $key . "'>",
+                '#suffix' => "</div>"
+
+            );
+        }
+//        if(!empty($form['#ChoseDepartureFareOptionSession'])){
+        $form['RightDetail'] = array(
+            '#markup' => _cassiopeia_render_theme("module", "cassiopeia_ticket", "templates/parts/right-detail.tpl.php", array("DepartureFlight" => $form['#ChoseDepatureFlight'], "FareOption" => $FareOption, "PNR" => $form_state['values']['code'], "Adult" => $form['#Adult'], "Children" => $form['#Children'], "Infant" => $form['#Infant'], "custom_fee" => $form['#data']->custom_fee)),
+            '#prefix' => "<div id='RightDetail'>",
+            '#suffix' => "</div>"
+
+        );
+//        }
+    }
+
+
+    $form['search'] = array(
+        '#type' => 'submit',
+        '#value' => t('Thêm mới'),
+        '#submit' => array("cassiopeia_ticket_flight_search_form_submit"),
+//        '#validate' => array("cassiopeia_admin_payment_report_add_form_validate"),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ticket_flight_search_form_ajax_submit',
+            'wrapper' => $form_wrapper,
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes' => array("class" => array("btn-ajax btn-add"))
+    );
+    $form['#attached']['js'] = array(
+        drupal_get_path('module', 'cassiopeia_ticket') . '/js/cassiopeia_ticket_search_flight_form.js'
+    );
+    return $form;
+}
+
+function cassiopeia_ticket_flight_search_form_submit($form, &$form_state)
+{
+//    print_r($form['#data']);
+//    die;
+    $result = cassiopeia_meta_ExtDOMSearchFlights($form['#data']);
+//    print_r($result);
+    $form_state['#search_result'] = $result;
+    $form_state['#ChoseFlightSession'] = null;
+    $form_state['#ChoseFareOptionSession'] = null;
+    $form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_ticket_flight_search_form_ajax_submit($form, &$form_state)
+{
+    return $form;
+}
+
+function cassiopeia_ticket_theme($existing, $type, $theme, $path)
+{
+    return array(
+        'cassiopeia_ticket_flight_search_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_ticket_flight_search_form',
+            'path' => drupal_get_path('module', 'cassiopeia_ticket') . '/templates/forms'
+        ),
+        'cassiopeia_ticket_issue_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_ticket_issue_form',
+            'path' => drupal_get_path('module', 'cassiopeia_ticket') . '/templates/forms'
+        ),
+        'cassiopeia_ticket_booking_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_ticket_booking_form',
+            'path' => drupal_get_path('module', 'cassiopeia_ticket') . '/templates/forms'
+        ),
+        'cassiopeia_ticket_payment_after_booking_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_ticket_payment_after_booking_form',
+            'path' => drupal_get_path('module', 'cassiopeia_ticket') . '/templates/forms'
+        ),
+    );
+}
+
+function cassiopeia_ticket_search_flight_form_ajax_un_choose($form, &$form_state)
+{
+
+    $ajax_commands = array();
+    $ajax_commands[] = ajax_command_replace('#choose_' . $form_state['#ChoseDepartureFlightSession'], (render($form['DepartureFlight'][$form_state['#ChoseDepartureFlightSession']]['choose'])));
+    $ajax_commands[] = ajax_command_replace('#RightDetail', (render($form['RightDetail'])));
+    $form_state['rebuild'] = TRUE;
+    return array(
+        '#type' => 'ajax',
+        '#commands' => $ajax_commands,
+    );
+}
+
+function cassiopeia_ticket_search_flight_form_ajax_choose($form, &$form_state)
+{
+    $ajax_commands = array();
+    $ajax_commands[] = ajax_command_replace('#RightDetail', (render($form['RightDetail'])));
+    $form_state['rebuild'] = TRUE;
+    return array(
+        '#type' => 'ajax',
+        '#commands' => $ajax_commands,
+    );
+}
+
+function cassiopeia_ticket_search_flight_form_departure_choose($form, &$form_state)
+{
+    $key = $form_state['triggering_element']['#parents'][0];
+    $splitter = explode("-", $key);
+    $FlightSession = $splitter[1];
+    $FareOption = $form_state['values'][$key];
+    $form_state['#ChoseDepartureFlightSession'] = $FlightSession;
+    $form_state['#ChoseDepartureFareOptionSession'] = $FareOption['FareOption'];
+    $form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_ticket_search_flight_form_departure_un_choose($form, &$form_state)
+{
+    $form_state['#ChoseDepartureFlightSession'] = null;
+    $form_state['#ChoseDepartureFareOptionSession'] = null;
+    $form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_ticket_issue_review($form, &$form_state)
+{
+    $form_state['#leg_count'] = 0;
+    $form_state['#guest_count'] = 0;
+    $form_state['#open-pnr-result'] = null;
+    $form_state['#TotalPrice'] = 0;
+    $values = $form_state['values']['review-group'];
+    $_data = new stdClass();
+    $_data->PNRCode = strtoupper(trim($values['code']));
+    $_data->AirlineCode = strtoupper(trim($values['airline']));
+    $result = cassiopeia_meta_api_open_pnr($_data);
+    if ($result->Code == 0) {
+        if ($form_state['values']['review-group']['airline'] == "VN") {
+            $TotalPrice = cassiopeia_meta_api_DOMAirPrice($_data);
+            if ($TotalPrice->Code == 0) {
+                $form_state['#TotalPrice'] = $TotalPrice->Data->Amount;
+            }
+            $str = str_replace("\n", "<br>", $result->Data->PNRContent);
+            $array1 = explode(strtoupper($_data->PNRCode), $str);
+            if (!empty($array1[1])) {
+                $array2 = explode("1 VN", $array1[1]);
+                $array4 = explode("TKT/TIME LIMIT", $array2[1]);
+                $leg_count = (substr_count($array4[0], "VN")) + 1;				
+                $newstr = $array2[0];
+                $words = preg_replace('/\d+/u', '', $newstr);
+                $array3 = explode(".I", $words);
+                $str_adult = $array3[0];
+                $guestCount = (substr_count($str_adult, "."));
+            }
+        }
+        if ($form_state['values']['review-group']['airline'] == "VJ") {
+            if ($result->Code == 0) {
+                $DOM = new DOMDocument();
+                $DOM->loadHTML('<?xml encoding="utf-8" ?>' . $result->Data->PNRContent);
+                $tables = $DOM->getElementsByTagName('table');
+                if ($tables->length >= 5) {
+                    $length = $tables->length;
+                    $guestTables = $tables->item(2);
+                    $guestTableTbody = $guestTables->childNodes->item(0);
+                    $guestTableTbodyTr = $guestTableTbody->childNodes;
+                    $guestCount = count($guestTableTbodyTr) - 1;
+
+                    $itineraryTables = $tables->item($length - 2);
+                    $itineraryTableTbody = $itineraryTables->childNodes->item(1);
+                    $itineraryTableTbodyTr = $itineraryTableTbody->childNodes;
+                    $leg_count = count($itineraryTableTbodyTr);
+
+                    $priceTables = $tables->item($length - 1);
+                    $priceTableTbody = $priceTables->childNodes->item(0);
+                    $priceTableTbodyTr = $priceTableTbody->childNodes;
+                    $priceRow = $priceTableTbodyTr->item($priceTableTbodyTr->length - 1);
+                    $priceTds = $priceRow->childNodes;
+                    $priceTd = $priceTds->item($priceTds->length - 1);
+                    $price = str_replace("VND", "", $priceTd->nodeValue);
+                    $price = str_replace(",", "", $price);
+                    $removeNode = $tables->item($length - 1);
+                    $removeNode->parentNode->removeChild($removeNode);
+                    $result->Data->PNRContent = $DOM->saveHTML();
+                    $form_state['#TotalPrice'] = $price;
+                }
+            }
+        }
+//        _print_r($form_state['values']['review-group']['airline']);
+        if ($form_state['values']['review-group']['airline'] == "QH") {
+            if ($result->Code == 0) {
+                $DOM = new DOMDocument();
+                $DOM->loadHTML('<?xml encoding="utf-8" ?>' . $result->Data->PNRContent);
+                $tables = $DOM->getElementsByTagName('table');
+                if ($tables->length >= 3) {
+                  $TotalPrice = 0;
+                    $length = $tables->length;
+                  $paymentTables = $tables->item($length - 1);
+                  $paymentTableTbody = $paymentTables->childNodes->item(1);
+                  $paymentTableTbodyTr = $paymentTableTbody->childNodes;
+                  foreach ($paymentTableTbodyTr as $item) {
+                    $itineraryTableTbodyTrTd = $item->childNodes;
+                    if (!empty($itineraryTableTbodyTrTd->item(2)->nodeValue)) {
+                      $TotalPrice += str_replace("VND", "", str_replace(".", "", $itineraryTableTbodyTrTd->item(2)->nodeValue));
+                    }
+                  }
+//                  _print_r($TotalPrice);
+                    $guestTables = $tables->item(1);
+                    $guestTableTbody = $guestTables->childNodes->item(1);
+                    $guestTableTbodyTr = $guestTableTbody->childNodes;
+                    $leg_count = 0;
+//                    $TotalPrice = 0;
+                    $infant = 0;
+                    foreach ($guestTableTbodyTr as $item) {
+                        foreach ($item->attributes as $attribute) {
+                            if ($attribute->name == "class" && $attribute->value == "INFANT") {
+                                $infant++;
+                            }
+                        }
+                    }
+                    $guestCount = count($guestTableTbodyTr) - $infant;
+
+                    $itineraryTables = $tables->item(0);
+                    $itineraryTableTbody = $itineraryTables->childNodes->item(1);
+                    $itineraryTableTbodyTr = $itineraryTableTbody->childNodes;
+//                _print_r($itineraryTables);
+                    foreach ($itineraryTableTbodyTr as $item) {
+                        foreach ($item->attributes as $attribute) {
+                            if ($attribute->name == "class" && $attribute->value == "flight") {
+                                $itineraryTableTbodyTrTd = $item->childNodes;
+//                                $TotalPrice += str_replace("VND", "", str_replace(",", "", $itineraryTableTbodyTrTd->item(6)->nodeValue));
+//                                $TotalPrice += str_replace("VND", "", str_replace(",", "", $itineraryTableTbodyTrTd->item(7)->nodeValue));
+//                                $TotalPrice += str_replace("VND", "", str_replace(",", "", $itineraryTableTbodyTrTd->item(8)->nodeValue));
+                                $leg_count++;
+                            }
+                        }
+                    }
+                    $form_state['#TotalPrice'] = $TotalPrice;
+                }
+            }
+        }
+        if ($form_state['values']['review-group']['airline'] == "VU") {
+            if ($result->Code == 0) {
+                $DOM = new DOMDocument();
+                $DOM->loadHTML('<?xml encoding="utf-8" ?>' . $result->Data->PNRContent);
+                $tables = $DOM->getElementsByTagName('table');
+                $length = $tables->length;
+                $guestTables = $tables->item(0);
+                $guestTableTbody = $guestTables->childNodes->item(1);
+                $guestTableTbodyTr = $guestTableTbody->childNodes;
+                $infant = 0;
+                foreach ($guestTableTbodyTr as $item) {
+                    foreach ($item->attributes as $attribute) {
+                        if ($attribute->name == "class" && $attribute->value == "INF") {
+                            $infant++;
+                        }
+                    }
+                }
+                $guestCount = $guestTableTbodyTr->length - $infant;
+
+                $itineraryTables = $tables->item(1);
+                $itineraryTableTbody = $itineraryTables->childNodes->item(1);
+                $itineraryTableTbodyTr = $itineraryTableTbody->childNodes;
+
+                $leg_count = $itineraryTableTbodyTr->length;
+
+
+                $priceTables = $tables->item(2);
+                $priceTableTbody = $priceTables->childNodes->item(1);
+                $priceTbodyTr = $priceTableTbody->childNodes;
+                $priceTr = $priceTbodyTr->item(count($priceTbodyTr) - 1);
+                $priceTds = $priceTr->childNodes;
+                $priceTd = $priceTds->item($priceTds->length - 1);
+                $price = str_replace("VND", "", str_replace(",", "", $priceTd->nodeValue));
+                $form_state['#TotalPrice'] = $price;
+            }
+        }
+    }
+//    _print_r($leg_count);
+//    _print_r($guestCount);
+    $form_state['#leg_count'] = $leg_count;
+    $form_state['#guest_count'] = $guestCount;
+    $form_state['#open-pnr-result'] = $result;
+    $form_state['rebuild'] = TRUE;
+}
+
+function cassiopeia_ticket_issue_review_ajax($form, &$form_state)
+{
+    return $form;
+}
+
+function cassiopeia_ticket_issue_form($form, &$form_state){
+    $form = array();
+    $form_wrapper = "cassiopeia-ticket-issue-form-wrapper";
+    $form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes']['class'][] = "cassiopeia-ticket-issue-form";
+    $airline_options = array();
+    $airline_options['VN'] = "Vietnam Airlines";
+    $airline_options['VJ'] = "Vietjet Air";
+    $airline_options['QH'] = "Bamboo Airways";
+    $airline_options['VU'] = "Vietravel Airlines";
+    $form['review-group'] = array(
+        '#type' => 'container',
+        '#tree' => TRUE,
+    );
+    $form['review-group']['airline'] = array(
+        '#type' => 'select',
+        '#title' => t('Hãng'),
+        '#options' => $airline_options,
+        '#chosen' => false,
+    );
+    $form['review-group']['code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('PNR'),
+        '#size' => 255,
+        '#maxlength' => 255,
+    );
+    $form['review-group']['review'] = array(
+        '#type' => 'submit',
+        '#name' => 'review',
+        '#value' => "Mở mặt vé",
+        '#attributes' => array("class" => array("btn-default btn-ajax btn-open-pnr btn bg-secondary clr-white text ff-bold radius-36")),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ticket_issue_review_ajax',
+            'wrapper' => $form_wrapper,
+        ),
+        '#submit' => array('cassiopeia_ticket_issue_review'),
+    );
+//    _print_r($form_state['#TotalPrice']);
+    if (!empty($form_state['#TotalPrice'])) {
+        $form['issue-group'] = array(
+            '#type' => 'container',
+            '#tree' => TRUE,
+        );
+        if (cassiopeia_issue_report_accept()) {
+            $form['issue-group']['agent'] = array(
+                '#type' => 'textfield',
+                '#title' => t('Đại lý'),
+                '#size' => 255,
+                '#maxlength' => 255,
+                '#attributes' => array("class" => array("hidden")),
+                '#ajax' => array(
+                    'callback' => 'cassiopeia_ticket_issue_form_ajax_submit',
+                    'wrapper' => $form_wrapper,
+                    'progress' => 'none',
+                ),
+            );
+            $form['issue-group']['agent']['#process'] = array('form_process_autocomplete', 'ajax_process_form', 'bootstrap_form_process', 'cassiopeia_ticket_issue_form_issue_agent_process');
+        }
+        $form['issue-group']['code'] = array(
+            '#type' => 'textfield',
+            '#title' => t('Code'),
+            '#size' => 255,
+            '#maxlength' => 255,
+            '#value' => !empty($form_state['values']['review-group']['code']) ? $form_state['values']['review-group']['code'] : "",
+            '#attributes' => array("readonly" => "readonly", "disabled" => "disabled")
+        );
+        $form['issue-group']['issue'] = array(
+            '#type' => 'submit',
+            '#name' => 'btn-issue',
+            '#value' => t('Xuất vé'),
+            '#submit' => array('cassiopeia_ticket_issue_form_submit'),
+            '#ajax' => array(
+                'callback' => 'cassiopeia_ticket_issue_form_ajax_submit',
+                'wrapper' => $form_wrapper,
+            ),
+            '#attributes' => array("class" => array("btn-ajax btn-red btn-filter btn-issue hidden "))
+        );
+    }
+    $form['#attached']['js'] = array(
+        drupal_get_path("module", "cassiopeia_ticket") . "/js/cassiopeia-ticket-issue-form.js"
+    );
+
+    $form['#review-result'] = !empty($form_state['#open-pnr-result']) ? $form_state['#open-pnr-result'] : "";
+    $form['#TotalPrice'] = !empty($form_state['#TotalPrice']) ? $form_state['#TotalPrice'] : "";
+    $form['#leg_count'] = !empty($form_state['#leg_count']) ? $form_state['#leg_count'] : 1;
+    $form['#guest_count'] = !empty($form_state['#guest_count']) ? $form_state['#guest_count'] : 1;
+    $form['#airline'] = $form_state['#airline'] = !empty($form_state['values']['review-group']['airline']) ? $form_state['values']['review-group']['airline'] : "";
+    $form_state['#code'] = !empty($form_state['values']['review-group']['code']) ? $form_state['values']['review-group']['code'] : "";
+    return $form;
+}
+
+function cassiopeia_ticket_issue_form_issue_agent_process($element, &$form_state, &$form)
+{
+    $value = !empty($element['#value']) ? $element['#value'] : '';
+    $element['#field_prefix'] = '<input placeholder="Nhập mã, tên giao dịch..." name="tagify-issue-agent" class="form-control tagify-issue-agent" id="tagify-issue-agent" value="' . check_plain($value) . '">';
+    return $element;
+}
+
+function cassiopeia_ticket_issue_form_ajax_submit($form, &$form_state)
+{
+//    _print_r($form_state['#error_message']);
+    if (!empty($form_state['#added'])) {
+        ctools_include('ajax');
+        $commands[] = ajax_command_invoke("", "cassiopeiaTicketIssueCompleted", array(json_encode(array())));
+    } else {
+        if ($form_state['#error_message']) {
+            ctools_include('ajax');
+            $commands[] = ajax_command_invoke("", "cassiopeiaAlert", array(json_encode($form_state['#error_message'])));
+        } else {
+            drupal_get_messages();
+            $commands[] = ajax_command_replace('#cassiopeia-ticket-issue-form-wrapper', drupal_render($form));
+        }
+    }
+    $form_state['rebuild'];
+    return array(
+        '#type' => 'ajax',
+        '#commands' => $commands,
+    );
+}
+
+function cassiopeia_ticket_issue_form_submit($form, &$form_state)
+{
+    global $user;
+    $flag = true;
+    if (!cassiopeia_ticket_issue_accept()) {
+        $form_state['#error_message'][] = "Bạn không có quyền sử dụng chức năng này!";
+        $flag = false;
+    }
+    $_log = new stdClass();
+    $form_state['#error_message'] = array(); // clear messages
+    $form_state['#added'] = 0;
+    $TotalPrice = $form_state['#TotalPrice'];
+    $Leg = $form_state['#leg_count'];
+    $Guest = $form_state['#guest_count'];
+    $agent_id = !empty($form_state['values']['issue-group']['agent']) ? json_decode($form_state['values']['issue-group']['agent'])[0]->id : null;
+    $Airline = trim($form_state['#airline']);
+    $pnr_code = strtoupper(trim($form_state['#code']));
+    $booking = cassiopeia_qt_ticket_booking_load_by_PNR($pnr_code);
+    $_log->booking_code = "Xuất vé ngoài hệ thống";
+    $total_service_fee = 0;
+    if (!empty($booking)) {
+        $tickets = $booking->tickets;
+        $count_ticket = 0;
+        $total_agent_fee = 0;
+        foreach ($tickets as $ticket) {
+            if ($ticket->pnr_code == $pnr_code) {
+                $count_ticket++;
+                $total_service_fee += $ticket->service_fee * ($booking->adt + $booking->chd);
+                $total_service_fee += $ticket->service_infant_fee * $booking->inf;
+
+                $total_agent_fee += $ticket->agent_fee * ($booking->adt + $booking->chd);
+                $total_agent_fee += $ticket->agent_infant_fee * $booking->inf;
+            }
+        }
+        $_log->booking_code = $booking->booking_code;
+        if (empty($agent_id)) {
+            if (cassiopeia_issue_report_accept()) {
+                $agent_id = !empty($booking->uid) ? $booking->uid : $user->uid; //
+            } else {
+                $agent_id = $user->uid;
+            }
+        }
+    } else {
+        if (empty($agent_id)) {
+            $agent_id = $user->uid;
+        }
+    }
+
+    if ($flag) {
+        $_log->uid = $user->uid;
+        $_log->pnr_code = $pnr_code;
+        $_log->status = "PENDING";
+        $_log->error_code = "";
+        $_log->message = "Thực hiện xuất vé";
+        $_log->booking_image = "";
+        $_log->note = "";
+        $_log->issue_type = 1;
+
+        $_agent = !empty($agent_id) ? user_load($agent_id) : user_load($user->uid);
+        if (empty($_agent)) {
+            $_agent = user_load($user->uid);
+        }
+        $silver_rank_fee = 0;
+
+
+        $Partner_Price = $TotalPrice;
+        $balance = !empty($_agent->field_account_balance['und'][0]['value']) ? $_agent->field_account_balance['und'][0]['value'] : 0;
+        $balance = (float)trim($balance);
+        if ($TotalPrice > 0) {
+            if ($balance >= $Partner_Price + $total_service_fee || user_has_role(3) || user_has_role(8)) {
+                try {
+                    $dataResponseFromMeta = "dataResponseFromMeta";
+                    $_data = new stdClass();
+                    $_data->PNRCode = $pnr_code;
+                    $_data->AirlineCode = $Airline;
+
+                    $issue_response = cassiopeia_meta_api_issue($_data);
+//                    $issue_response = new stdClass();
+//                    $issue_response->Code=0;
+                    $dataResponseFromMeta = serialize($issue_response);
+                    if ($issue_response->Code == 0 || $issue_response->Code == "0") { // xuất thành công
+
+
+                        $_agent->field_account_balance['und'][0]['value'] = $balance;
+                        if ($_agent->field_account_status['und'][0]['tid'] == 22) { //tiềm năng
+                            $_agent->field_account_status['und'][0]['tid'] = 13;
+                            $_agent->field_account_updated_date['und'][0]['value'] = REQUEST_TIME;
+                        }
+
+                        $insertData = new stdClass();
+                        $insertData->partner_price = $Partner_Price + $total_service_fee;
+                        $insertData->price = $Partner_Price;
+                        $insertData->agent = $_agent->uid;
+                        $insertData->tran_kind = 4;
+                        $insertData->quantity = $Leg * $Guest;
+                        $insertData->PNR = $pnr_code;
+                        $insertData->date = REQUEST_TIME;
+                        $insertData->airline = $Airline;
+                        $insertData->content = "API issue";
+                        $insertData->booking = $booking;
+                        $flag = true;
+                        try {
+                            cassiopeia_create_issue_report($insertData);
+                            if (!empty($booking)) {
+                                $_PNR = $booking->pnr_code;
+                                $splitter = explode("-", $_PNR);
+
+                                $query = db_select("tbl_issue_report", "tbl_issue_report");
+                                $query->fields("tbl_issue_report");
+                                $query->condition("PNR", $splitter, "IN");
+                                $query->condition("tran_kind", 4, "=");
+                                $checkIssue = $query->execute()->fetchAll();
+                                if (count($checkIssue) >= count($booking->tickets)) {
+                                    db_update("tbl_booking")->fields(array(
+                                        "status" => "TICKETED"
+                                    ))->condition("booking_code", $booking->booking_code)->execute();
+                                }
+                                cassiopeia_send_booking_mail($booking->booking_code, $_agent->mail, $booking->DO);
+                            }
+                        } catch (Exception $e) {
+                        }
+
+                        $query = db_select("tbl_issue_report", "cassiopeia_report_issue");
+                        $query->fields("cassiopeia_report_issue");
+                        $query->condition("agent", $_agent->uid);
+                        $query->condition("date", strtotime(date("d-m-Y 00:00", strtotime("01-09-2020"))), ">=");
+                        $query->addExpression("SUM(partner_price)", "total");
+                        $query->groupBy("agent");
+                        $result = $query->execute()->fetchObject();
+
+                        $query1 = db_select("tbl_room_booking_report", "cassiopeia_report_room_booking");
+                        $query1->fields("cassiopeia_report_room_booking");
+                        $query1->condition("agent", $_agent->uid);
+                        $query1->addExpression("SUM(partner_price)", "total");
+                        $query1->groupBy("agent");
+                        $result1 = $query1->execute()->fetchObject();
+
+                        $total = $result->total;
+                        if (!empty($result1)) {
+                            $total += $result1->total;
+                        }
+
+                        $point = round($total / 1000000);
+                        $_agent->field_point['und'][0]['value'] = $point;
+
+                        $_agent->field_account_balance['und'][0]['value'] = $balance - $Partner_Price - $total_service_fee;
+                        user_save($_agent);
+
+                        $message = "Xuất vé thành công!";
+                        if($Airline=="VJ"){
+                          $sendMailData = array();
+                          $sendMailData['PNRCode'] = $pnr_code;
+                          $sendMailData['AirlineCode'] = $Airline;
+                          $sendMailData['Language'] = "VN";
+                          $sendMailData['Emails'] = $_agent->mail;
+                          $sendmail = cassiopeia_qt_meta_SendMail($sendMailData);
+                        }
+                        $form_state['#added'] = 1;
+                    } else { // xuất thất bại
+                        $message = "Xuất vé thất bại";
+                    }
+                    $_log->status = $issue_response->Code;
+                    $_log->note = serialize($dataResponseFromMeta);
+                } catch (Exception $e) {
+                    $message = "Đã có lỗi xảy ra trong quá trình thao tác, vui lòng liên hệ bộ phận booker để dược hỗ trợ!";
+                    $_log->status = "FAIL";
+                    $_log->note = serialize($e);
+                }
+            } else {
+                $message = "Tài khoản đại lý không đủ số dư để thực hiện thao tác xuất ";
+            }
+        } else {
+            $message = "Phiên làm việc đã hết hạn, vui lòng mở mặt vé rồi thử lại sau!";
+        }
+        $_log->message = $message;
+        $form_state['#error_message'][] = $message;
+        cassiopeia_ticket_issue_log_save($_log);
+    }
+    $form_state['rebuild'] = TRUE;
+//    cassiopeia_user_action_log_delete($action);
+}
+
+function cassiopeia_ticket_issue_log_save($log)
+{
+    try {
+        $log->created = REQUEST_TIME;
+        $log->changed = REQUEST_TIME;
+        drupal_write_record("cassiopeia_ticket_issue_log", $log);
+    } catch (Exception $e) {
+
+    }
+}
+
+function cassiopeia_ticket_alepay_request_payment($booking)
+{
+    $fields = new stdClass();
+//    $fields->allowDomestic = true;
+    $fields->amount = $booking->total_pay + $booking->alefee;
+    $fields->buyerAddress = $booking->contact_FirstName . " " . $booking->contact_LastName;
+    $fields->buyerCity = "Ha noi";
+    $fields->buyerCountry = "Viet Nam";
+    $fields->buyerEmail = $booking->contact_Email;
+    $fields->buyerName = $booking->contact_FirstName . " " . $booking->contact_LastName;
+    $fields->buyerPhone = $booking->contact_Phone;
+    $fields->cancelUrl = "https://qtair.vn/ticket/alepay/cancel";
+//    $fields->checkoutType = 4;
+//    $fields->checkoutType = 3;
+    $fields->currency = "VND";
+    $fields->customMerchantId = "";
+    $fields->orderCode = $booking->booking_code;
+    $fields->orderDescription = $booking->booking_code;
+//    $fields->paymentMethod  = "QRCODE";
+    $fields->returnUrl = "https://qtair.vn/ticket/alepay/complete";
+    $fields->tokenKey = tokenKey;
+    $fields->totalItem = 1;
+    $firstValue = null;
+    switch ($booking->payment_method) {
+        case INTERNATIONAL_CARD :
+            $fields->checkoutType = 1;
+//            $fields->allowDomestic = true;
+//            $fields->paymentMethod  = "ATM_ON";
+            break;
+        case DOMESTIC_CARD :
+            $fields->checkoutType = 4;
+            $fields->allowDomestic = true;
+            $fields->paymentMethod = "ATM_ON";
+            $firstValue = "true";
+            break;
+        case INTERNET_BANKING :
+            $fields->checkoutType = 4;
+            $fields->allowDomestic = true;
+            $fields->paymentMethod = "VA";
+            $firstValue = "true";
+            break;
+        case QR_PAY :
+            $fields->checkoutType = 4;
+            $fields->allowDomestic = true;
+            $fields->paymentMethod = "VIETQR";
+            $firstValue = "true";
+            break;
+    }
+    $fields = (array)$fields;
+    ksort($fields);
+//    print_r($booking);
+//    print_r($fields);
+//    die;
+    $index = 1;
+    $data = "";
+    foreach ($fields as $key => $field) {
+        if ($index == 1) {
+            if (empty($firstValue)) {
+                $data .= $key . "=" . $field;
+            } else {
+                $data .= $key . "=" . $firstValue;
+            }
+        } else {
+            $data .= "&" . $key . "=" . $field;
+        }
+        $index++;
+    }
+    $fields['signature'] = hash_hmac('sha256', $data, ChecksumKey);
+    $curl = curl_init();
+
+    curl_setopt_array($curl, array(
+        CURLOPT_URL => ALEPAY_ENPOINT . '/request-payment',
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_ENCODING => '',
+        CURLOPT_MAXREDIRS => 10,
+        CURLOPT_TIMEOUT => 0,
+        CURLOPT_FOLLOWLOCATION => true,
+        CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+        CURLOPT_CUSTOMREQUEST => 'POST',
+        CURLOPT_POSTFIELDS => json_encode($fields),
+        CURLOPT_HTTPHEADER => array(
+            'Content-Type: application/json'
+        ),
+    ));
+
+    $response = curl_exec($curl);
+//    print_r($response);
+//    print_r(json_decode($response));
+    curl_close($curl);
+    return json_decode($response);
+}
+
+function cassiopeia_ticket_payment_after_booking_form($form, &$form_state)
+{
+    global $theme;
+    global $user;
+    global $viewing_booking_code;
+    
+    $_user = !empty($user->uid) ? user_load($user->uid) : null;
+    $form_wrapper = "cassiopeia-ticket-ticket-payment-after-booking-form-wrapper";
+    $form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes']['class'][] = "cassiopeia-ticket-booking-form";
+    $balance = $_user->field_account_balance['und'][0]['value'];
+    $TotalPrice = $_SESSION['TotalPrice'];
+    $TotalServiceFee = $_SESSION['TotalServiceFee'];
+    if (!empty($user->uid)) {
+        $form_state['#total_pay'] = $TotaPartnerPrice = $TotalPrice - $TotalServiceFee;
+    } else {
+        $form_state['#total_pay'] = $TotaPartnerPrice = $TotalPrice;
+    }
+    $form_state['#TotalServiceFee'] = $TotalServiceFee;
+    if ($TotaPartnerPrice > $balance) {
+        $text = "<span class=\"color-red\">( Số dư tài khoản không đủ, vui lòng <b>nạp tiền</b> để tiếp tục! )</span>";
+    } else {
+        $text = "<div class=\"color-orange\">( Bấm tiếp tục để thực hiện xuất vé ngay! )</div>";
+    }
+    $options = array();
+//    if (empty(!$user->uid)) {
+//        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+//        $_options[QT_CREDIT] = "Quang Trang Credit";
+//    } else {
+//        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+        $_options[QR_PAY] = "QR CODE";
+        $_options[INTERNET_BANKING] = "Chuyển khoản nhận ngay 24/7";
+        $_options[DOMESTIC_CARD] = "Thẻ nội địa";
+        $_options[INTERNATIONAL_CARD] = "Thẻ quốc tế";
+//    }
+//    print_r(123);
+    foreach ($_options as $_key => $_option) {
+        $alefee = 0;
+        $note = "Miễn phí";
+        $fee = cassiopeia_qt_alepay_fee_config_load($_key);
+        if (!empty($fee)) {
+            $alefee = $fee->percent * $TotalPrice / 100 + $fee->amount;
+            if (!empty($alefee)) $note = "Thu thêm phụ phí: " . number_format($alefee, 0, ",", ".") . " đ";
+        }
+        if ($_key == QT_CREDIT) {
+            $note = $text;
+        }
+        $options[$_key] = _cassiopeia_render_theme("module", "cassiopeia_qt", "templates/parts/payment-method-label.tpl.php", array("payment_method" => $_key, "note" => $note, "balance" => $balance));
+    }
+    $form['payment'] = array(
+        '#type' => 'container',
+        '#tree' => TRUE,
+    );
+    $form['payment']['method'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#default_value' => QR_PAY,
+        '#options' => $options,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_room_room_booking_form_change_payment_method_ajax_callback',
+            'wrapper' => $form_wrapper,
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+    );
+    $form['payment']['method'][QR_PAY]['#prefix'] = "<div class='radio-group-title'>THANH TOÁN</div>";
+//    $form['payment']['method'][PAYMENT_HOLD]['#suffix'] = "<div class='radio-group-title'>Xuất vé ngay</div>";
+    $alepay_fee = "Miễn phí";
+    $form['#alefee'] = $form_state['#alefee'] = $alefee = 0;
+    if (!empty($form_state['values']['payment']['method'])) {
+        $fee = cassiopeia_qt_alepay_fee_config_load($form_state['values']['payment']['method']);
+        if (!empty($fee)) {
+            $form['#alefee'] = $form_state['#alefee'] = $alefee = $fee->percent * $TotalPrice / 100 + $fee->amount;
+        }
+    }
+    $banks = (array)cassiopeia_get_items_by_conditions(array(), "bank_info", "node");
+    $options = array();
+    $default_value = !empty($banks) ? array_values($banks)[0]->nid : null;
+    if (!empty($banks)) {
+        foreach ($banks as $bank) {
+            $options[$bank->nid] = _cassiopeia_render_theme("module", "cassiopeia", "templates/parts/bank-type-1.tpl.php", array("node" => $bank, "image_style" => "original"));
+        }
+    }
+    $form['bank'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => $options,
+        '#default_value' => $default_value,
+    );
+    
+    $form['booking_code'] = array(
+        '#type' => 'hidden',
+        '#default_value' => $viewing_booking_code,
+    );
+
+    
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Tiếp tục'),
+        '#submit' => array("cassiopeia_ticket_open_payment"),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ticket_booking_form_ajax_submit',
+        ),
+        '#attributes' => array("class" => array("btn bg-secondary clr-white text ff-bold mt-4 btn-ajax"))
+    );
+    $form['#attached']['js'] = array(
+        drupal_get_path("module", "cassiopeia_ticket") . "/js/cassiopeia-ticket-booking-form.js"
+    );
+    return $form;
+}
+
+function cassiopeia_ticket_booking_form($form, &$form_state)
+{
+    global $theme;
+    global $user;
+    $_user = !empty($user->uid) ? user_load($user->uid) : null;
+    $form_wrapper = "cassiopeia-ticket-ticket-booking-form-wrapper";
+    $form['#prefix'] = "<div id='" . $form_wrapper . "'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes']['class'][] = "cassiopeia-ticket-booking-form";
+    $balance = $_user->field_account_balance['und'][0]['value'] ?? 0;
+    $TotalPrice = $_SESSION['TotalPrice'];
+    $TotalServiceFee = $_SESSION['TotalServiceFee'];
+    if (!empty($user->uid)) {
+        $form_state['#total_pay'] = $TotaPartnerPrice = $TotalPrice - $TotalServiceFee;
+    } else {
+        $form_state['#total_pay'] = $TotaPartnerPrice = $TotalPrice;
+    }
+    $form_state['#TotalServiceFee'] = $TotalServiceFee;
+    if ($TotaPartnerPrice > $balance) {
+        $text = "<span class=\"color-red\">( Số dư tài khoản không đủ, vui lòng <b>nạp tiền</b> để tiếp tục! )</span>";
+    } else {
+        $text = "<div class=\"color-orange\">( Bấm tiếp tục để thực hiện xuất vé ngay! )</div>";
+    }
+    $options = array();
+    if (empty(!$user->uid)) {
+        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+        $_options[QT_CREDIT] = "Quang Trang Credit";
+    } else {
+        $_options[PAYMENT_HOLD] = "Giữ chỗ";
+        $_options[QR_PAY] = "QR CODE";
+        $_options[INTERNET_BANKING] = "Chuyển khoản nhận ngay 24/7";
+        $_options[DOMESTIC_CARD] = "Thẻ nội địa";
+        $_options[INTERNATIONAL_CARD] = "Thẻ quốc tế";
+    }
+//    print_r(123);
+    foreach ($_options as $_key => $_option) {
+        $alefee = 0;
+        $note = "Miễn phí";
+        $fee = cassiopeia_qt_alepay_fee_config_load($_key);
+        if (!empty($fee)) {
+            $alefee = $fee->percent * $TotalPrice / 100 + $fee->amount;
+            if (!empty($alefee)) $note = "Thu thêm phụ phí: " . number_format($alefee, 0, ",", ".") . " đ";
+        }
+        if ($_key == QT_CREDIT) {
+            $note = $text;
+        }
+        $options[$_key] = _cassiopeia_render_theme("module", "cassiopeia_qt", "templates/parts/payment-method-label.tpl.php", array("payment_method" => $_key, "note" => $note, "balance" => $balance));
+    }
+    $form['payment'] = array(
+        '#type' => 'container',
+        '#tree' => TRUE,
+    );
+    $form['payment']['method'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#default_value' => PAYMENT_HOLD,
+        '#options' => $options,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_room_room_booking_form_change_payment_method_ajax_callback',
+            'wrapper' => $form_wrapper,
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+    );
+    $form['payment']['method'][PAYMENT_HOLD]['#prefix'] = "<div class='radio-group-title'>Giữ chỗ</div>";
+    if (!empty($user->uid)) {
+        $form['payment']['method'][PAYMENT_HOLD]['#prefix'] .= "<div class='agent-text' style='
+    overflow: hidden;
+    display: block;
+    padding-top: 5px;
+    margin-top: 8px;
+    line-height: 22px;
+    font-weight: bold;
+'>";
+        $form['payment']['method'][PAYMENT_HOLD]['#prefix'] .= "<span class='text-info-agent' style='
+    font-size: 15px;'>
+    <i class='fa-solid fa-triangle-exclamation' style='color: #FF0000;'></i>
+
+    <b>Để đảm bảo vé xuất thành công</b> – Quý Đại lý vui lòng <b>giữ chỗ ra CODE vé trước</b>, sau đó mới thực hiện <b>xuất vé trong Tài khoản Đại lý</b>.</span>";
+        $form['payment']['method'][PAYMENT_HOLD]['#prefix'] .= "</div>";
+        $form['payment']['method'][QT_CREDIT]['#prefix'] = "<div class='radio-group-title'>Quang Trang Credit</div>";
+
+        $form['payment']['method'][QT_CREDIT]['#prefix'] .= "<div class='agent-text' style='
+        overflow: hidden;
+        display: block;
+        padding-top: 5px;
+        margin-top: 8px;
+        line-height: 22px;
+        font-weight: bold;
+    '>";
+            $form['payment']['method'][QT_CREDIT]['#prefix'] .= "<span class='text-info-agent' style='
+        font-size: 15px;'>
+        <i class='fa-solid fa-triangle-exclamation' style='color: #FF0000;'></i>
+        Trong trường hợp <b>vé Vietjet bay trong khung 24h</b>, Quý Đại lý <b>thao tác xuất trực tiếp</b>. Nếu có vấn đề phát sinh vui lòng <b>báo nhóm ngay để xử lý - TUYỆT ĐỐI KHÔNG thực hiện XUẤT LẠI lần 2</b>.
+</span>";
+            $form['payment']['method'][QT_CREDIT]['#prefix'] .= "</div>";
+    }
+//    $form['payment']['method'][PAYMENT_HOLD]['#suffix'] = "<div class='radio-group-title'>Xuất vé ngay</div>";
+    $alepay_fee = "Miễn phí";
+    $form['#alefee'] = $form_state['#alefee'] = $alefee = 0;
+    if (!empty($form_state['values']['payment']['method'])) {
+        $fee = cassiopeia_qt_alepay_fee_config_load($form_state['values']['payment']['method']);
+        if (!empty($fee)) {
+            $form['#alefee'] = $form_state['#alefee'] = $alefee = $fee->percent * $TotalPrice / 100 + $fee->amount;
+        }
+    }
+    $banks = (array)cassiopeia_get_items_by_conditions(array(), "bank_info", "node");
+    $options = array();
+    $default_value = !empty($banks) ? array_values($banks)[0]->nid : null;
+    if (!empty($banks)) {
+        foreach ($banks as $bank) {
+            $options[$bank->nid] = _cassiopeia_render_theme("module", "cassiopeia", "templates/parts/bank-type-1.tpl.php", array("node" => $bank, "image_style" => "original"));
+        }
+    }
+    $form['bank'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => $options,
+        '#default_value' => $default_value,
+    );
+
+    $form['topup'] = array(
+        '#type' => 'submit',
+        '#name' => 'topup',
+        '#value' => t('Nạp tiền'),
+        '#attributes' => array("class" => array("btn bg-secondary clr-white text ff-bold radius-36 mt-4")),
+        '#submit' => array('cassiopeia_room_room_booking_form_topup_submit_callback'),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_room_room_booking_form_topup_submit_ajax_callback',
+        ),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Tiếp tục'),
+        '#submit' => array("cassiopeia_ticket_booking_form_submit"),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ticket_booking_form_ajax_submit',
+        ),
+        '#attributes' => array("class" => array("btn bg-secondary clr-white text ff-bold mt-4 btn-ajax"))
+    );
+    $form['#attached']['js'] = array(
+        drupal_get_path("module", "cassiopeia_ticket") . "/js/cassiopeia-ticket-booking-form.js"
+    );
+    return $form;
+}
+
+function cassiopeia_ticket_telegram_send_order_info($info)
+{
+    $apiToken = '7564695233:AAFpUQZZLDtQ3M-Iis9lnyAOi-yjH9YHS1M';
+ 
+    $data = [ 
+        'chat_id' => $info['chat_id'], 
+        'text' => $info['message'],
+        'parse_mode' => 'HTML'
+    ]; 
+ 
+    $response = file_get_contents("http://api.telegram.org/bot$apiToken/sendMessage?" . http_build_query($data) ); 
+}
+
+function cassiopeia_ticket_telegram_send_order_error($info)
+{
+    $apiToken = '8192729762:AAGKTxMy1GSMaI5d6z9asnyzf2ns5zDra-Y';
+ 
+    $data = [ 
+        'chat_id' => $info['chat_id'], 
+        'text' => $info['message'],
+        'parse_mode' => 'HTML'
+    ]; 
+ 
+    $response = file_get_contents("http://api.telegram.org/bot$apiToken/sendMessage?" . http_build_query($data) ); 
+    $log_file = 'sites/default/files/logs/telegram_log_' . date('Y-m-d') . '.log';
+    $log_data = date('Y-m-d H:i:s') . ' - ' .
+                'Telegram response: ' . print_r($response, TRUE);
+    file_put_contents($log_file, $log_data . PHP_EOL, FILE_APPEND);
+}
+
+
+
+function cassiopeia_ticket_booking_form_ajax_submit($form, &$form_state)
+{
+    if ($form_state['#status'] == "OK") {
+        ctools_include('ajax');
+        ctools_add_js('ajax-responder');
+        $commands[] = ctools_ajax_command_redirect($form_state['#return_url']);
+        print ajax_render($commands);
+        exit;
+    } else {
+        drupal_set_message($form_state['#message']);
+    }
+}
+
+function cassiopeia_ticket_open_payment($form, &$form_state) {
+    global $viewing_booking_code;
+    try {
+        $booking_code = empty($viewing_booking_code) ? $form_state["values"]['booking_code']  : $viewing_booking_code;
+        
+        $fbooking = cassiopeia_qt_ticket_booking_load_by_code($booking_code);
+        
+        $ContactGender = $fbooking->contact_Gender;
+        $ContactFirstName = $fbooking->contact_FirstName;
+        $ContactLastName = $fbooking->contact_LastName;
+        $ContactPhone = $fbooking->contact_Phone;
+        $ContactEmail = $fbooking->contact_Email;
+
+        $_PNR = $booking->pnr_code;
+        $_splitter = explode("-", $_PNR);
+        $Passengers = $fbooking->passengers;
+        $tickets = $fbooking->tickets;
+        $B_status = $fbooking->status;
+        $total_price = 0;
+        
+        
+
+        if (in_array($form_state['values']['payment']['method'], array(DOMESTIC_CARD, INTERNATIONAL_CARD, INTERNET_BANKING, QR_PAY))) {
+            $fbooking->alefee = !empty($form_state['#alefee']) ? $form_state['#alefee'] : 0;
+            $fbooking->total_pay = $fbooking->book_price;
+            $fbooking->payment_method = $form_state['values']['payment']['method'];
+            
+            $result = cassiopeia_ticket_alepay_request_payment($fbooking);
+            
+            $fbooking->transactionCode = $result->transactionCode;
+            $fbooking->errorCode = $result->errorCode;
+            if ($result->code == "000") {
+                $data['return_url'] = $result->checkoutUrl;
+            } else {
+                $data['return_url'] = "/booking/view/" . $booking_code;
+                $data['status'] = "OK";
+            }
+            $data['status'] = "OK";
+            
+            $saved = cassiopeia_qt_ticket_booking_save($fbooking);
+        } else {
+            
+        }
+    } catch (Exception $e) {
+        print_r($e);
+        $data['status'] = "FAIL";
+        $data['message'] = "Đã xảy ra lỗi, vui lòng liên hệ với người quản trị.";
+        $db_transaction->rollback();
+    }
+    
+    $form_state['#return_url'] = $data['return_url'];
+    $form_state['#messages'] = $data['message'];
+    $form_state['#status'] = $data['status'];
+}
+
+function cassiopeia_ticket_booking_form_submit($form, &$form_state)
+{
+    global $user;
+    $message = "Phiên làm việc đã hết hạn!";
+    $Flag = true;
+    if (empty($_SESSION['booking'])) {
+        drupal_set_message($message);
+    } else {
+        $DataSession = $_SESSION['DataSession'];
+        $_agent = user_load($user->uid);
+        $_payment_method = $form_state['values']['payment']['method'];
+        $_contact = $_SESSION['booking_payment']['contact'];
+//        _print_r($_contact);
+//        die;
+        $_Adt = $_SESSION['booking_payment']['adt'];
+        $_Chd = $_SESSION['booking_payment']['chd'];
+        $_Inf = $_SESSION['booking_payment']['inf'];
+        $_array = explode(" ", $_contact->full_name);
+        $_contact_first_name = $_array[0];
+        $_contact_last_name = str_replace($_contact_first_name, "", $_contact->full_name);
+        $PNR_CODE = "";
+        $Bookings = null;
+        $Booking_Airline = "";
+        $stt = 0;
+        $booking_code = "VE" . REQUEST_TIME;
+        $total_price = 0;
+        $TotalNetPrice = 0;
+        $TotalPartnerPrice = 0;
+        $TotalPax = 0;
+        $DepartureFlight = $_SESSION['booking']['DepartureFlights']['Flight'];
+        $ReturnFlight = !empty($_SESSION['booking']['ReturnFlights']['Flight']) ? $_SESSION['booking']['ReturnFlights']['Flight'] : null;
+        $DepartureFlightDetail = $DepartureFlight->FlightDetail;
+        $ReturnFlightDetail = !empty($ReturnFlight) ? $ReturnFlight->FlightDetail : null;
+//        print_r($DepartureFlightDetail);
+//        print_r($ReturnFlightDetail);
+//        die;
+        $Expired_Date = 0;
+        if (!empty($_SESSION['booking'])) {
+            $_data = new stdClass();
+            $_data->booking_code = $booking_code;
+            $_data->ContactInfo = array(
+                "Gender" => 1,
+                "FirstName" => vn_to_str($_contact_first_name),
+                "LastName" => vn_to_str($_contact_last_name),
+                "Phone" => $_contact->tel,
+                "Email" => $_contact->email,
+                "Address" => "",
+            );
+
+            $Content = "XN " . $DepartureFlight->StartPoint . $DepartureFlight->EndPoint . " " . date("d/m/Y", strtotime($DepartureFlight->StartDate));
+            $_data->DataSession = $DataSession;
+
+            $_data->DepartureFlightSession = $DepartureFlightDetail->FareOptionSession;
+            $_data->ReturnFlightSession = !empty($ReturnFlightDetail) ? $ReturnFlightDetail->FareOptionSession : "";
+            $totalDepartureBaggageFee = 0;
+            $totalReturnBaggageFee = 0;
+            $guest_index = 1;
+            
+            //UPDATE PRICE!!!
+            if (!empty($_data->DepartureFlightSession) && $DepartureFlight->AirlineCode == 'VN') {
+                $FlightPricingParams = array(
+                    "DataSession"  => $_data->DataSession,
+                    "GroupSession"  => "",
+                    "DepartureFlightSession"      => $_data->DepartureFlightSession,
+                    //"ReturnFlightSession"      => $_data->ReturnFlightSession
+                );
+                
+                $updated_1way_price = cassiopeia_meta_api_FlightPricing($FlightPricingParams);
+                $DepartureFlightDetail->PriceAdult = $updated_1way_price->Data->PriceAdult;
+                $DepartureFlightDetail->FeeAdult = $updated_1way_price->Data->FeeAdult;
+                $DepartureFlightDetail->TaxAdult = $updated_1way_price->Data->TaxAdult;
+
+                $DepartureFlightDetail->PriceChild = $updated_1way_price->Data->PriceChild;
+                $DepartureFlightDetail->FeeChild = $updated_1way_price->Data->FeeChild;
+                $DepartureFlightDetail->TaxChild = $updated_1way_price->Data->TaxChild;
+
+                $DepartureFlightDetail->PriceInfant = $updated_1way_price->Data->PriceInfant;
+                $DepartureFlightDetail->FeeInfant = $updated_1way_price->Data->FeeInfant;
+                $DepartureFlightDetail->TaxInfant = $updated_1way_price->Data->TaxInfant;
+                
+                $DepartureFlightDetail->TotalPrice = $updated_1way_price->Data->TotalPrice;
+
+                //$DepartureFlightDetail->ServiceFee = $updated_1way_price->Data->ServiceFee;
+                $DepartureFlightDetail->IssueFee = $updated_1way_price->Data->IssueFee;
+
+                $DepartureFlight->FlightDetail = $DepartureFlightDetail;
+                
+                
+                if (!empty($_data->ReturnFlightSession)) {
+                    $FlightPricingParams = array(
+                        "DataSession"  => $_data->DataSession,
+                        "GroupSession"  => "",
+                        "DepartureFlightSession"      => $_data->DepartureFlightSession,
+                        "ReturnFlightSession"      => $_data->ReturnFlightSession
+                    );
+
+                    $updated_2way_price = cassiopeia_meta_api_FlightPricing($FlightPricingParams);
+                    $ReturnFlightDetail->PriceAdult = $updated_2way_price->Data->PriceAdult - $updated_1way_price->Data->PriceAdult;
+                    $ReturnFlightDetail->FeeAdult = $updated_2way_price->Data->FeeAdult - $updated_1way_price->Data->FeeAdult;
+                    $ReturnFlightDetail->TaxAdult = $updated_2way_price->Data->TaxAdult - $updated_1way_price->Data->TaxAdult;
+
+                    $ReturnFlightDetail->PriceChild = $updated_2way_price->Data->PriceChild - $updated_1way_price->Data->PriceChild;
+                    $ReturnFlightDetail->FeeChild = $updated_2way_price->Data->FeeChild - $updated_1way_price->Data->FeeChild;
+                    $ReturnFlightDetail->TaxChild = $updated_2way_price->Data->TaxChild - $updated_1way_price->Data->TaxChild;
+
+                    $ReturnFlightDetail->PriceInfant = $updated_2way_price->Data->PriceInfant - $updated_1way_price->Data->PriceInfant;
+                    $ReturnFlightDetail->FeeInfant = $updated_2way_price->Data->FeeInfant - $updated_1way_price->Data->FeeInfant;
+                    $ReturnFlightDetail->TaxInfant = $updated_2way_price->Data->TaxInfant - $updated_1way_price->Data->TaxInfant;
+
+                    $ReturnFlightDetail->TotalPrice = $updated_2way_price->Data->TotalPrice - $updated_1way_price->Data->TotalPrice;
+                    
+                    //$ReturnFlightDetail->ServiceFee = $updated_2way_price->Data->ServiceFee - $updated_1way_price->Data->ServiceFee;
+                    $ReturnFlightDetail->IssueFee = $updated_2way_price->Data->IssueFee - $updated_1way_price->Data->IssueFee;
+
+                    $ReturnFlight->FlightDetail = $ReturnFlightDetail;
+                }
+                
+            }
+            
+            if (!empty($_Adt)) {
+                foreach ($_Adt as $item) {
+                    $baggageReturn = null;
+                    $baggageDeparture = null;
+                    if (!empty($item->baggages->ReturnFlights) && !empty($item->baggages->ReturnFlights->id)) {
+                        $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
+                    }
+                    if (!empty($item->baggages->DepartureFlights) && !empty(($item->baggages->DepartureFlights->id))) {
+                        $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
+                    }
+                    $_array = explode(" ", $item->full_name);
+                    $_first_name = $_array[0];
+                    $_last_name = "";
+                    for ($i = 1; $i <= count($_array); $i++) {
+                        if (!empty($_array[$i])) {
+                            $_last_name .= " " . $_array[$i];
+                        }
+                    }
+                    $_last_name = trim($_last_name);
+                    if (!empty($user->uid)) {
+                        $guest_mail = $_contact->email;
+                    }
+                    $_data->ListPassengers[] = array(
+                        "Email" => "",
+                        "Phone" => $_contact->tel,
+                        "Index" => $stt,
+                        "FirstName" => vn_to_str($_first_name),
+                        "LastName" => vn_to_str($_last_name),
+                        "Type" => "ADT",
+                        "Gender" => $item->gender,
+                        //"Birthday" => date("d/m/Y", strtotime(str_replace("/", "-", $item->birth_day))),
+                        "Birthday" => !empty($item->birth_day) ? date("d/m/Y", strtotime(str_replace("/", "-", $item->birth_day))) : "",
+                        "BaggageDeparture" => !empty($baggageDeparture) ? $baggageDeparture->weight : 0,
+                        "BaggageReturn" => !empty($baggageReturn) ? $baggageReturn->weight : 0,
+                    );
+
+                    $stt++;
+                    $total_price += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $totalDepartureBaggageFee += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $total_price += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->AgentFee) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceFee);
+                    $TotalPartnerPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceFee); //chỉ cộng phí dịch vụ
+                    $TotalPartnerPrice += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $TotalPax++;
+                    if (!empty($ReturnFlightDetail)) {
+                        $total_price += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $totalReturnBaggageFee += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $total_price += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->AgentFee) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceFee); // thuế phí
+                        $TotalPartnerPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceFee); // chỉ cộng phí dịch vụ
+                        $TotalPartnerPrice += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $TotalNetPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxAdult); // thuế phí
+                        $TotalNetPrice += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $TotalPax++;
+                    }
+                    $TotalNetPrice += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $TotalNetPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeAdult) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxAdult); // thuế phí
+                    $guest_index++;
+                }
+            }
+            if (!empty($_Chd)) {
+                foreach ($_Chd as $item) {
+                    $baggageReturn = null;
+                    $baggageDeparture = null;
+                    if (!empty($item->baggages->ReturnFlights) && !empty(($item->baggages->ReturnFlights->id))) {
+                        $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
+                    }
+                    if (!empty($item->baggages->DepartureFlights) && !empty(($item->baggages->DepartureFlights->id))) {
+                        $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
+                    }
+                    $_array = explode(" ", $item->full_name);
+                    $_first_name = $_array[0];
+                    $_last_name = "";
+                    for ($i = 1; $i <= count($_array); $i++) {
+                        $_last_name .= " " . $_array[$i];
+                    }
+                    $_last_name = trim($_last_name);
+                    $_data->ListPassengers[] = array(
+                        "Email" => "",
+                        "Phone" => $_contact->tel,
+                        "Index" => $stt,
+                        "FirstName" => vn_to_str($_first_name),
+                        "LastName" => vn_to_str($_last_name),
+                        "Type" => "CHD",
+                        "Gender" => $item->gender,
+                        "Birthday" => date("d/m/Y", strtotime(str_replace("/", "-", $item->birth_day))),
+                        "BaggageDeparture" => !empty($baggageDeparture) ? $baggageDeparture->weight : 0,
+                        "BaggageReturn" => !empty($baggageReturn) ? $baggageReturn->weight : 0,
+                    );
+                    $stt++;
+                    $total_price += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $totalDepartureBaggageFee += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $total_price += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->AgentFee) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceFee); // thuế phí
+                    $TotalPartnerPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceFee); // chỉ cộng phí dịch vụ
+                    $TotalPartnerPrice += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $TotalPax++;
+                    //
+                    if (!empty($ReturnFlightDetail)) {
+                        $total_price += !empty($baggageReturn) ? $baggageReturn->amount : 0;; // hành lý chiều về
+                        $totalReturnBaggageFee += !empty($baggageReturn) ? $baggageReturn->amount : 0;; // hành lý chiều về
+                        $total_price += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->AgentFee) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceFee); // thuế phí
+                        $TotalPartnerPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceFee); // chỉ cộng phí dịch vụ
+                        $TotalPartnerPrice += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $TotalNetPrice += !empty($baggageReturn) ? $baggageReturn->amount : 0; // hành lý chiều về
+                        $TotalNetPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeChild) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxChild); // thuế phí
+                        $TotalPax++;
+                    }
+
+                    $TotalNetPrice += !empty($baggageDeparture) ? $baggageDeparture->amount : 0; // hành lý chiều đi
+                    $TotalNetPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeChild) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxChild); // thuế phí
+                }
+            }
+            if (!empty($_Inf)) {
+                foreach ($_Inf as $item) {
+                    $_array = explode(" ", $item->full_name);
+                    $_first_name = $_array[0];
+                    $_last_name = "";
+                    for ($i = 1; $i <= count($_array); $i++) {
+                        $_last_name .= " " . $_array[$i];
+                    }
+                    $_last_name = trim($_last_name);
+                    $_data->ListPassengers[] = array(
+                        "Index" => $stt,
+                        "FirstName" => vn_to_str($_first_name),
+                        "LastName" => vn_to_str($_last_name),
+                        "Type" => "INF",
+                        "Gender" => $item->gender,
+                        "Birthday" => date("d/m/Y", strtotime(str_replace("/", "-", $item->birth_day))),
+                        "BaggageDeparture" => "",
+                        "BaggageReturn" => "",
+                    );
+                    $stt++;
+                    $total_price += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->AgentInfantFee) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceInfantFee); // thuế phí
+                    $TotalPartnerPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->ServiceInfantFee); // thuế phí
+                    $TotalNetPrice += cassiopeia_qt_price_fix($DepartureFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($DepartureFlightDetail->TaxInfant); // thuế phí
+                    if (!empty($ReturnFlightDetail)) {
+                        $total_price += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->AgentInfantFee) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceInfantFee); // thuế phí
+                        $TotalPartnerPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->ServiceInfantFee); // thuế phí
+                        $TotalNetPrice += cassiopeia_qt_price_fix($ReturnFlightDetail->PriceInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->FeeInfant) + cassiopeia_qt_price_fix($ReturnFlightDetail->TaxInfant); // thuế phí
+                    }
+                }
+            }
+            $Booking_Airline = $DepartureFlight->AirlineCode;
+            if (!empty($ReturnFlight)) {
+                $ReturnFlight->Baggage = $totalReturnBaggageFee;
+                if ($Booking_Airline != $ReturnFlight->AirlineCode) {
+                    $Booking_Airline .= " - " . $ReturnFlight->AirlineCode;
+                }
+            }
+            $DepartureFlight->Baggage = $totalDepartureBaggageFee;
+            $Expired_Date = $DepartureFlightsExpired_Date = cassiopeia_get_flight_time_limit($DepartureFlight->AirlineCode, $DepartureFlight->StartDate, $DepartureFlightDetail->Class, "", "", "");
+            if (!empty($ReturnFlight)) {
+           
+ $ReturnFlightsExpired_Date = cassiopeia_get_flight_time_limit($ReturnFlight->AirlineCode, $ReturnFlight->StartDate, $ReturnFlightDetail->Class, "", "", "");
+            if ($DepartureFlightsExpired_Date > 0 && $ReturnFlightsExpired_Date > 0) {
+                $Expired_Date = $DepartureFlightsExpired_Date < $ReturnFlightsExpired_Date ? $DepartureFlightsExpired_Date : $ReturnFlightsExpired_Date;
+
+            }
+}
+            $PNR_CODE = '';
+            if ($_payment_method == QT_CREDIT) { // xuất vé ngay
+                $issue_log = new stdClass();
+                $issue_log->uid = $user->uid;
+                $issue_log->created = REQUEST_TIME;
+                $issue_log->bid = "";
+                $issue_log->booking_code = $booking_code;
+                $issue_log->pnr_code = "";
+                $issue_log->issue_type = 2;
+                $issue_log->status = 10;
+                $issue_log->message = "Thực hiện xuất ngay";
+                drupal_write_record("tbl_issue", $issue_log);
+                if (user_has_role(3)) { // admin
+                    $booking = cassiopeia_meta_api_issue_reservation($_data); // hàm đặt vé xuất ngay
+                    $DepartureFlight->PNR = $booking->Code == 0 ? $booking->Data->DepartureCode : "";
+                    $DepartureFlight->status = $booking->Code == 0 ? "TICKETED" : "PENDING";
+                    $PNR_CODE = $booking->Data->DepartureCode;
+                    $sendMailData = array();
+                    $sendMailData['PNRCode'] = $PNR_CODE;
+                    $sendMailData['AirlineCode'] = $DepartureFlight->AirlineCode;
+                    $sendMailData['Language'] = "VN";
+                    $sendMailData['Emails'] = $_contact->email;
+                    $sendmail = cassiopeia_qt_meta_SendMail($sendMailData);
+                    if (!empty($ReturnFlight)) {
+                        $ReturnFlight->status = $DepartureFlight->status;
+                        $ReturnFlight->PNR = $booking->Data->ReturnCode;
+                    }
+                    if (!empty($ReturnFlight) && ($PNR_CODE != $booking->Data->ReturnCode)) {
+                        $PNR_CODE .= " - " . $booking->Data->ReturnCode;
+                        $sendMailData = array();
+                        $sendMailData['PNRCode'] = $booking->Data->ReturnCode;
+                        $sendMailData['AirlineCode'] = $ReturnFlight->AirlineCode;
+                        $sendMailData['Language'] = "VN";
+                        $sendMailData['Emails'] = $_contact->email;
+                        $sendmail = cassiopeia_qt_meta_SendMail($sendMailData);
+                    }
+                    $issue_log = new stdClass();
+                    $issue_log->uid = $user->uid;
+                    $issue_log->created = REQUEST_TIME;
+                    $issue_log->booking_image = serialize($booking);
+                    $issue_log->bid = "";
+                    $issue_log->booking_code = $booking_code;
+                    $issue_log->pnr_code = $PNR_CODE;
+                    $issue_log->issue_type = 2;
+                    $issue_log->status = !empty($booking) ? $booking->Code : "error";
+                    $issue_log->message = "Xuất ngay";
+                    drupal_write_record("tbl_issue", $issue_log);
+                } else {
+                    if ($_agent->field_account_balance['und'][0]['value'] < $TotalPartnerPrice) { // Không đủ tiền thanh toán
+                        $Flag = false;
+                        $message = "Số dư không đủ, vui lòng nạp thêm tiền và thử lại sau";
+                    } else {
+                        try {
+                            $booking = cassiopeia_meta_api_issue_reservation($_data); // hàm đặt vé xuất ngay
+                            $DepartureFlight->PNR = $booking->Code == 0 ? $booking->Data->DepartureCode : "";
+                            $DepartureFlight->status = $booking->Code == 0 ? "TICKETED" : "PENDING";
+                            $PNR_CODE = $booking->Data->DepartureCode;
+                            if (!empty($ReturnFlight)) {
+                                $ReturnFlight->status = $DepartureFlight->status;
+                                $ReturnFlight->PNR = $booking->Data->ReturnCode;
+                            }
+                            if (!empty($ReturnFlight) && ($PNR_CODE != $booking->Data->ReturnCode)) {
+                                $PNR_CODE .= " - " . $booking->Data->ReturnCode;
+                            }
+                            $issue_log = new stdClass();
+                            $issue_log->uid = $user->uid;
+                            $issue_log->created = REQUEST_TIME;
+                            $issue_log->booking_image = serialize($booking);
+                            $issue_log->bid = "";
+                            $issue_log->booking_code = $booking_code;
+                            $issue_log->pnr_code = $PNR_CODE;
+                            $issue_log->issue_type = 2;
+                            $issue_log->status = !empty($booking) ? $booking->Code : "error";
+                            $issue_log->message = "Xuất ngay";
+                            drupal_write_record("tbl_issue", $issue_log);
+
+                            $_agent = user_load($user->uid);
+
+
+                            if ($booking->Code == 0 && !empty($PNR_CODE)) {
+                                $insertData = new stdClass();
+                                $insertData->partner_price = $TotalPartnerPrice;
+                                $insertData->price = $TotalNetPrice;
+                                $insertData->agent = $user->uid;
+                                $insertData->tran_kind = 4;
+                                $insertData->quantity = $TotalPax;;
+                                $insertData->PNR = $PNR_CODE;
+                                $insertData->date = strtotime(date("Y-m-d h:i:sa"));
+                                $insertData->airline = $Booking_Airline;
+                                $insertData->content = $Content;
+                                $insertData->booking = $booking;
+                                $insertData->booking_code = $booking_code;
+                                cassiopeia_create_issue_report($insertData);
+                            }
+                        } catch (Exception $e) {
+
+                        }
+                    }
+                }
+            } else { // đặt vé thông thường
+                $booking = cassiopeia_meta_api_booking($_data);
+                // Log booking data to file
+                $log_dir = 'sites/default/files/logs';
+                if (!file_exists($log_dir)) {
+                    mkdir($log_dir, 0755, TRUE);
+                }
+                
+                $log_file = $log_dir . '/booking_log_' . date('Y-m-d') . '.log';
+                $log_data = date('Y-m-d H:i:s') . ' - ' . 
+                            'User ID: ' . (isset($user->uid) ? $user->uid : 'anonymous') . ' - ' .
+                            'IP: ' . get_client_ip() . ' - ' .
+                            'Booking data: ' . print_r($booking, TRUE);
+                file_put_contents($log_file, $log_data . PHP_EOL, FILE_APPEND);
+
+
+                if (!empty($booking)) {
+                    $DepartureFlight->PNR = $booking->Code == 0 ? $booking->Data->DepartureCode : "";
+                    $DepartureFlight->status = $booking->Code == 0 ? "OK" : "FAIL";
+                    $DepartureFlight->TransactionCode = $booking->Data->TransactionCode;
+                    if (!empty($ReturnFlightDetail)) {
+                        $ReturnFlight->PNR = $booking->Data->ReturnCode;
+                        $ReturnFlight->status = $booking->Code == 0 ? "OK" : "FAIL";
+                        $ReturnFlight->TransactionCode = $booking->Data->TransactionCode;
+                    }
+                    $PNR_CODE = $booking->Data->DepartureCode;
+                    if ($booking->Code == 0 && !empty($PNR_CODE)) {
+                        if (!empty($user->uid)) {
+                            $sendMailData = array();
+                            $sendMailData['PNRCode'] = $PNR_CODE;
+                            $sendMailData['AirlineCode'] = $DepartureFlight->AirlineCode;
+                            $sendMailData['Language'] = "VN";
+                            $sendMailData['Emails'] = $_contact->email;
+                            $sendmail = cassiopeia_qt_meta_SendMail($sendMailData);
+                        }
+                    }
+                    if(empty($booking->Data->DepartureCode)){
+                        $message = 'Booking data error: ' . print_r($booking, TRUE);
+                        $message = str_replace('"', '', $message);
+                        $message.='<b>Airline:</b> '.$DepartureFlight->AirlineCode . '<br>';
+                        $message.='<b>Contact info:</b> '.$_data->ContactInfo['FirstName'].' '.$_data->ContactInfo['LastName'].' - '.$_data->ContactInfo['Phone'].' - '.$_data->ContactInfo['Email'];
+                        // Check if user is a partner and add that information to the message
+                        // if (!empty($user->uid)) {
+                            // Get all user roles
+                            // $user_roles = '';
+                            // if (isset($user->roles) && is_array($user->roles)) {
+                            //     foreach ($user->roles as $rid => $role_name) {
+                            //         $user_roles .= $role_name . ', ';
+                            //     }
+                            //     // Remove trailing comma and space
+                            //     $user_roles = rtrim($user_roles, ', ');
+                            //     $message .= '<b>User roles:</b> ' . $user_roles . '<br>';
+                            // }
+                            // $message .= '<b>User roles:</b> ' . implode(', ', $user->roles) . '<br>';
+                        // } 
+                        $telegram_info = [
+                            'chat_id' => '-4727782211',
+                            'message' => $message
+                        ];
+                        //$res = cassiopeia_ticket_telegram_send_order_error($telegram_info);
+                        // Log the Telegram API response
+                       
+
+                    }
+                    if (!empty($ReturnFlightDetail) && ($PNR_CODE != $booking->Data->ReturnCode) && $ReturnFlight->AirlineCode != $DepartureFlight->AirlineCode) {
+                        if ($PNR_CODE != $booking->Data->ReturnCode) {
+                            if (!empty($user->uid)) {
+                                $sendMailData = new stdClass();
+                                $sendMailData->PNRCode = $booking->Data->ReturnCode;
+                                $sendMailData->AirlineCode = $ReturnFlight->AirlineCode;
+                                $sendMailData->Language = "VN";
+                                $sendMailData->Emails = $_contact->email;
+                                cassiopeia_qt_meta_SendMail($sendMailData);
+                            }
+                            $PNR_CODE .= " - " . $booking->Data->ReturnCode;
+                        }
+                    }
+                }
+            }
+            $Bookings[] = $booking;
+            $Trip_type = !empty($ReturnFlight) ? "RT" : "OW";
+        }
+        if ($Trip_type === "OW") {
+            $_SESSION['booking']['ReturnFlights'] = null;
+            unset($_SESSION['booking']['ReturnFlights']);
+        }
+        $_SESSION['booking']['DepartureFlights']['Flight'] = $DepartureFlight;
+        $_SESSION['booking']['ReturnFlights']['Flight'] = $ReturnFlight;
+        if ($Flag && !empty($_SESSION['booking'])) {
+            $db_transaction = db_transaction();
+
+            $Booking_Status = $DepartureFlight->status;
+            if (!empty($ReturnFlight->status)) {
+                if ($DepartureFlight->status != $ReturnFlight->status) {
+                    if ($DepartureFlight->status != "OK" || $ReturnFlight->status != "OK") {
+                        $Booking_Status = "FAIL";
+                    }
+                }
+            }
+            $fbooking = new stdClass();
+            $fbooking->uid = !empty($user->uid) ? $user->uid : "";
+            $fbooking->contact_Gender = $_data->ContactInfo['Gender'];
+            $fbooking->contact_FirstName = $_data->ContactInfo['FirstName'];
+            $fbooking->contact_LastName = $_data->ContactInfo['LastName'];
+            $fbooking->contact_Phone = $_data->ContactInfo['Phone'];
+            $fbooking->contact_Email = $_data->ContactInfo['Email'];
+            $fbooking->created = REQUEST_TIME;
+            $fbooking->changed = REQUEST_TIME;
+            $fbooking->booking_code = $booking_code;
+            $fbooking->pnr_code = $PNR_CODE;
+            $fbooking->airline = $Booking_Airline;
+            $fbooking->price = $total_price;
+//            $fbooking->price = $TotalNetPrice;
+            $fbooking->book_price = $total_price;
+            $fbooking->agent_code = "";
+            $fbooking->booking_name = "";
+            $fbooking->status = $Booking_Status;
+            $fbooking->adt = count($_Adt);
+            $fbooking->chd = count($_Chd);
+            $fbooking->inf = count($_Inf);
+            $fbooking->payment_method = $_payment_method;
+            $fbooking->ExpiryDt = !empty($Expired_Date) ? $Expired_Date : 0;
+            $fbooking->trip_type = $Trip_type;
+            $fbooking->version = 2;
+            $fbooking->booking = serialize($Bookings);
+            $fbooking->data = serialize($_data);
+            $fbooking->start_point = !empty($DepartureFlight->StartPoint) ? $DepartureFlight->StartPoint : "";
+            $fbooking->end_point = !empty($DepartureFlight->EndPoint) ? $DepartureFlight->EndPoint : "";
+            $fbooking->departure_date = !empty($DepartureFlight->StartDate) ? strtotime($DepartureFlight->StartDate) : "";
+            $fbooking->return_date = !empty($ReturnFlight->StartDate) ? strtotime($ReturnFlight->StartDate) : "";
+            $fbooking->DO = 1;
+            $fbooking->additional = !empty($_SESSION['additional']->note) ? $_SESSION['additional']->note : "";
+            $fbooking->bill_company = !empty($_SESSION['additional']->company_name) ? $_SESSION['additional']->company_name : "";
+            $fbooking->bill_tax_number = !empty($_SESSION['additional']->tax_number) ? $_SESSION['additional']->tax_number : "";
+            $fbooking->bill_address = !empty($_SESSION['additional']->company_address) ? $_SESSION['additional']->company_address : "";
+            $fbooking->bill_mail = !empty($_SESSION['additional']->company_mail) ? $_SESSION['additional']->company_mail : "";
+            $fbooking->bank = $_REQUEST['bank'] ? $_REQUEST['bank'] : 0;
+            if (!empty($_data->ListPassengers)) {
+                foreach ($_data->ListPassengers as $Passenger) {
+                    $passenger = new stdClass();
+                    $passenger->Email = "";
+                    $passenger->Phone = "";
+                    $passenger->passenger_index = $Passenger['Index'];
+                    $passenger->FirstName = $Passenger['FirstName'];
+                    $passenger->LastName = $Passenger['LastName'];
+                    $passenger->Type = $Passenger['Type'];
+                    $passenger->Gender = $Passenger['Gender'];
+                    $passenger->Birthday = !empty($Passenger['Birthday']) ? strtotime(str_replace("/", "-", $Passenger['Birthday'])) : 0;
+                    $passenger->BaggageDeparture = $Passenger['BaggageDeparture'];
+                    $passenger->BaggageReturn = $Passenger['BaggageReturn'];
+                    $passenger->uid = $user->uid;
+                    $passenger->created = REQUEST_TIME;
+                    $passenger->changed = REQUEST_TIME;
+                    $fbooking->passengers[] = $passenger;
+                }
+            }
+            foreach ($_SESSION['booking'] as $Itinerary => $Booking) {
+               // $FlightDetail = $Booking['Flight']->FlightDetail;
+                if (!empty($Booking['Flight']->FlightSession) && !empty($Booking['Flight']->FlightDetail)) {
+                    $FlightDetail = $Booking['Flight']->FlightDetail;
+                    $ticket = new stdClass();
+                    $ticket->status = $Booking['Flight']->status;
+                    $ticket->TransactionCode = !empty($Booking['TransactionCode']) ? $Booking['TransactionCode'] : "";
+                    $ticket->type = 0; // nội địa
+                    $ticket->StartPoint = $Booking['Flight']->StartPoint;
+                    $ticket->EndPoint = $Booking['Flight']->EndPoint;;
+                    $ticket->FlightNumber = $Booking['Flight']->FlightNumber;;
+                    $ticket->AirlineCode = $Booking['Flight']->AirlineCode;;
+                    $ticket->StartDate = strtotime($Booking['Flight']->StartDate);;
+                    $ticket->EndDate = strtotime($Booking['Flight']->EndDate);;
+                    $ticket->Stops = $Booking['Flight']->Stops;;
+                    $ticket->Duration = $Booking['Flight']->Duration;;
+                    $ticket->FlightSession = $Booking['Flight']->FlightSession;;
+                    $ticket->pnr_code = $Booking['Flight']->PNR;;
+                    $ticket->Itinerary = $Itinerary;
+                    $ticket->FareOptionSession = $FlightDetail->FareOptionSession;
+                    $ticket->Class = $FlightDetail->Class;
+                    $ticket->PriceAdult = cassiopeia_qt_price_fix($FlightDetail->PriceAdult);
+                    $ticket->PriceChild = cassiopeia_qt_price_fix($FlightDetail->PriceChild);
+                    $ticket->PriceInfant = cassiopeia_qt_price_fix($FlightDetail->PriceInfant);
+                    $ticket->FeeAdult = cassiopeia_qt_price_fix($FlightDetail->FeeAdult);
+                    $ticket->FeeChild = cassiopeia_qt_price_fix($FlightDetail->FeeChild);
+                    $ticket->FeeInfant = cassiopeia_qt_price_fix($FlightDetail->FeeInfant);
+                    $ticket->TaxAdult = cassiopeia_qt_price_fix($FlightDetail->TaxAdult);
+                    $ticket->TaxChild = cassiopeia_qt_price_fix($FlightDetail->TaxChild);
+                    $ticket->TaxInfant = cassiopeia_qt_price_fix($FlightDetail->TaxInfant);
+                    $ticket->TotalPrice = cassiopeia_qt_price_fix($FlightDetail->TotalPrice);
+                    $ticket->ServiceFee = cassiopeia_qt_price_fix($FlightDetail->ServiceFee);
+                    $ticket->IssueFee = cassiopeia_qt_price_fix($FlightDetail->IssueFee);
+                    $ticket->LastTkDate = strtotime($FlightDetail->LastTkDate);
+                    $ticket->SeatsAvailable = $FlightDetail->SeatsAvailable;
+                    $ticket->leg = $Itinerary == "DepartureFlights" ? 0 : 1;
+                    $ticket->service_fee = $FlightDetail->ServiceFee;
+                    $ticket->agent_fee = $FlightDetail->AgentFee;
+                    $ticket->infant_fee = $FlightDetail->AgentInfantFee;
+                    $ticket->service_infant_fee = $FlightDetail->ServiceInfantFee;
+                    $ticket->uid = $user->uid;
+                    $ticket->created = REQUEST_TIME;
+                    $ticket->changed = REQUEST_TIME;
+                    $fbooking->tickets[] = $ticket;
+                }
+            }
+            try {
+                $_SESSION['booking_issue'] = $booking;
+                cassiopeia_meta_api_ReleaseDataSession($DataSession); // giải phóng phiên tìm kiếm
+
+                if (in_array($form_state['values']['payment']['method'], array(DOMESTIC_CARD, INTERNATIONAL_CARD, INTERNET_BANKING, QR_PAY))) {
+                    $fbooking->alefee = !empty($form_state['#alefee']) ? $form_state['#alefee'] : 0;
+                    $fbooking->total_pay = $form_state['#total_pay'];
+                    $result = cassiopeia_ticket_alepay_request_payment($fbooking);
+                    $fbooking->transactionCode = $result->transactionCode;
+                    $fbooking->errorCode = $result->errorCode;
+                    if ($result->code == "000") {
+                        $data['return_url'] = $result->checkoutUrl;
+                    } else {
+                        $data['return_url'] = "/booking/view/" . $booking_code;
+                        $data['status'] = "OK";
+                    }
+                    $data['status'] = "OK";
+                    $saved = cassiopeia_qt_ticket_booking_save($fbooking);
+                } else {
+                    $saved = cassiopeia_qt_ticket_booking_save($fbooking);
+                    cassiopeia_send_booking_mail($booking_code, $_data->ContactInfo['Email'], $fbooking->DO);
+                    cassiopeia_send_booking_mail($booking_code, variable_get("site_mail"), $fbooking->DO);
+                    if (!empty(trim(variable_get("mod_accountant_email"))) && !empty($fbooking->bill_company) && !empty($fbooking->bill_tax_number) && !empty($fbooking->bill_mail)) {
+                        $custom_subject = $fbooking->bill_company . " - " . $fbooking->bill_tax_number . ": Yêu cầu cung cấp hóa đơn";
+                        cassiopeia_send_booking_mail($booking_code, variable_get("mod_accountant_email"), $fbooking->DO, $custom_subject);
+                    }
+
+                    $data['return_url'] = "/booking/view/" . $booking_code;
+                    $data['status'] = "OK";
+                    if (empty($user->uid)) {
+                        $info['chat_id'] = '-1002485725944';
+                        $info['message'] =<<<EOT
+Đơn hàng mới: <b>$fbooking->booking_code</b> Mã đặt chỗ: <b>$fbooking->pnr_code</b> | Thông tin liên hệ: <b>$fbooking->contact_FirstName $fbooking->contact_LastName - $fbooking->contact_Phone - $fbooking->contact_Email</b>
+EOT;
+                        cassiopeia_ticket_telegram_send_order_info($info);
+                    }
+                }
+                $_SESSION['booking'] = null;
+
+            } catch (Exception $e) {
+                // print_r($e->getMessage());
+                // die;
+                $data['status'] = "FAIL";
+                $data['message'] = "Đã xảy ra lỗi, vui lòng liên hệ với người quản trị.";
+                $_SESSION['booking'] = null;
+                $db_transaction->rollback();
+            }
+        } else {
+            $data['status'] = "FAIL";
+            $data['message'] = $message;
+        }
+        $form_state['#return_url'] = $data['return_url'];
+        $form_state['#messages'] = $data['message'];
+        $form_state['#status'] = $data['status'];
+    }
+}
+
+function cassiopeia_ticket_cassiopeia_meta_ExtDOMSearchFlights($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_booking($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_issue_reservation($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_issue($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_open_pnr($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_INTSearchFlights($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_flight_search($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_international_booking($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_ReleaseDataSession($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_DOMAirPrice($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_cassiopeia_meta_api_VoidPNRByListTicketNumber($data)
+{
+    global $user;
+    $log = new stdClass();
+    $log->uid = !empty($user->uid) ? $user->uid : 0;
+    $log->created = REQUEST_TIME;
+    $log->changed = REQUEST_TIME;
+    $log->function = $data->function;
+    $log->client_ip = get_client_ip();
+    cassiopeia_ticket_meta_request_log($log);
+}
+
+function cassiopeia_ticket_meta_request_log($log)
+{
+    try {
+        drupal_write_record("cassiopeia_ticket_meta_request_log", $log);
+    } catch (Exception $e) {
+
+    }
+}

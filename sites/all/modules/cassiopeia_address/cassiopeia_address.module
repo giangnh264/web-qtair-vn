@@ -1,0 +1,94 @@
+<?php
+function cassiopeia_address_menu()
+{
+    $items = array();
+
+   $items['cassiopeia/address/update'] = array(
+        'type' => MENU_CALLBACK,
+       'page callback' => array('drupal_get_form'),
+       'page arguments' => array('cassiopeia_address_update_form'),
+        'title' => t('Cập nhật dữ liệu'),
+        'access arguments' => array('access content'),
+    );
+    return $items;
+}
+function cassiopeia_address_update_form($form,&$form_state){
+    $form = array();
+
+    $form['submit'] = array('#type' => 'submit', '#value' => t('update'));
+    return $form;
+}
+function cassiopeia_address_update_form_submit($form,&$form_state){
+    $file = file_get_contents(drupal_get_path("module","cassiopeia_address")."/data/local.json");
+    $datas = json_decode($file);
+
+    foreach($datas as $item){
+        $operations[] = array(
+            'cassiopeia_address_update_form_excel',
+            array(
+                'item'=> $item
+            ),
+        );
+    }
+    if (!empty($operations)) {
+        $batch = array(
+            'title' => 'Import trademark conflict',
+            'operations' => $operations,
+            'progress_message' => t('Import @current of @total.'),
+            'error_message' => t('Error!'),
+            'finished' => 'cassiopeia_address_update_form_excel_finished',
+        );
+        batch_set($batch);
+    }
+}
+
+function cassiopeia_address_update_form_excel($item, &$context){
+    global $user;
+    $province = new stdClass();
+    $province->uid = $user->uid;
+    $province->created = REQUEST_TIME;
+    $province->changed = REQUEST_TIME;
+    $province->code = $item->code;
+    $province->name = $item->name;
+    drupal_write_record("cassiopeia_address_province",$province);
+    foreach($item->districts as $_district){
+        $district = new stdClass();
+        $district->uid = $user->uid;
+        $district->created = REQUEST_TIME;
+        $district->changed = REQUEST_TIME;
+        $district->name = $_district->name;
+        $district->pid = $province->id;
+        drupal_write_record("cassiopeia_address_district",$district);
+        $query = db_insert("cassiopeia_address_ward")->fields(array("uid","created","changed","did","pid","name","prefix"));
+        if(!empty($_district->wards)){
+            foreach($_district->wards as $_ward){
+                $query->values(array($user->uid,REQUEST_TIME,REQUEST_TIME,$district->id,$province->id,$_ward->name,$_ward->prefix));
+            }
+            $query->execute();
+        }
+    }
+}
+function cassiopeia_address_update_form_excel_finished($success, $results, $operations) {
+
+}
+function cassiopeia_address_province_load_all(){
+    try{
+        $query = db_select("cassiopeia_address_province","cassiopeia_address_province");
+        $query->fields("cassiopeia_address_province");
+        $result = $query->execute()->fetchAll();
+        return $result;
+    }catch (Exception $e){
+        return null;
+    }
+}
+function cassiopeia_address_province_load($id){
+    try{
+        $query = db_select("cassiopeia_address_province","cassiopeia_address_province");
+        $query->fields("cassiopeia_address_province");
+        $query->condition("id",$id);
+        $result = $query->execute()->fetchObject();
+        return $result;
+    }catch (Exception $e){
+        return null;
+    }
+}

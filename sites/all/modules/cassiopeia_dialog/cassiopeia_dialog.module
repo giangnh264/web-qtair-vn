@@ -1,0 +1,162 @@
+<?php
+
+//Link call model dialog from other page.
+//ctools_include('modal');
+//ctools_modal_add_js();
+//print(l('Get dialog form', 'cassiopeia/entities/3/edit/nojs', array('attributes' => array('class' => 'ctools-use-modal'))));
+//
+
+function cassiopeia_dialog_menu()
+{
+  $items = array();
+  $items['cassiopeia/test/ajax/form/%ctools_js'] = array(
+    'page callback' => 'cassiopeia_dialog_test_dialog_ajax_callback',
+    'page arguments' => array(4),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+    $items['admin/manager/alepay/transaction/%cassiopeia_qt_alepay_transaction/view/%ctools_js'] = array(
+        'page callback' => 'cassiopeia_dialog_alepay_transaction_view_ajax_callback',
+        'page arguments' => array(4,6),
+        'access callback' => TRUE,
+        'type' => MENU_CALLBACK,
+    );
+  $items['admin/manager/airline/%cassiopeia_airline/edit/%ctools_js'] = array(
+    'page callback' => 'cassiopeia_dialog_airline_edit_ajax_callback',
+    'page arguments' => array(3, 5),
+    'access callback' => TRUE,
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Ajax menu callback.
+ */
+
+
+function cassiopeia_dialog_test_dialog_ajax_callback ($ajax) {
+  drupal_set_title('Lawyer add');
+//  $lawyer = (object)cassiopeia_lawyer_lawyer_new();
+//    _print_r($ajax);
+//    die;
+  if ($ajax) {
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    $form_state = array(
+      'ajax' => TRUE,
+    );
+    $form_state['build_info']['args'] = array();
+    // Use ctools to generate ajax instructions for the browser to create
+    // a form in a modal popup.
+
+    $output = ctools_modal_form_wrapper('cassiopeia_add_bank_form', $form_state);
+
+    // If the form has been submitted, there may be additional instructions
+    // such as dismissing the modal popup.
+    if (!empty($form_state['ajax_commands'])) {
+      $output = $form_state['ajax_commands'];
+    }
+
+    // Return the ajax instructions to the browser via ajax_render().
+    print ajax_render($output);
+    drupal_exit();
+  } else {
+    $lawyer = array();
+    return drupal_get_form('cassiopeia_add_bank_form');
+  }
+}
+
+function cassiopeia_admin_payment_report_update_dialog_ajax_callback ($ajax) {
+  drupal_set_title('Cập nhật báo cáo');
+//  $lawyer = (object)cassiopeia_lawyer_lawyer_new();
+  if ($ajax) {
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    $form_state = array(
+      'ajax' => TRUE,
+    );
+    $form_state['build_info']['args'] = array();
+    // Use ctools to generate ajax instructions for the browser to create
+    // a form in a modal popup.
+
+    $output = ctools_modal_form_wrapper('cassiopeia_admin_payment_report_update_form', $form_state);
+
+    // If the form has been submitted, there may be additional instructions
+    // such as dismissing the modal popup.
+    if (!empty($form_state['ajax_commands'])) {
+      $output = $form_state['ajax_commands'];
+    }
+
+    // Return the ajax instructions to the browser via ajax_render().
+    print ajax_render($output);
+    drupal_exit();
+  } else {
+    $lawyer = array();
+    return drupal_get_form('cassiopeia_admin_payment_report_update_form');
+  }
+}
+function cassiopeia_dialog_report_payment_update_dialog_ajax_callback ($ajax) {
+  drupal_set_title('Cập nhật báo cáo');
+//  $lawyer = (object)cassiopeia_lawyer_lawyer_new();
+  if ($ajax) {
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    $form_state = array(
+      'ajax' => TRUE,
+    );
+    $form_state['build_info']['args'] = array();
+    // Use ctools to generate ajax instructions for the browser to create
+    // a form in a modal popup.
+
+    $output = ctools_modal_form_wrapper('cassiopeia_report_payment_update_form', $form_state);
+
+    // If the form has been submitted, there may be additional instructions
+    // such as dismissing the modal popup.
+    if (!empty($form_state['ajax_commands'])) {
+      $output = $form_state['ajax_commands'];
+    }
+
+    // Return the ajax instructions to the browser via ajax_render().
+    print ajax_render($output);
+    drupal_exit();
+  } else {
+    $lawyer = array();
+    return drupal_get_form('cassiopeia_report_payment_update_form');
+  }
+}
+function cassiopeia_dialog_alepay_transaction_view_ajax_callback($transaction,$ajax){
+    return _cassiopeia_render_theme("module","cassiopeia_qt","templates/parts/alepay-transaction.tpl.php",array("transaction"=>$transaction));
+}
+function cassiopeia_dialog_airline_edit_ajax_callback($airline, $ajax) {
+  drupal_set_title('Cập nhật hãng hàng không');
+  //  $lawyer = (object)cassiopeia_lawyer_lawyer_new();
+  if ($ajax) {
+    ctools_include('ajax');
+    ctools_include('modal');
+
+    $form_state = array(
+      'ajax' => TRUE,
+    );
+    $form_state['build_info']['args'] = array(array("airline" => $airline));
+    // Use ctools to generate ajax instructions for the browser to create
+    // a form in a modal popup.
+
+    $output = ctools_modal_form_wrapper('cassiopeia_admin_airline_edit_form', $form_state);
+
+    // If the form has been submitted, there may be additional instructions
+    // such as dismissing the modal popup.
+    if (!empty($form_state['ajax_commands'])) {
+      $output = $form_state['ajax_commands'];
+    }
+
+    // Return the ajax instructions to the browser via ajax_render().
+    print ajax_render($output);
+    drupal_exit();
+  } else {
+    return drupal_get_form('cassiopeia_admin_airline_edit_form', array("airline" => $airline));
+  }
+}

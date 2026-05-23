@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="5f12d599-5e92-43c7-a39b-025c5701e509" name="DEV">
+        <fileTransfer rootFolder="/www/wwwroot/qtair.vn/" accessType="SFTP" host="124.158.5.41" port="24297" sshConfigId="6a32430f-ec75-4b0f-b96f-a8eb403967e4" sshConfig="root@124.158.5.41:24297 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

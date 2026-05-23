@@ -1,0 +1,753 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function cassiopeia_room_install() {
+
+}
+function cassiopeia_room_schema() {
+    $schema = array();
+    $schema['cassiopeia_room_booking'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transactionCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'alefee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_tel' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_mail' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_province' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_address' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'customer_note' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+
+            'room_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contactName' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contactTel' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contactEmail' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'extraBed' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VAT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'history' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'room_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'partner_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'total_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'net_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'surcharge_children' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'surcharge_adult' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'surcharge_weekend' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'hotel' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'from_date' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'to_date' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            // 1 đặt chỗ, 2 báo giá, 3 đã chốt, 4 thất bại
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'payment_method' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'tran_user' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'discount' => array(
+                'type' => 'float',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_booking_code'    => array('code'),
+            'c_r_booking_customer_name'    => array('customer_name'),
+            'c_r_booking_room_code'    => array('room_code'),
+            'c_r_booking_contactName'    => array('contactName'),
+            'c_r_booking_contactTel'    => array('contactTel'),
+            'c_r_booking_contactEmail'    => array('contactEmail'),
+            'c_r_booking_note'    => array('note'),
+            'c_r_booking_hotel'    => array('hotel'),
+            'c_r_booking_status'    => array('status'),
+            'c_r_booking_from_date'    => array('from_date'),
+            'c_r_booking_to_date'    => array('to_date'),
+            'c_r_booking_uid'     => array('uid'),
+            'c_r_booking_created' => array('created'),
+            'c_r_booking_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_room_booking_detail'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'children_age' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'room' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'number_of_room' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'from_date' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'to_date' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'number_of_night' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'adult' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'children' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'room_price' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'extraBed' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_booking_t_code'    => array('code'),
+            'c_r_booking_t_uid'     => array('uid'),
+            'c_r_booking_t_created' => array('created'),
+            'c_r_booking_t_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_room_room_price'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'nid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'from_date' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'to_date' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'adult' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'children' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'infant' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'extra_bed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'weekend' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'original_price' => array(
+                'type' => 'float',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'price' => array(
+                'type' => 'float',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_r_price_t_price'     => array('price'),
+            'c_r_r_price_t_original_price'     => array('original_price'),
+            'c_r_r_price_t_weekend'     => array('weekend'),
+            'c_r_r_price_t_extra_bed'     => array('extra_bed'),
+            'c_r_r_price_t_infant'     => array('infant'),
+            'c_r_r_price_t_children'     => array('children'),
+            'c_r_r_price_t_adult'     => array('adult'),
+            'c_r_r_price_t_to_date'     => array('to_date'),
+            'c_r_r_price_t_from_date'     => array('from_date'),
+            'c_r_r_price_t_nid'     => array('nid'),
+            'c_r_r_price_t_uid'     => array('uid'),
+            'c_r_r_price_t_created' => array('created'),
+            'c_r_r_price_t_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_room_room_booking_fee'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            // 0=> tất cả
+            'star' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'amount' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'percent' => array(
+                'type' => 'float',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'agent_rank' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'agent' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_r_b_f_t_agent'     => array('agent'),
+            'c_r_r_b_f_t_agent_rank'     => array('agent_rank'),
+            'c_r_r_b_f_t_percent'     => array('percent'),
+            'c_r_r_b_f_t_amount'     => array('amount'),
+            'c_r_r_b_f_t_star'     => array('star'),
+            'c_r_r_b_f_t_uid'     => array('uid'),
+            'c_r_r_b_f_t_created' => array('created'),
+            'c_r_r_b_f_t_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_room_hotel_rating'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'full_name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'email' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'nid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'point' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'comment' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_hotel_rating_t_status'     => array('status'),
+            'c_r_hotel_rating_t_point'     => array('point'),
+            'c_r_hotel_rating_t_uid'     => array('uid'),
+            'c_r_hotel_rating_t_created' => array('created'),
+            'c_r_hotel_rating_t_changed' => array('changed'),
+        ),
+    );
+    return $schema;
+}
+/**
+ * Implements hook_uninstall().
+ */
+function cassiopeia_room_uninstall() {
+    db_drop_table('cassiopeia_room_booking');
+
+}
+function cassiopeia_room_update_7101() {
+    $schema['cassiopeia_room_hotel_rating'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'nid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'point' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'c_r_hotel_rating_t_status'     => array('status'),
+            'c_r_hotel_rating_t_point'     => array('point'),
+            'c_r_hotel_rating_t_uid'     => array('uid'),
+            'c_r_hotel_rating_t_created' => array('created'),
+            'c_r_hotel_rating_t_changed' => array('changed'),
+        ),
+    );
+    db_create_table("cassiopeia_room_hotel_rating",$schema['cassiopeia_room_hotel_rating']);
+}
+function cassiopeia_room_update_7102() {
+    $comment = array(
+       'type' => 'text',
+       'size' => 'normal', // tiny | small | normal | medium | big
+       'not null' => FALSE,
+       'default' => '',
+   );
+    db_add_field("cassiopeia_room_hotel_rating","comment",$comment);
+}
+function cassiopeia_room_update_7103() {
+   $customer_tel = array(
+       'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+   );
+   $customer_mail = array(
+       'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+   );
+   $customer_province = array(
+       'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+   );
+   $customer_address = array(
+       'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+   );
+   $customer_note = array(
+       'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+   );
+   $discount = array(
+       'type' => 'float',
+       'default' => 0,
+   );
+    db_add_field("cassiopeia_room_booking","customer_tel",$customer_tel);
+    db_add_field("cassiopeia_room_booking","customer_mail",$customer_mail);
+    db_add_field("cassiopeia_room_booking","customer_province",$customer_province);
+    db_add_field("cassiopeia_room_booking","customer_address",$customer_address);
+    db_add_field("cassiopeia_room_booking","customer_note",$customer_note);
+    db_add_field("cassiopeia_room_booking","discount",$discount);
+}
+function cassiopeia_room_update_7104() {
+   $payment_method = array(
+      'type' => 'int',
+      'size' => 'tiny',
+      'default' => 1,
+    );
+    db_add_field("cassiopeia_room_booking","payment_method",$payment_method);
+}
+function cassiopeia_room_update_7105() {
+   $payment_method = array(
+     'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+    );
+    db_add_field("cassiopeia_room_booking","transactionCode",$payment_method);
+}
+function cassiopeia_room_update_7106() {
+   $payment_method = array(
+     'type' => 'varchar',
+       'length' => 255,
+       'default' => '',
+    );
+    db_add_field("cassiopeia_room_booking","errorCode",$payment_method);
+}
+function cassiopeia_room_update_7107() {
+    $schema['cassiopeia_room_room_booking_fee'] = array(
+       'fields' => array(
+           'id'=> array(
+               'type' => 'serial',
+               'unsigned' => TRUE,
+               'not null' => TRUE,
+           ),
+           // 0=> tất cả
+           'star' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'amount' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'percent' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'agent_rank' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'agent' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'uid' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'created' => array(
+               'type' => 'int',
+               'not null' => TRUE,
+               'default' => 0,
+           ),
+           'changed' => array(
+               'type' => 'int',
+               'default' => 0,
+           ),
+       ),
+       'primary key' => array('id'),
+       'unique keys' => array(
+
+       ),
+       'indexes' => array(
+           'c_r_r_b_f_t_agent'     => array('agent'),
+           'c_r_r_b_f_t_agent_rank'     => array('agent_rank'),
+           'c_r_r_b_f_t_percent'     => array('percent'),
+           'c_r_r_b_f_t_amount'     => array('amount'),
+           'c_r_r_b_f_t_star'     => array('star'),
+           'c_r_r_b_f_t_uid'     => array('uid'),
+           'c_r_r_b_f_t_created' => array('created'),
+           'c_r_r_b_f_t_changed' => array('changed'),
+       ),
+   );
+   db_create_table("cassiopeia_room_room_booking_fee",$schema['cassiopeia_room_room_booking_fee']);
+}
+function cassiopeia_room_update_7108() {
+   $int = array(
+       'type' => 'int',
+       'size' => 'tiny',
+       'default' => 0,
+   );
+    db_add_field("cassiopeia_room_room_booking_fee","status",$int);
+}
+function cassiopeia_room_update_7109() {
+   $int = array(
+       'type' => 'float',
+       'not null' => TRUE,
+       'default' => 0,
+   );
+    db_change_field("cassiopeia_room_room_booking_fee","percent","percent",$int);
+}
+function cassiopeia_room_update_7110() {
+   $int = array(
+       'type' => 'float',
+       'not null' => TRUE,
+       'default' => 0,
+   );
+    db_add_field("cassiopeia_room_booking","alefee",$int);
+}
+function cassiopeia_room_update_7111() {
+  $full_name = array(
+      'type' => 'varchar',
+      'length' => 255,
+      'default' => '',
+  );
+    db_add_field("cassiopeia_room_hotel_rating","full_name",$full_name);
+    db_add_field("cassiopeia_room_hotel_rating","email",$full_name);
+}

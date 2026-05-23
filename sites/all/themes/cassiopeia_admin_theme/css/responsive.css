@@ -1,0 +1,192 @@
+@media (max-width: 1370px) {
+    .page-issue-report .add-form div.date {
+        width: 130px;
+    }
+    .page-issue-report div.code {
+        width: 100px;
+    }
+    .page-issue-report div.tran_user,
+    .page-issue-report div.agent,
+    .page-issue-report div.airline {
+        width: 118px;
+    }
+    .page-issue-report div.to-date,
+    .page-issue-report div.from-date {
+        width: 96px;
+    }
+    .page-payment-report .add-form .price,
+    .page-payment-report .add-form .partner_price {
+        width: 100px;
+    }
+}
+
+@media (max-width: 1200px) {
+    .page-payment-report .filter-form,
+    .page-issue-report .filter-form {
+        padding: 10px;
+    }
+    .page-issue-report div.from-date,
+    .page-issue-report div.to-date {
+        width: 100px;
+    }
+    .page-payment-report .add-form>div,
+    .page-payment-report .filter-form>div {
+        width: 50%;
+        margin: 0px;
+        margin-bottom: 8px;
+        padding: 0px 4px;
+    }
+    .select2-container .select2-selection--single {
+        height: 28px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        padding-left: 10px;
+    }
+    .select2-container .select2-selection--single>span {
+        margin-top: 0 !important;
+    }
+    .page-issue-report .add-form>div,
+    .page-payment-report .add-form>div.tran_kind {
+        /*width:90px;*/
+    }
+    .page-payment-report,
+    .page-manager-partners {
+        font-size: 13px;
+    }
+    td.td-partner-status>div .text-partner-status {
+        padding: 3px 10px;
+    }
+    .table>thead>tr>th,
+    .table>tbody>tr>th,
+    .table>tfoot>tr>th,
+    .table>thead>tr>td,
+    .table>tbody>tr>td,
+    .table>tfoot>tr>td {
+        padding: 4px;
+    }
+    .form-control {
+        height: 32px;
+    }
+    button {
+        height: 28px;
+        padding: 0px 5px !important;
+        /*width: 66px;*/
+    }
+    .page-manager-partners select {
+        padding: 0px;
+    }
+    .page-payment-report .container-inline-date {
+        width: 110px;
+        margin-right: 20px;
+    }
+    .chosen-container-single .chosen-single span,
+    .chosen-container-single .chosen-single {
+        height: 28px;
+        display: flex;
+        align-items: center;
+    }
+    #cassiopeia-booking-filter-form .form-button .form-item-uncheck label {
+        height: 28px;
+    }
+    .page-payment-report .add-form>div.quantity {
+        width: 48px;
+    }
+    .page-issue-report .filter-form .agent,
+    .page-issue-report .filter-form .airline {
+        width: 110px;
+    }
+    .page-issue-report .filter-form .code {
+        width: 90px
+    }
+    .page-issue-report .filter-form .month select {
+        padding: 0;
+        padding-left: 5px;
+    }
+}
+
+@media (max-width: 670px) {
+    .page-issue-report .filter-block,
+    .page-payment-report .filter-block {
+        margin-top: 20px;
+    }
+    .page-issue-report .filter-block div.btn-primary,
+    .page-payment-report .filter-block div.btn-primary,
+    .page-issue-report .add-block div.btn-primary,
+    .page-payment-report .add-block div.btn-primary {
+        margin-bottom: 15px;
+        padding: 10px;
+        font-size: 14px;
+    }
+    .page-issue-report .filter-form .select2-container,
+    .page-payment-report .filter-form .select2-container,
+    .page-payment-report .add-form .select2-container,
+    .page-issue-report .add-form .select2-container {
+        width: 100% !important;
+    }
+    .select2-container .select2-selection--single {
+        height: 32px;
+    }
+    .collapse {
+        display: none !important;
+    }
+    .collapse.in {
+        display: flex !important;
+    }
+    .page-issue-report .add-form,
+    .page-payment-report .add-form,
+    .page-void-report .filter-form,
+    .page-payment-report .filter-form,
+    .page-issue-report .filter-form {
+        flex-wrap: wrap;
+    }
+    .desktop-detail-row.EXPIRED,
+    .desktop-detail-row.FAIL {
+        color: red;
+        font-weight: bold;
+    }
+    .desktop-detail-row.TICKETED {
+        color: #ff9000;
+        font-weight: bold;
+    }
+    .desktop-detail-row.OK {
+        color: green;
+        font-weight: bold;
+    }
+    .mobile-detail-row.active {
+        display: table-row;
+    }
+    #cassiopeia-agent-report-filter-form>div {
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+    #cassiopeia-agent-report-filter-form>div .form-item-num-per-page,
+    #cassiopeia-agent-report-filter-form>div .form-item-order-by,
+    #cassiopeia-agent-report-filter-form>div .form-item-direction {
+        display: none;
+    }
+    #cassiopeia-agent-report-filter-form>div .form-group {
+        width: 49% !important;
+        margin: 0;
+    }
+    .page-detail-report .block-menu ul {
+        flex-wrap: wrap;
+    }
+    .page-detail-report .block-menu ul li {
+        list-style: none;
+        width: 50%;
+        box-shadow: 1px 2px 3px #00000029;
+    }
+    .page-issue-report .add-form>div,
+    .page-issue-report .filter-form>div {
+        width: 50% !important;
+        margin: 0;
+        padding: 0px 5px;
+    }
+    .report-items tbody tr.footable-detail-row {
+        display: none !important;
+    }
+    .report-items tbody tr.footable-detail-row.active {
+        display: table-row !important;
+    }
+}

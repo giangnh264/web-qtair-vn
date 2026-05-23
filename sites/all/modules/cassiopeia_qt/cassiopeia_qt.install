@@ -1,0 +1,2610 @@
+<?php
+/**
+ * Implements hook_install().
+ */
+function cassiopeia_qt_install() {
+
+}
+function cassiopeia_qt_schema() {
+    $schema = array();
+    $schema['cassiopeia_qt_vietinbank_inqCustom'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'msgId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'custCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transTime' => array(
+                'type' => 'varchar',
+               'length' => 255,
+               'default' => '',
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'data_s' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorDesc' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            // 1 request, 2 response
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_vietinbank_inqCustom_type' => array('type'),
+            'qt_vietinbank_inqCustom_errorCode' => array('errorCode'),
+            'qt_vietinbank_inqCustom_transTime' => array('transTime'),
+            'qt_vietinbank_inqCustom_custCode' => array('custCode'),
+            'qt_vietinbank_inqCustom_transId' => array('transId'),
+            'qt_vietinbank_inqCustom_created' => array('created'),
+            'qt_vietinbank_inqCustom_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_qt_vietinbank_notifytrans'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'transId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'msgId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'custCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transTime' => array(
+                'type' => 'varchar',
+                   'length' => 255,
+                   'default' => '',
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+             'data_s' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorDesc' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            // 1 request, 2 response
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_vietinbank_notifytrans_type' => array('type'),
+            'qt_vietinbank_notifytrans_errorCode' => array('errorCode'),
+            'qt_vietinbank_notifytrans_transTime' => array('transTime'),
+            'qt_vietinbank_notifytrans_custCode' => array('custCode'),
+            'qt_vietinbank_notifytrans_transId' => array('transId'),
+            'qt_vietinbank_notifytrans_created' => array('created'),
+            'qt_vietinbank_notifytrans_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_qt_alepay_transaction'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'transactionCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'cancel' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+            ),
+            'reference' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            // 1 vé, 2 phòng
+            'reference_type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_alepay_transaction_reference_type'     => array('reference_type'),
+            'qt_alepay_transaction_reference'     => array('reference'),
+            'qt_alepay_transaction_cancel'     => array('cancel'),
+            'qt_alepay_transaction_errorCode'     => array('errorCode'),
+            'qt_alepay_transaction_transactionCode'     => array('transactionCode'),
+            'qt_alepay_transaction_uid'     => array('uid'),
+            'qt_alepay_transaction_created' => array('created'),
+            'qt_alepay_transaction_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_qt_alepay_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            // thẻ nội địa, quốc tế...
+            'type' => array(
+                'type' => 'int',
+                'size'  => "tiny"
+            ),
+            'percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'amount' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_alepay_fee_config_amount'     => array('amount'),
+            'qt_alepay_fee_config_percent'     => array('percent'),
+            'qt_alepay_fee_config_type'     => array('type'),
+            'qt_alepay_fee_config_uid'     => array('uid'),
+            'qt_alepay_fee_config_created' => array('created'),
+            'qt_alepay_fee_config_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_top_up_request'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'payment' => array(
+                'type' => 'int',
+                'size'  => "tiny"
+            ),
+            'code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bank' => array(
+                'type' => 'int',
+            ),
+            'amount' => array(
+                'type' => 'int',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'tran_user' => array(
+                'type' => 'int',
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_t_issue_uid'     => array('uid'),
+            'qt_t_issue_created' => array('created'),
+        ),
+    );
+    $schema['tbl_issue'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'message' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'booking_image' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'issue_type' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 1,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_t_issue_uid'     => array('uid'),
+            'qt_t_issue_bid'     => array('bid'),
+            'qt_t_issue_booking_code'     => array('booking_code'),
+            'qt_t_issue_pnr_code'     => array('pnr_code'),
+            'qt_t_issue_status'     => array('status'),
+            'qt_t_issue_error_code'     => array('error_code'),
+            'qt_t_issue_note'     => array('note'),
+            'qt_t_issue_created' => array('created'),
+        ),
+    );
+    $schema['tbl_service_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'VN_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_fee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_domestic_fee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'tid' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'infant' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_s_f_uid'     => array('uid'),
+            'qt_s_f_created' => array('created'),
+            'qt_s_f_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_agent_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'VN_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_fee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'tid' => array(
+                'type' => 'int',
+                'default' => 0,
+            ),
+            'infant' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_a_f_uid'     => array('uid'),
+            'qt_a_f_created' => array('created'),
+            'qt_a_f_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_booking'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'booking_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'transactionCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'alefee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'airline' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'netPrice' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'book_price' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'customFee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'silverFee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'agent_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_name' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_type'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'DO'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'version'=>array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0
+            ),
+            'adt'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'chd'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'inf'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'trip_type' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'ExpiryDt'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'payment_method'=>array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'history' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'booking' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'start_point' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'end_point' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'departure_date' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'return_date' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_message' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Gender' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_FirstName' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_LastName' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Phone' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Email' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'contact_Address' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_company' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_tax_number' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_address' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bill_mail' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'additional' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'bank' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_booking_booking_code'    => array('booking_code'),
+            'qt_booking_pnr_code'    => array('pnr_code'),
+            'qt_booking_airline'    => array('airline'),
+            'qt_booking_price'    => array('price'),
+            'qt_booking_book_price'    => array('book_price'),
+            'qt_booking_agent_code'    => array('agent_code'),
+            'qt_booking_booking_name'    => array('booking_name'),
+            'qt_booking_DO'    => array('DO'),
+            'qt_booking_booking_type'    => array('booking_type'),
+            'qt_booking_version'    => array('version'),
+            'qt_booking_trip_type'    => array('trip_type'),
+            'qt_booking_ExpiryDt'    => array('ExpiryDt'),
+            'qt_booking_uid'     => array('uid'),
+            'qt_booking_created' => array('created'),
+            'qt_booking_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_customer'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'name' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'tel' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'mail' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'gender' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'birthday' => array(
+                'type' => 'int',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'VN' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'QH' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_c_b_name'    => array('name'),
+            'qt_c_b_mail'    => array('mail'),
+            'qt_c_b_tel'    => array('tel'),
+            'qt_c_b_birthday'    => array('birthday'),
+            'qt_c_b_uid'     => array('uid'),
+            'qt_c_b_created' => array('created'),
+            'qt_c_b_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_customer_booking'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'QH_CODE' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'VN_CODE' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'cid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_c_b_bid'    => array('bid'),
+            'qt_c_b_QH_CODE'    => array('QH_CODE'),
+            'qt_c_b_VN_CODE'    => array('VN_CODE'),
+            'qt_c_b_cid'     => array('cid'),
+            'qt_c_b_uid'     => array('uid'),
+            'qt_c_b_created' => array('created'),
+            'qt_c_b_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_ticket'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'TransactionCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            // 0 nội địa, 1 quốc tế
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'StartPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'EndPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FlightNumber' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'AirlineCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'StartDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'EndDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Stops' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Duration' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'FlightSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Itinerary' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FareOptionSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Class' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'service_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'service_infant_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'agent_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'infant_fee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TotalPrice' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'ServiceFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'IssueFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'LastTkDate' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'SeatsAvailable' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'leg' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_ticket_bid'     => array('bid'),
+            'qt_ticket_Itinerary'     => array('Itinerary'),
+            'qt_ticket_uid'     => array('uid'),
+            'qt_ticket_created' => array('created'),
+            'qt_ticket_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_passenger'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Email' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Phone' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FirstName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'LastName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Type' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Gender' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Birthday' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageDeparture' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageReturn' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'passenger_index' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_c_b_bid'    => array('bid'),
+            'qt_c_b_uid'     => array('uid'),
+            'qt_c_b_created' => array('created'),
+            'qt_c_b_changed' => array('changed'),
+        ),
+    );
+    return $schema;
+}
+/**
+ * Implements hook_uninstall().
+ */
+function cassiopeia_qt_uninstall() {
+
+}
+function cassiopeia_qt_update_7101() {
+    $schema['tbl_ticket'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'TransactionCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            // 0 nội địa, 1 quốc tế
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'StartPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'EndPoint' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FlightNumber' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'AirlineCode' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'StartDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'EndDate' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Stops' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Duration' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'FlightSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Itinerary' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FareOptionSession' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Class' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'PriceAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'PriceInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'FeeInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxAdult' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxChild' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TaxInfant' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'TotalPrice' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'ServiceFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'IssueFee' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'LastTkDate' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'SeatsAvailable' => array(
+                'type' => 'float',
+                'size' => 'normal',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_ticket_bid'     => array('bid'),
+            'qt_ticket_Itinerary'     => array('Itinerary'),
+            'qt_ticket_uid'     => array('uid'),
+            'qt_ticket_created' => array('created'),
+            'qt_ticket_changed' => array('changed'),
+        ),
+    );
+    db_create_table('tbl_ticket', $schema['tbl_ticket']);
+}
+function cassiopeia_qt_update_7102() {
+    $schema['tbl_passenger'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => 0,
+            ),
+            'Email' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Phone' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'FirstName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'LastName' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Type' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Gender' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'Birthday' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageDeparture' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'BaggageReturn' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'Index' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_p_bid'    => array('bid'),
+            'qt_p_uid'     => array('uid'),
+            'qt_p_created' => array('created'),
+            'qt_p_changed' => array('changed'),
+        ),
+    );
+    db_create_table('tbl_passenger', $schema['tbl_passenger']);
+}
+function cassiopeia_qt_update_7103() {
+    db_add_field('tbl_passenger', 'passenger_index',array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+    ));
+}
+function cassiopeia_qt_update_7104() {
+    db_add_field('tbl_ticket', 'status',array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+    ));
+}
+function cassiopeia_qt_update_7106() {
+    $field = array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+    );
+    db_drop_field('tbl_booking', 'contact_name');
+    db_drop_field('tbl_booking', 'contact_tel');
+    db_drop_field('tbl_booking', 'contact_mail');
+    db_drop_field('tbl_booking', 'contact_note');
+
+    db_drop_field('tbl_booking', 'contact_Gender',$field);
+    db_drop_field('tbl_booking', 'contact_FirstName',$field);
+    db_drop_field('tbl_booking', 'contact_LastName',$field);
+    db_drop_field('tbl_booking', 'contact_Phone',$field);
+    db_drop_field('tbl_booking', 'contact_Email',$field);
+    db_drop_field('tbl_booking', 'contact_Address',$field);
+}
+function cassiopeia_qt_update_7107() {
+    $field = array(
+        'type' => 'float',
+        'size' => 'normal',
+        'default' => 0,
+    );
+    db_add_field('tbl_ticket', 'service_fee',$field);
+    db_add_field('tbl_ticket', 'agent_fee',$field);
+}
+function cassiopeia_qt_update_7108() {
+    $schema['tbl_service_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'VN_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_fee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_s_f_uid'     => array('uid'),
+            'qt_s_f_created' => array('created'),
+            'qt_s_f_changed' => array('changed'),
+        ),
+    );
+    $schema['tbl_agent_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'VN_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VN_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'QH_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VJ_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'VT_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_ECO' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_OTHER' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'SPA_INFANT' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_fee' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'international_percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            )
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_a_f_uid'     => array('uid'),
+            'qt_a_f_created' => array('created'),
+            'qt_a_f_changed' => array('changed'),
+        ),
+    );
+    db_create_table('tbl_service_fee_config', $schema['tbl_service_fee_config']);
+    db_create_table('tbl_agent_fee_config', $schema['tbl_agent_fee_config']);
+}
+function cassiopeia_qt_update_7109() {
+    $field = array(
+        'type' => 'int',
+        'size' => 'big',
+        'default' => 0,
+    );
+    db_add_field('tbl_agent_fee_config', 'tid',$field);
+    db_add_field('tbl_service_fee_config', 'tid',$field);
+}
+function cassiopeia_qt_update_7110() {
+    $field = array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+    );
+    db_add_field('tbl_agent_fee_config', 'infant',$field);
+    db_add_field('tbl_service_fee_config', 'infant',$field);
+}
+function cassiopeia_qt_update_7111() {
+    $field = array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'default' => 0,
+    );
+    db_add_field('tbl_ticket', 'leg',$field);
+    $field = array(
+        'type' => 'float',
+        'size' => 'normal',
+        'default' => 0,
+    );
+    db_add_field('tbl_ticket', 'infant_fee',$field);
+}
+function cassiopeia_qt_update_7112() {
+    $field = array(
+        'type' => 'varchar',
+        'not null' => TRUE,
+        'length' => 255,
+        'default' => '',
+    );
+
+    db_add_field('tbl_booking', 'contact_Gender',$field);
+    db_add_field('tbl_booking', 'contact_FirstName',$field);
+    db_add_field('tbl_booking', 'contact_LastName',$field);
+    db_add_field('tbl_booking', 'contact_Phone',$field);
+    db_add_field('tbl_booking', 'contact_Email',$field);
+    db_add_field('tbl_booking', 'contact_Address',$field);
+}
+function cassiopeia_qt_update_7113() {
+    $field = array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    );
+    db_add_field('tbl_ticket', 'pnr_code',$field);
+}
+function cassiopeia_qt_update_7115() {
+    $bank = array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+    );
+    $additional = array(
+        'type' => 'text',
+        'size' => 'normal', // tiny | small | normal | medium | big
+        'not null' => FALSE,
+        'default' => '',
+    );
+    $field = array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    );
+    db_add_field('tbl_booking', 'bill_company',$field);
+    db_add_field('tbl_booking', 'bill_tax_number',$field);
+    db_add_field('tbl_booking', 'bill_address',$field);
+    db_add_field('tbl_booking', 'bill_mail',$field);
+    db_add_field('tbl_booking', 'additional',$additional);
+    db_add_field('tbl_booking', 'bank',$bank);
+}
+function cassiopeia_qt_update_7116() {
+    $schema['tbl_issue'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'bid' => array(
+                'type' => 'varchar',
+                'not null' => TRUE,
+                'length' => 255,
+                'default' => '',
+            ),
+            'booking_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'pnr_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'error_code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'message' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'booking_image' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'note' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'issue_type' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 1,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_t_issue_uid'     => array('uid'),
+            'qt_t_issue_bid'     => array('bid'),
+            'qt_t_issue_booking_code'     => array('booking_code'),
+            'qt_t_issue_pnr_code'     => array('pnr_code'),
+            'qt_t_issue_status'     => array('status'),
+            'qt_t_issue_error_code'     => array('error_code'),
+            'qt_t_issue_note'     => array('note'),
+            'qt_t_issue_created' => array('created'),
+        ),
+    );
+    db_create_table('tbl_issue', $schema['tbl_issue']);
+}
+function cassiopeia_qt_update_7117() {
+    $schema['tbl_top_up_request'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'payment' => array(
+                'type' => 'int',
+                'size'  => "tiny"
+            ),
+            'code' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'bank' => array(
+                'type' => 'int',
+            ),
+            'status' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_t_issue_uid'     => array('uid'),
+            'qt_t_issue_created' => array('created'),
+        ),
+    );
+    db_create_table('tbl_top_up_request', $schema['tbl_top_up_request']);
+}
+function cassiopeia_qt_update_7118() {
+    $convert = array(
+        'type' => 'int',
+    );
+
+    db_add_field('tbl_top_up_request', 'tran_user',$convert);
+}
+function cassiopeia_qt_update_7119() {
+    $service_infant_fee = array(
+        'type' => 'float',
+        'size' => 'normal',
+        'default' => 0,
+    );
+
+    db_add_field('tbl_ticket', 'service_infant_fee',$service_infant_fee);
+}
+function cassiopeia_qt_update_7120() {
+    $service_infant_fee = array(
+        'type' => 'int',
+    );
+
+    db_add_field('tbl_top_up_request', 'amount',$service_infant_fee);
+}
+function cassiopeia_qt_update_7121() {
+    $varchar = array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    );
+
+    db_add_field('tbl_booking', 'transactionCode',$varchar);
+    db_add_field('tbl_booking', 'errorCode',$varchar);
+}
+function cassiopeia_qt_update_7122() {
+    $varchar = array(
+        'type' => 'float',
+        'size' => 'normal',
+        'default' => 0,
+    );
+
+    db_add_field('tbl_booking', 'netPrice',$varchar);
+}
+function cassiopeia_qt_update_7123() {
+    $schema['cassiopeia_qt_alepay_transaction'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'transactionCode' => array(
+                'type' => 'int',
+                'size'  => "tiny"
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'cancel' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+            ),
+            'reference' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            // 1 vé, 2 phòng
+            'reference_type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_alepay_transaction_reference_type'     => array('reference_type'),
+            'qt_alepay_transaction_reference'     => array('reference'),
+            'qt_alepay_transaction_cancel'     => array('cancel'),
+            'qt_alepay_transaction_errorCode'     => array('errorCode'),
+            'qt_alepay_transaction_transactionCode'     => array('transactionCode'),
+            'qt_alepay_transaction_uid'     => array('uid'),
+            'qt_alepay_transaction_created' => array('created'),
+            'qt_alepay_transaction_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_qt_alepay_fee_config'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            // thẻ nội địa, quốc tế...
+            'type' => array(
+                'type' => 'int',
+                'size'  => "tiny"
+            ),
+            'percent' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'amount' => array(
+                'type' => 'float',
+                'size' => 'big',
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_alepay_fee_config_amount'     => array('amount'),
+            'qt_alepay_fee_config_percent'     => array('percent'),
+            'qt_alepay_fee_config_type'     => array('type'),
+            'qt_alepay_fee_config_uid'     => array('uid'),
+            'qt_alepay_fee_config_created' => array('created'),
+            'qt_alepay_fee_config_changed' => array('changed'),
+        ),
+    );
+    db_create_table("cassiopeia_qt_alepay_transaction",$schema['cassiopeia_qt_alepay_transaction']);
+    db_create_table("cassiopeia_qt_alepay_fee_config",$schema['cassiopeia_qt_alepay_fee_config']);
+}
+function cassiopeia_qt_update_7124() {
+    db_change_field("cassiopeia_qt_alepay_transaction","transactionCode","transactionCode",array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    ));
+}
+function cassiopeia_qt_update_7125() {
+    $int = array(
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+    );
+    db_add_field("tbl_booking","alefee",$int);
+}
+function cassiopeia_qt_update_7126() {
+    $schema['cassiopeia_qt_vietinbank_inqCustom'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'transId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'custCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transTime' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorDesc' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            // 1 request, 2 response
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_vietinbank_inqCustom_type' => array('type'),
+            'qt_vietinbank_inqCustom_errorCode' => array('errorCode'),
+            'qt_vietinbank_inqCustom_transTime' => array('transTime'),
+            'qt_vietinbank_inqCustom_custCode' => array('custCode'),
+            'qt_vietinbank_inqCustom_transId' => array('transId'),
+            'qt_vietinbank_inqCustom_created' => array('created'),
+            'qt_vietinbank_inqCustom_changed' => array('changed'),
+        ),
+    );
+    $schema['cassiopeia_qt_vietinbank_notifytrans'] = array(
+        'fields' => array(
+            'id'=> array(
+                'type' => 'serial',
+                'unsigned' => TRUE,
+                'not null' => TRUE,
+            ),
+            'transId' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'custCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'transTime' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'data' => array(
+                'type' => 'text',
+                'size' => 'big', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            'errorCode' => array(
+                'type' => 'varchar',
+                'length' => 255,
+                'default' => '',
+            ),
+            'errorDesc' => array(
+                'type' => 'text',
+                'size' => 'normal', // tiny | small | normal | medium | big
+                'not null' => FALSE,
+                'default' => '',
+            ),
+            // 1 request, 2 response
+            'type' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'default' => 1,
+            ),
+            'created' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'changed' => array(
+                'type' => 'int',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'primary key' => array('id'),
+        'unique keys' => array(
+
+        ),
+        'indexes' => array(
+            'qt_vietinbank_notifytrans_type' => array('type'),
+            'qt_vietinbank_notifytrans_errorCode' => array('errorCode'),
+            'qt_vietinbank_notifytrans_transTime' => array('transTime'),
+            'qt_vietinbank_notifytrans_custCode' => array('custCode'),
+            'qt_vietinbank_notifytrans_transId' => array('transId'),
+            'qt_vietinbank_notifytrans_created' => array('created'),
+            'qt_vietinbank_notifytrans_changed' => array('changed'),
+        ),
+    );
+    db_create_table("cassiopeia_qt_vietinbank_inqCustom",$schema['cassiopeia_qt_vietinbank_inqCustom']);
+    db_create_table("cassiopeia_qt_vietinbank_notifytrans",$schema['cassiopeia_qt_vietinbank_notifytrans']);
+}
+
+function cassiopeia_qt_update_7127() {
+    db_change_field("cassiopeia_qt_vietinbank_inqCustom","transTime","transTime",array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    ));
+    db_change_field("cassiopeia_qt_vietinbank_notifytrans","transTime","transTime",array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    ));
+}
+function cassiopeia_qt_update_7128() {
+    $msgId = array(
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+    );
+     $data_s = array(
+        'type' => 'text',
+        'size' => 'big', // tiny | small | normal | medium | big
+        'not null' => FALSE,
+        'default' => '',
+    );
+     db_add_field('cassiopeia_qt_vietinbank_inqCustom', 'data_s',$data_s);
+     db_add_field('cassiopeia_qt_vietinbank_inqCustom', 'msgId',$msgId);
+     db_add_field('cassiopeia_qt_vietinbank_notifytrans', 'msgId',$msgId);
+     db_add_field('cassiopeia_qt_vietinbank_notifytrans', 'data_s',$data_s);
+}
+function cassiopeia_qt_update_7129() {
+    $note = array(
+        'type' => 'text',
+        'size' => 'normal', // tiny | small | normal | medium | big
+        'not null' => FALSE,
+        'default' => '',
+    );
+     db_add_field('tbl_top_up_request', 'note',$note);
+
+}
+function cassiopeia_qt_update_7130() {
+    $field = array(
+        'type' => 'float',
+        'size' => 'big',
+        'default' => 0,
+        'description' => 'International flight fee',
+    );
+    
+    // Check if field exists before adding
+    $schema = drupal_get_schema('tbl_service_fee_config');
+    if (!isset($schema['fields']['international_domestic_fee'])) {
+        db_add_field('tbl_service_fee_config', 'international_domestic_fee', $field);
+    }
+}

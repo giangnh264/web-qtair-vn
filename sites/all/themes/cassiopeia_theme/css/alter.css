@@ -1,0 +1,630 @@
+/* Cassiopeia theme core */
+
+@font-face {
+  font-family: UTM_AVO;
+  src: url("../font/UTM_AVO.TTF");
+}
+
+@font-face {
+  font-family: UTM_AVO_BOLD;
+  src: url("../font/UTM_AVO_BOLD.TTF");
+}
+
+@font-face {
+  font-family: UTM_AVO_BOLD_ITALIC;
+  src: url("../font/UTM_AVO_BOLD_ITALIC.TTF");
+}
+
+@font-face {
+  font-family: UTM_AVO_ITALIC;
+  src: url("../font/UTM_AVO_ITALIC.TTF");
+}
+
+img {
+  max-width: 100%;
+}
+
+body {
+  font-family: "UTM_AVO", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.defaultSkin .mceMenu .mceText {
+  background-color: white !important;
+}
+
+.col-md-padding-10 {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.col-md-padding-10 {
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+.col-md-padding-0 {
+  padding-right: 0px;
+  padding-left: 0px;
+}
+
+.margin--10 {
+  margin-right: -10px;
+  margin-left: -10px;
+}
+
+.margin-0 {
+  margin-right: 0px;
+  margin-left: 0px;
+}
+
+.margin-15 {
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+.col-md-padding-left-0 {
+  padding-left: 0px;
+}
+
+.col-md-padding-right-0 {
+  padding-right: 0px;
+}
+
+.col-md-padding-left-28 {
+  padding-left: 28px;
+}
+
+.col-md-padding-right-28 {
+  padding-right: 28px;
+}
+
+.padding-0 {
+  padding-left: 0px;
+  padding-right: 0px;
+}
+
+.padding-60 {
+  padding-left: 60px;
+  padding-right: 60px;
+}
+
+.margin-auto {
+  margin: auto;
+}
+
+.tabs .nav-tabs {
+  margin-bottom: 0px;
+}
+
+.page-flight-search
+  .international-search
+  #list-of-flight
+  .flight-item.inactive {
+  display: none;
+}
+
+#search-fly-form {
+  width: 100%;
+  background: no-repeat;
+  z-index: 2;
+  position: relative;
+}
+
+.page-flight-search
+  .flights
+  .item
+  .between
+  > div.flight-number.multiple-segment {
+  color: var(--clr-secondary);
+}
+
+.Promo-Ticket {
+  color: var(--clr-secondary);
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: solid 2px;
+  border-radius: 100%;
+  margin-right: 10px;
+}
+
+.page-flight-search .flights .item .item-body.active .detail {
+  display: block;
+}
+
+.page-flight-search
+  .flights
+  .flight-blocks.international-search.chosen
+  #list-of-flight
+  .flight-item.chosen
+  .item-body.chosen {
+  display: flex;
+}
+
+.page-flight-search
+  .flights
+  .flight-blocks.international-search.chosen
+  #list-of-flight
+  .flight-item.chosen
+  .item-body {
+  display: none;
+}
+
+.page-tx-article .tx-item {
+  box-shadow: 0px 0px 3px #00000042;
+  margin-bottom: 20px;
+}
+
+.article-type-4 .article-title a {
+  font-size: 18px;
+  margin: 5px 0px;
+  display: block;
+  /*font-weight: bold; */
+  font-family: "ROBOTO-BOLD";
+}
+
+.article-type-4 .article-created-date {
+  color: grey;
+}
+
+.article-type-4 .button {
+  display: flex;
+}
+
+.article-type-4 .button a {
+  background: var(--clr-secondary);
+  color: white;
+  padding: 8px 12px;
+  margin-top: 20px;
+}
+
+.page-tx-article .tx-item .col-md-6:first-child {
+  padding: 15px;
+}
+
+.page-tx-article .tx-item .col-md-6:last-child {
+  padding-bottom: 15px;
+  background: #fafafa;
+}
+
+.page-tx-article .tx-item .col-md-6:last-child .article-type-3:first-child {
+  margin-top: 0px;
+  border: none;
+}
+
+.page-user-manager .form-control {
+  border-color: #d7d7d7;
+  border-radius: 0px 0px;
+  outline: none;
+  box-shadow: 0px 0px;
+}
+
+.page-user-manager .filter-form > div > label {
+  font-family: OPENSANS_REGULAR;
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.c-table {
+  background: #ffffff;
+  border: 1px solid #f1f1f1;
+}
+
+.c-table > thead > tr > th {
+  font-family: Roboto-Bold;
+  font-size: 14px;
+  line-height: 19px;
+  text-align: center;
+  vertical-align: middle;
+  border-bottom: 0px;
+  background-color: #f1f1f1;
+  padding: 16px;
+  color: #333333;
+}
+
+.c-table > tbody > tr:nth-child(odd) {
+  background-color: #f5f5f5;
+}
+
+.filter-form .chosen-container-single .chosen-single {
+  box-shadow: unset !important;
+}
+
+.filter-form .chosen-container-active.chosen-with-drop .chosen-single {
+  border: 0px !important;
+  background-image: unset !important;
+}
+
+.w-8-per {
+  width: 8% !important;
+}
+
+.mg-0 {
+  margin: 0px !important;
+}
+
+.page-user-manager .form-control[readonly] {
+  background-color: transparent !important;
+}
+
+.pd-y-48 {
+  padding-top: 48px;
+  padding-bottom: 48px;
+}
+
+.pt-48 {
+  padding-top: 48px !important;
+}
+
+.mb-30 {
+  margin-bottom: 30px !important;
+}
+
+.pb-0 {
+  padding-bottom: 0px !important;
+}
+
+.pt-30 {
+  padding-top: 30px !important;
+}
+.TotalPriceDiv {
+  display: flex;
+  align-items: center;
+}
+
+.check .Promo-Ticket {
+  position: relative;
+  display: inline-block;
+  border-bottom: 1px dotted black;
+}
+
+.Promo-Ticket .tooltiptext {
+  visibility: hidden;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+
+  /* Position the tooltip */
+  position: absolute;
+  z-index: 1;
+}
+
+.Promo-Ticket:hover .tooltiptext {
+  visibility: visible;
+}
+.page-flight-search .international-search .flights .item .item-body .journey {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  align-items: center;
+}
+#cassiopeia-booking-filter-form > div {
+  display: flex;
+  flex-wrap: wrap;
+  margin: 10px -8px;
+  align-items: flex-end;
+}
+#cassiopeia-booking-filter-form > div > div {
+  width: 20%;
+  padding: 6px 8px;
+}
+
+.header-navigator > ul > li:hover > a {
+  color: var(--clr-secondary) !important;
+}
+.header-navigator > ul > li > a > span {
+  font-weight: 500;
+}
+.header-navigator > ul > li:hover > ul > li > a {
+  color: unset !important;
+}
+/* .header-navigator > ul > li:not(:last-child) {
+  margin-right: 0px !important;
+} */
+.header-navigator > ul > li > ul {
+  min-width: 200px !important;
+}
+.header-navigator > ul > li > ul > li > a {
+  padding: 10px !important;
+  font-size: 15px !important;
+}
+.header-navigator > ul > li > ul {
+  background-color: #fff !important;
+}
+/* agent-profession */
+.page-agent-profession,
+.page-agent-profession-detail {
+  padding: 48px 0 64px;
+}
+.list-agent-profession {
+  padding: 24px 24px 24px 13px;
+  background: #f7faf9;
+  border: 1px solid #ebf0ef;
+}
+.box-list-agent-profession {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.title-agent-profession {
+  margin-bottom: 4px;
+  font-weight: 600;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0.25px;
+  color: #002620;
+}
+.icon-view,
+.date-submitted {
+  font-size: 14px;
+  line-height: 24px;
+  color: #717a78;
+}
+.icon-view {
+  padding-right: 14px;
+  margin-right: 14px;
+  border-right: 1px solid #d4d9d8;
+}
+.note-agent-profession > div > span:last-child {
+  margin-left: 4px;
+}
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  padding-top: 24px;
+}
+.pagination li a {
+  border: 1px solid #d4d9d8;
+  border-radius: 2px;
+  color: #394745;
+}
+.pagination li:hover a {
+  background: #027a6c;
+  color: #fff;
+}
+.pagination li.active span {
+  background: #027a6c;
+  border-radius: 2px;
+  border: none;
+  color: #fff;
+}
+.pagination > .active > a,
+.pagination > .active > span,
+.pagination > .active > a:hover,
+.pagination > .active > span:hover,
+.pagination > .active > a:focus,
+.pagination > .active > span:focus {
+  background-color: #027a6c;
+}
+
+.popular-posts,
+.agent-profession-detail {
+  padding: 24px;
+  background: #f7faf9;
+  border: 1px solid #ebf0ef;
+}
+.title-popular-posts,
+.title-related-posts {
+  margin-bottom: 16px;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: -0.01em;
+  color: #002620;
+  text-transform: uppercase;
+}
+.text-popular-posts {
+  width: 90%;
+}
+.text-popular-posts a {
+  font-weight: 600;
+  font-size: 14px;
+  line-height: 20px;
+  color: #002620;
+}
+.box-popular-posts .list-popular-posts:not(:last-child) {
+  margin-bottom: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1.5px solid #ebf0ef;
+}
+
+.title-agent-profession-detail {
+  margin-bottom: 8px;
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 32px;
+  color: #002620;
+}
+.icon-share {
+  margin-right: 14px;
+  padding-right: 14px;
+  border-right: 1px solid #d4d9d8;
+}
+.box-list-icon-share {
+  display: flex;
+  gap: 8px;
+}
+.list-icon-share {
+  width: 24px;
+  height: 24px;
+  opacity: 0.8;
+  border: 1px solid #a0a8a6;
+  color: #a0a8a6;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+}
+.content-post-detail p {
+  font-size: 14px;
+  line-height: 24px;
+  color: #394745;
+}
+.sticky-top {
+  position: sticky;
+  top: 0;
+}
+
+.filter-block.flight-block-2 div:last-child .sort-price div:last-child,
+.filter-block.flight-block-2 div:last-child .sort-time div:last-child {
+  display: flex;
+  flex-direction: column;
+}
+.filter-block.flight-block-2 div:last-child .sort-price div:last-child i,
+.filter-block.flight-block-2 div:last-child .sort-time div:last-child i {
+  line-height: 8px;
+}
+.bank-item-logo {
+  margin: 10px 0;
+}
+.bank-item-logo label {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+}
+.qt-news .card-type-3 .calendar,
+.qt-news .card-type-3 .card-synop {
+  display: none;
+}
+
+.has-feedback label ~ .form-control-feedback {
+  top: 22px;
+  right: 16px;
+}
+
+/* .page-user-register .header,
+.page-user-register .footer {
+  display: none !important;
+} */
+
+.footer {
+  background: url(/sites/all/themes/cassiopeia_theme/img/Footer-bg.png) !important;
+  background-size: cover !important;
+  margin:0px;
+}
+
+/* .input-fn,
+.search-fly-form-departure,
+.search-fly-form-destination {
+  z-index: 9;
+} */
+
+.page-flight-search
+  .flights
+  .item
+  .detail
+  .block-container
+  > div
+  .detail-departure,
+.page-flight-search
+  .flights
+  .item
+  .detail
+  .block-container
+  > div
+  .detail-return {
+  font-size: 14px;
+  line-height: 19px;
+}
+
+.page-flight-search
+  .flights
+  .item
+  .detail
+  .block-container
+  > div
+  > div
+  > div:first-child {
+  font-weight: bold;
+}
+
+.page-flight-search .flights .item .detail .block-container > div > div > div {
+  padding-bottom: 10px;
+}
+
+.search-fly-form-body .row {
+  margin: 0px;
+}
+
+.search-fly-form-body .row > div[class^="col-"] {
+  padding: 0px;
+}
+
+.search-fly-form-body .gutter {
+  padding: 0px !important;
+}
+
+.search-fly-form-horizontal-one .search-fly-form-itinerary {
+  padding: 0px !important;
+}
+
+.search-fly-form-body .row::before,
+.search-fly-form-body .row > div[class^="col-"]::before,
+.search-fly-form-body .row::after,
+.search-fly-form-body .row > div[class^="col-"]::after {
+  display: none;
+}
+
+.search-fly-guest {
+  flex: 0 0 150px !important;
+}
+
+.page-flight-search .search-fly-form-date .search-fly-form-return-date,
+.page-flight-search .search-fly-form-date .search-fly-form-departure-date {
+  padding: 0px !important;
+}
+
+.page-flight-search .block-result .flights .item-body {
+  width: 100%;
+}
+
+.page-flight-search .block-result .flights .item {
+  gap: 8px;
+}
+.Promo-Ticket {
+  flex-shrink: 0;
+}
+.TotalPriceDiv .btn-choose {
+  white-space: nowrap;
+}
+
+.rules.btn-get-rules {
+  margin-bottom: 10px;
+}
+
+.header-user-menu {
+  z-index: 99;
+}
+
+.total-price .sigma {
+  display: inline-block;
+  margin-right: 8px;
+}
+
+div[clook="flight table-responsive"] {
+  min-height: 0.1%;
+  overflow-x: auto;
+}
+
+.form-item-news-pass .row {
+  margin: 0px;
+}
+
+/* .header-user-menu {
+  visibility: visible !important;
+  opacity: 1 !important;
+} */
+
+.main-slider .swiper-pagination,
+.main-slider .swiper-control {
+  display: none;
+}

@@ -1,0 +1,2295 @@
+<?php
+define("KHACH_THUONG",106);
+define("USER_SETTING_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Settings',
+        'mark' => 'f0.1',
+        'description' => 'Settings.',
+        'permission' => 1,
+    ),
+)));
+define("USER_ARTICLE_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị bài viết',
+        'mark' => 'f1.1',
+        'description' => 'Quản trị bài viết',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới bài viết',
+        'mark' => 'f1.2',
+        'description' => 'Thêm mới bài viết',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Sửa bài viết',
+        'mark' => 'f1.3',
+        'description' => 'Sửa bài viết',
+        'permission' => 3,
+    ),
+    4 => array(
+        'title' => 'Xóa bài viết',
+        'mark' => 'f1.4',
+        'description' => 'Xóa bài viết',
+        'permission' => 4,
+    ),
+)));
+define("USER_PAGE_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị trang tĩnh',
+        'mark' => 'f2.1',
+        'description' => 'Quản trị trang tĩnh',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới trang tĩnh',
+        'mark' => 'f2.2',
+        'description' => 'Thêm mới trang tĩnh',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Sửa trang tĩnh',
+        'mark' => 'f2.3',
+        'description' => 'Sửa trang tĩnh',
+        'permission' => 3,
+    ),
+    4 => array(
+        'title' => 'Xóa bài viết',
+        'mark' => 'f2.4',
+        'description' => 'Xóa trang tĩnh',
+        'permission' => 4,
+    ),
+)));
+define("USER_NOTIFY_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị thông báo',
+        'mark' => 'f3.1',
+        'description' => 'Quản trị thông báo',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới thông báo',
+        'mark' => 'f3.2',
+        'description' => 'Thêm mới thông báo',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Sửa thông báo',
+        'mark' => 'f3.3',
+        'description' => 'Sửa thông báo',
+        'permission' => 3,
+    ),
+    4 => array(
+        'title' => 'Xóa bài viết',
+        'mark' => 'f3.4',
+        'description' => 'Xóa thông báo',
+        'permission' => 4,
+    ),
+)));
+define("USER_PARTNER_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị đại lý',
+        'mark' => 'f4.1',
+        'description' => 'Quản trị đại lý',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Cập nhật thông tin',
+        'mark' => 'f4.2',
+        'description' => 'Cập nhật thông tin',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Cập nhật tình trạng',
+        'mark' => 'f4.3',
+        'description' => 'Cập nhật tình trạng',
+        'permission' => 3,
+    ),
+)));
+define("USER_USER_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị tài khoản',
+        'mark' => 'f5.1',
+        'description' => 'Quản trị tài khoản',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới tài khoản',
+        'mark' => 'f5.2',
+        'description' => 'Thêm mới tài khoản',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Cập nhật tài khoản',
+        'mark' => 'f5.3',
+        'description' => 'Cập nhật tài khoản',
+        'permission' => 3,
+    ),
+    4 => array(
+        'title' => 'Xóa tài khoản',
+        'mark' => 'f5.4',
+        'description' => 'Xóa tài khoản',
+        'permission' => 4,
+    ),
+)));
+define("USER_TOPUP_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Lịch sử top-up',
+        'mark' => 'f6.1',
+        'description' => 'Lịch sử top-up',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm top-up',
+        'mark' => 'f6.2',
+        'description' => 'Thêm top-up',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Danh sách yêu cầu',
+        'mark' => 'f6.3',
+        'description' => 'Danh sách yêu cầu',
+        'permission' => 3,
+    ),
+    4 => array(
+        'title' => 'Cập nhật trạng thái yêu cầu',
+        'mark' => 'f6.4',
+        'description' => 'Cập nhật trạng thái yêu cầu',
+        'permission' => 4,
+    ),
+)));
+define("USER_TICKET_BOOKING_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị đơn hàng vé máy bay',
+        'mark' => 'f7.1',
+        'description' => 'Quản trị đơn hàng vé máy bay',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Cập nhật giao dịch',
+        'mark' => 'f7.2',
+        'description' => 'Cập nhật giao dịch',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Gửi mail mặt vé',
+        'mark' => 'f7.3',
+        'description' => 'Gửi mail mặt vé',
+        'permission' => 3,
+    ),
+)));
+define("USER_ISSUE_TICKET_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Mở mã đặt chỗ',
+        'mark' => 'f8.1',
+        'description' => 'Mở mã đặt chỗ',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Xuất vé',
+        'mark' => 'f8.2',
+        'description' => 'Xuất vé',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Void vé VNA',
+        'mark' => 'f8.3',
+        'description' => 'Void vé VNA',
+        'permission' => 3,
+    ),
+)));
+define("USER_ISSUE_TICKET_REPORT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Báo cáo xuất vé',
+        'mark' => 'f9.1',
+        'description' => 'Báo cáo xuất vé',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới báo cáo',
+        'mark' => 'f9.2',
+        'description' => 'Thêm mới báo cáo',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Xuất excel',
+        'mark' => 'f9.3',
+        'description' => 'Xuất excel',
+        'permission' => 3,
+    ),
+)));
+define("USER_VOID_TICKET_REPORT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Báo cáo void vé',
+        'mark' => 'f10.1',
+        'description' => 'Báo cáo xuất vé',
+        'permission' => 1,
+    ),
+)));
+define("USER_PAYMENT_REPORT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Báo cáo thanh toán',
+        'mark' => 'f11.1',
+        'description' => 'Báo cáo thanh toán',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Thêm mới báo cáo',
+        'mark' => 'f11.2',
+        'description' => 'Thêm mới báo cáo',
+        'permission' => 2,
+    ),
+    3 => array(
+        'title' => 'Xuất excel',
+        'mark' => 'f11.3',
+        'description' => 'Xuất excel',
+        'permission' => 3,
+    ),
+)));
+define("USER_GENERAL_REPORT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Báo cáo tổng hợp',
+        'mark' => 'f12.1',
+        'description' => 'Báo cáo tổng hợp',
+        'permission' => 1,
+    ),
+)));
+define("USER_BALANCE_REPORT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Báo cáo số dư',
+        'mark' => 'f13.1',
+        'description' => 'Báo cáo số dư',
+        'permission' => 1,
+    ),
+    2 => array(
+        'title' => 'Xuất excel',
+        'mark' => 'f13.2',
+        'description' => 'Xuất excel',
+        'permission' => 2,
+    ),
+)));
+define("USER_ISSUE_HISTORY_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Lịch sử xuất vé',
+        'mark' => 'f14.1',
+        'description' => 'Lịch sử xuất vé',
+        'permission' => 1,
+    ),
+)));
+define("USER_GIFT_HISTORY_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Lịch sử đổi quà',
+        'mark' => 'f15.1',
+        'description' => 'Lịch sử đổi quà',
+        'permission' => 1,
+    ),
+)));
+define("USER_GIFT_PERMISSION", serialize(array(
+    1 => array(
+        'title' => 'Quản trị quà tặng',
+        'mark' => 'f16.1',
+        'description' => 'Quản trị quà tặng',
+        'permission' => 1,
+    ),
+)));
+define("USER_PERMISSIONS_LIST", serialize(array(
+    "f0"    => array(
+        "title" => "Setting",
+        "table" => "user_setting_permissions",
+        "list"  => unserialize(USER_SETTING_PERMISSION),
+    ),
+    "f1"    => array(
+        "title" => "Bài viết",
+        "table" => "user_article_permissions",
+        "list"  => unserialize(USER_ARTICLE_PERMISSION),
+    ),
+    "f2"    => array(
+        "title" => "Trang tĩnh",
+        "table" => "user_page_permissions",
+        "list"  => unserialize(USER_PAGE_PERMISSION),
+    ),
+    "f3"    => array(
+        "title" => "Thông báo",
+        "table" => "user_notify_permissions",
+        "list"  => unserialize(USER_NOTIFY_PERMISSION),
+    ),
+    "f4"    => array(
+        "title" => "Đại lý",
+        "table" => "user_partner_permissions",
+        "list"  => unserialize(USER_PARTNER_PERMISSION),
+    ),
+    "f5"    => array(
+        "title" => "Tài khoản",
+        "table" => "user_user_permissions",
+        "list"  => unserialize(USER_USER_PERMISSION),
+    ),
+    "f6"    => array(
+        "title" => "Top-up",
+        "table" => "user_topup_permissions",
+        "list"  => unserialize(USER_TOPUP_PERMISSION),
+    ),
+    "f7"    => array(
+        "title" => "Đơn hàng vé máy bay",
+        "table" => "user_ticket_booking_permissions",
+        "list"  => unserialize(USER_TICKET_BOOKING_PERMISSION),
+    ),
+    "f8"    => array(
+        "title" => "Xuất vé",
+        "table" => "user_issue_ticket_permissions",
+        "list"  => unserialize(USER_ISSUE_TICKET_PERMISSION),
+    ),
+    "f9"    => array(
+        "title" => "Báo cáo xuất vé",
+        "table" => "user_issue_ticket_report_permissions",
+        "list"  => unserialize(USER_ISSUE_TICKET_REPORT_PERMISSION),
+    ),
+    "f10"   => array(
+        "title" => "Báo cáo void vé",
+        "table" => "user_void_ticket_report_permissions",
+        "list"  => unserialize(USER_VOID_TICKET_REPORT_PERMISSION),
+    ),
+    "f11"   => array(
+        "title" => "Báo cáo thanh toán",
+        "table" => "user_payment_report_permissions",
+        "list"  => unserialize(USER_PAYMENT_REPORT_PERMISSION),
+    ),
+    "f12"   => array(
+        "title" => "Báo cáo tổng hợp",
+        "table" => "user_general_report_permissions",
+        "list"  => unserialize(USER_GENERAL_REPORT_PERMISSION),
+    ),
+    "f13"   => array(
+        "title" => "Báo cáo số dư",
+        "table" => "user_balance_report_permissions",
+        "list"  => unserialize(USER_BALANCE_REPORT_PERMISSION),
+    ),
+    "f14"   => array(
+        "title" => "Lịch sử xuất vé",
+        "table" => "user_issue_history_permissions",
+        "list"  => unserialize(USER_ISSUE_HISTORY_PERMISSION),
+    ),
+    "f15"   => array(
+        "title" => "Lịch sử đổi quà",
+        "table" => "user_gift_history_permissions",
+        "list"  => unserialize(USER_GIFT_HISTORY_PERMISSION),
+    ),
+    "f16"   => array(
+        "title" => "Quà tặng",
+        "table" => "user_gift_permissions",
+        "list"  => unserialize(USER_GIFT_PERMISSION),
+    ),
+)));
+define("USER_ROLE_PERMISSIONS_LIST", serialize(array(
+    "f0"    => array(
+        "title" => "Setting",
+        "table" => "user_role_setting_permissions",
+        "list"  => unserialize(USER_SETTING_PERMISSION),
+    ),
+    "f1"    => array(
+        "title" => "Bài viết",
+        "table" => "user_role_article_permissions",
+        "list"  => unserialize(USER_ARTICLE_PERMISSION),
+    ),
+    "f2"    => array(
+        "title" => "Trang tĩnh",
+        "table" => "user_role_page_permissions",
+        "list"  => unserialize(USER_PAGE_PERMISSION),
+    ),
+    "f3"    => array(
+        "title" => "Thông báo",
+        "table" => "user_role_notify_permissions",
+        "list"  => unserialize(USER_NOTIFY_PERMISSION),
+    ),
+    "f4"    => array(
+        "title" => "Đại lý",
+        "table" => "user_role_partner_permissions",
+        "list"  => unserialize(USER_PARTNER_PERMISSION),
+    ),
+    "f5"    => array(
+        "title" => "Tài khoản",
+        "table" => "user_role_user_permissions",
+        "list"  => unserialize(USER_USER_PERMISSION),
+    ),
+    "f6"    => array(
+        "title" => "Top-up",
+        "table" => "user_role_topup_permissions",
+        "list"  => unserialize(USER_TOPUP_PERMISSION),
+    ),
+    "f7"    => array(
+        "title" => "Đơn hàng vé máy bay",
+        "table" => "user_role_ticket_booking_permissions",
+        "list"  => unserialize(USER_TICKET_BOOKING_PERMISSION),
+    ),
+    "f8"    => array(
+        "title" => "Xuất vé",
+        "table" => "user_role_issue_ticket_permissions",
+        "list"  => unserialize(USER_ISSUE_TICKET_PERMISSION),
+    ),
+    "f9"    => array(
+        "title" => "Báo cáo xuất vé",
+        "table" => "user_role_issue_ticket_report_permissions",
+        "list"  => unserialize(USER_ISSUE_TICKET_REPORT_PERMISSION),
+    ),
+    "f10"   => array(
+        "title" => "Báo cáo void vé",
+        "table" => "user_role_void_ticket_report_permissions",
+        "list"  => unserialize(USER_VOID_TICKET_REPORT_PERMISSION),
+    ),
+    "f11"   => array(
+        "title" => "Báo cáo thanh toán",
+        "table" => "user_role_payment_report_permissions",
+        "list"  => unserialize(USER_PAYMENT_REPORT_PERMISSION),
+    ),
+    "f12"   => array(
+        "title" => "Báo cáo tổng hợp",
+        "table" => "user_role_general_report_permissions",
+        "list"  => unserialize(USER_GENERAL_REPORT_PERMISSION),
+    ),
+    "f13"   => array(
+        "title" => "Báo cáo số dư",
+        "table" => "user_role_balance_report_permissions",
+        "list"  => unserialize(USER_BALANCE_REPORT_PERMISSION),
+    ),
+    "f14"   => array(
+        "title" => "Lịch sử xuất vé",
+        "table" => "user_role_issue_history_permissions",
+        "list"  => unserialize(USER_ISSUE_HISTORY_PERMISSION),
+    ),
+    "f15"   => array(
+        "title" => "Lịch sử đổi quà",
+        "table" => "user_role_gift_history_permissions",
+        "list"  => unserialize(USER_GIFT_HISTORY_PERMISSION),
+    ),
+    "f16"   => array(
+        "title" => "Quà tặng",
+        "table" => "user_role_gift_permissions",
+        "list"  => unserialize(USER_GIFT_PERMISSION),
+    ),
+)));
+/**
+ * Implements hook_permission().
+ */
+function cassiopeia_user_permission() {
+  return array(
+    'cassiopeia user module' => array(
+      'title' => t('Cassiopeia user module'),
+      'description' => t('Access for cassiopeia user module'),
+    ),
+    'cassiopeia user courses' => array(
+      'title' => 'Cassiopeia user courses',
+      t('Access for Cassiopeia user courses'),
+    ),
+    'cassiopeia user transaction detail' => array(
+      'title' => 'Cassiopeia user transaction detail',
+      t('Access for cassiopeia user transaction detail'),
+    ),
+  );
+}
+
+function cassiopeia_user_user_accep_pprofile() {
+  global $user;
+  $_accep = FALSE;
+  $_arg = arg();
+
+  $_is_admin = FALSE;
+  if (!empty($user->roles)) {
+    foreach ($user->roles as $_key => $_value) {
+      if ($_value == 'administrator') {
+        $_is_admin = TRUE;
+        break;
+      }
+    }
+  }
+
+  if ($_is_admin == TRUE) {
+    $_accep = TRUE;
+  }
+  if(!empty($user->uid)){
+      return true;
+  }
+  return $_accep;
+}
+
+
+/**
+ * Implements hook_menu().
+ */
+function cassiopeia_user_menu() {
+  $items = array();
+//    $items['user/manager/ticketIssue'] = array(
+//        'type' => MENU_CALLBACK,
+//        'page callback' => 'cassiopeia_ticketIssue_call_back',
+//        'title' => t('Xuất vé & mở mặt vé'),
+//        'access callback' => 'cassiopeia_agent_accept',
+//        'access arguments' => array('cassiopeia content'),
+//        'file' => 'cassiopeia_user.inc',
+//    );
+    $items['user/manager/bao-cao-xuat-ve'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_issue_call_back',
+        'title' => t('Báo cáo xuất vé'),
+        'access callback' => 'cassiopeia_agent_accept',
+        'access arguments' => array('cassiopeia content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/create-booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_create_booking_page_callback',
+        'title' => t('Thiết lập giá'),
+        'access callback'   => 'cassiopeia_user_user_accep_pprofile',
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+  $items['user/%user/change-password'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Đổi mật khẩu',
+    'page callback' => array('cassiopeia_user_user_change_password_page'),
+    'page arguments' => array(1),
+    'access callback' => 'cassiopeia_user_user_accep_pprofile',
+    'file' => 'cassiopeia_user.inc',
+  );
+
+  $items['user/%user/topup'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Lịch sử nạp tiền',
+    'page callback' => array('cassiopeia_user_user_topup_page'),
+      'page arguments' => array(1),
+    'access callback' => 'cassiopeia_user_user_accep_pprofile',
+    'file' => 'cassiopeia_user.inc',
+  );
+  $items['user/%user/add-topup'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'title' => 'Nạp tiền tài khoản',
+    'page callback' => array('drupal_get_form'),
+      'page arguments' => array('cassiopeia_user_user_topup_form'),
+    'access callback' => 'cassiopeia_user_user_accep_pprofile',
+    'file' => 'cassiopeia_user.inc',
+  );
+    $items['user/manager/tich-diem-doi-qua'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_gift_page_callback',
+        'title' => t('Tích điểm đổi quà'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/bao-cao-so-du'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_balance_report_page_callback',
+        'title' => t('Báo cáo số dư'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/transaction'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_transaction_history_page_callback',
+        'title' => t('Dashboard'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/dashboard'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_dashboard_page_callback',
+        'title' => t('Dashboard'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/report'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_dashboard_page_callback',
+        'title' => t('Báo cáo doanh thu'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/room-booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_room_booking_page_callback',
+        'title' => t("Đặt phòng"),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_booking_page_callback',
+        'title' => t('Booking'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/customer/%cassiopeia_qt_customer/delete'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_customer_delete_page_callback',
+        'page arguments' => array(3),
+        'title' => t('Xóa khách hàng'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/customer/%cassiopeia_qt_customer/edit'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_customer_edit_page_callback',
+        'page arguments' => array(3),
+        'title' => t('Sửa khách hàng'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/customer/add'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_customer_add_page_callback',
+        'title' => t('Thêm khách hàng'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/customer'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_customer_page_callback',
+        'title' => t('Danh sách khách hàng'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/notify'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_manager_notify_callback',
+        'title' => t('Thông báo'),
+        'access callback'   => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/ticketIssue'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticketIssue_call_back',
+        'title' => t('Xuất vé & mở mặt vé'),
+        'access callback' => 'cassiopeia_user_issue_ticket_access',
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/ticketReview'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticketReview_call_back',
+        'title' => t('Mở mặt vé'),
+        'access callback' => 'cassiopeia_ticket_issue_accept',
+        'access arguments' => array('cassiopeia content'),
+        'file' => 'cassiopeia_user.inc',
+    );
+    $items['user/manager/bao-cao-tich-diem'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_user_agent_point_report_callback',
+        'title' => t('Báo cáo tích điểm'),
+        'access callback' => 'cassiopeia_agent_accept',
+        'file' => 'cassiopeia_user.inc',
+    );
+  return $items;
+}
+
+function cassiopeia_agent_accept(){
+    global $user;
+    if(user_has_role(3,$user) || user_has_role(4,$user) || user_has_role(5,$user)|| user_has_role(8,$user)){
+        return true;
+    }else{
+        return false;
+    }
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function cassiopeia_user_menu_alter(&$items) {
+    global $user;
+    $items['user']['page callback'] = '_cassiopeia_user_user_page';
+//    $items['user/%user/edit']['access callback'] = 'cassiopeia_user_user_edit_access';
+//    $items['user/%user/edit']['theme callback'] = '_cassiopeia_admin_theme_white';
+    $items['user/%user/cancel']['access callback'] = '_cassiopeia_user_delete_access';
+    $items['admin/people/create']['access callback'] = '_cassiopeia_add_people_access';
+    $items['admin/people/create']['theme callback'] = '_cassiopeia_admin_theme_white';
+}
+
+function _cassiopeia_add_people_access() {
+    return cassiopeia_check_permission("cassiopeia_user_permission_user","p_add");
+}
+
+function _cassiopeia_user_delete_access($op){
+    return cassiopeia_check_permission("cassiopeia_user_permission_user","p_delete");
+}
+
+function cassiopeia_theme_callback () {
+  return 'cassiopeia_theme';
+}
+
+function _cassiopeia_user_user_page() {
+  global $user;
+  if (!empty($user->uid)) {
+    drupal_goto('user/' . $user->uid);
+  }
+  else {
+    return drupal_get_form('user_login');
+  }
+}
+
+
+function cassiopeia_user_user_change_password_form($form, &$form_state, $account) {
+  $form = array();
+  if (!isset($form_state['user'])) {
+    $form_state['user'] = $account;
+  }
+
+  if (empty($_SESSION['pass_reset_' . $account->uid])) {
+    $form['curent-pass'] = array(
+      '#type' => 'password',
+      '#title' => 'Mặt khẩu cũ',
+      '#element_validate' => array('cassiopeia_user_change_password_form_validate_curent_password'),
+      '#required' => TRUE,
+    );
+  }
+
+  $form['news-pass'] = array(
+    '#type' => 'password_confirm',
+    '#required' => TRUE,
+  );
+
+  $form['submit'] = array(
+    '#type' => 'submit',
+    '#value' => 'Lưu',
+    '#prefix' => '<div id="user-change-password-actions">',
+    '#suffix' => '</div>',
+  );
+
+  return $form;
+}
+
+function cassiopeia_user_change_password_form_validate_curent_password($element, &$form_state) {
+  global $user;
+  $account = $form_state['user'];
+  if ($account->uid == $user->uid) {
+    require_once DRUPAL_ROOT . '/' . variable_get('password_inc', 'includes/password.inc');
+    $current_pass_failed = strlen(trim($form_state['values']['curent-pass'])) == 0 || !user_check_password($form_state['values']['curent-pass'], $account);
+    if ($current_pass_failed) {
+      form_error($element, 'Mạt khẩu không đúng');
+    }
+  }
+  else {
+    form_error($element, 'Bạn không có quyền thay đổi mật khẩu');
+  }
+}
+
+function cassiopeia_user_user_change_password_form_submit($form, $form_state) {
+  global $user;
+//  print_r($form_state['user']);
+//  die;
+  $account = $form_state['user'];
+  if (strlen($form_state['values']['news-pass']) < 6) {
+    form_error($form['news-pass'], 'Mật khẩu phải  lớn hơn hoặc bàng 6 ký tự');
+  }
+  else {
+    if (!empty($user->uid) && ($user->uid == $account->uid)) {
+      require_once DRUPAL_ROOT . '/includes/bootstrap.inc';
+      drupal_bootstrap(DRUPAL_BOOTSTRAP_FULL);
+      require_once DRUPAL_ROOT . '/includes/password.inc';
+
+      $newhash = user_hash_password($form_state['values']['news-pass']);
+      try {
+        $updatepass = db_update('users')
+          ->fields(array('pass' => $newhash))
+          ->condition('uid', $account->uid, '=')
+          ->execute();
+        if ($updatepass) {
+          cache_clear_all();
+          if ($_SESSION['pass_reset_' . $form_state['user']->uid]) {
+            unset($_SESSION['pass_reset_' . $form_state['user']->uid]);
+          }
+          drupal_set_message('Thay đổi mật khẩu thành công');
+          drupal_goto("/");
+        }
+
+      } catch (Exception $e) {
+        drupal_set_message('Hệ thống đang bận vui lòng quai lại sau ít phút', 'error');
+      }
+    }
+
+  }
+}
+
+function cassiopeia_user_form_user_login_alter(&$form, &$form_state, $form_id) {
+//    print_r($form);
+  drupal_set_title(t('Sign In'));
+    $form['name']['#prefix'] = '<div class="input-group mail"><span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>';
+    $form['name']['#suffix'] = '</div>';
+    $form['name']['#title'] = "";
+    $form['name']['#attributes']['placeholder'] = "Tên đăng nhập";
+    $form['pass']['#prefix'] = '<div class="input-group pass"><span class="input-group-addon"><i class="fa fa-lock"></i></span>';
+    $form['pass']['#suffix'] = '</div>';
+    $form['pass']['#title'] = "";
+    $form['pass']['#attributes']['placeholder'] = "Mật khẩu";
+
+  $form['actions']['submit']['#prefix'] = l(t('Quên mật khẩu'), 'user/password');
+}
+
+function cassiopeia_user_user_login(&$edit, $account) {
+    $arg = arg();
+    $current_menu_item = menu_get_item();
+    $administrator_role = user_role_load_by_name('administrator');
+    if ($administrator_role && user_has_role($administrator_role->rid,$account)) {
+        $_GET['destination']=  'admin/cassiopeia/dashboard';
+    }else {
+        if(user_has_role(5)||user_has_role(7)){
+            $_GET['destination']=  'admin/cassiopeia/dashboard';
+        }else{
+            if (!empty($current_menu_item['path']) && ($current_menu_item['path'] == 'user/reset/%/%/%'))  {
+//            $_GET['destination'] = '/'.current_path();
+            }else {
+//                if($arg[0]!="user"){
+                    $_GET['destination'] = '/';
+//                }
+            }
+        }
+
+    }
+}
+//function cassiopeia_user_form_user_login_alter(&$form, &$form_state) {
+//    $form['account']['name']['#attributes']['placeholder'] = "Tên đăng nhập";
+//}
+function cassiopeia_user_form_user_register_form_alter(&$form, &$form_state) {
+    $arg = arg();
+    global $user,$theme;
+    $_is_admin = FALSE;
+
+    if (!empty($user->roles)) {
+        foreach ($user->roles as $_key => $_value) {
+            if ($_value == 'administrator') {
+                $_is_admin = TRUE;
+                break;
+            }
+        }
+    }
+    $form['#attributes']['class'][] = "user-register-form";
+    $form['account']['name']['#description'] = '';
+    $form['account']['name']['#title'] = 'Số điện thoại';
+    $form['account']['name']['#attributes']['placeholder'] = "Số điện thoại";
+
+    unset($form['account']['mail']['#description']);
+    if(!$_is_admin){
+        $form['account']['pass']['#type'] = "hidden";
+        $form['account']['pass']['#required'] = false;
+    }else{
+        $form['account']['pass']['#process'] = array(
+            'form_process_password_confirm',
+            'cassiopeia_user_password_confirm_process',
+            'user_form_process_password_confirm'
+        );
+    }
+    $form['account']['mail']['#title'] = "Email";
+    $form['account']['mail']['#attributes']['placeholder'] = "Email";
+    $form['field_account_full_name']['und'][0]['value']['#attributes']['placeholder'] = "Nhập họ và tên";
+    $form['field_account_full_name']['und'][0]['value']['#title'] = "Họ và tên";
+
+    $form['name']['#element_validate'][] = 'cassiopeia_register_validation';
+	
+    $form['actions']['submit']['#attributes'] = array("data-value"=>t("Đăng ký"));
+
+    $form['account']['roles']['#options'] = array(
+         3  => "Administrator",
+         4  => "Đại lý",
+         5  => "Sale",
+         7  => "Kế toán",
+         8  => "Booker",
+         9  => "Marketing",
+    );
+    if($theme!="cassiopeia_admin_theme_white"){
+        $form['#theme'][] = 'cassiopeia_user_form_user_register_form';
+        $form['terms_of_service'] = array(
+            '#type'     =>'checkbox',
+            '#prefix'       => "<div class=\"terms-services\">",
+            '#suffix'       => "<span class='get_terms_service'>Tôi đồng ý điều khoản & điều kiện của ".SITE_NAME."</span></div>",
+            '#title'    => t(''),
+            '#default_value'    => 1,
+            '#required'    => TRUE,
+        );
+    }
+    $form['#submit'] = array("_cassiopeia_user_register_submit");
+}
+function cassiopeia_register_validation(&$form, &$form_state){
+    $name_input = $form_state['values']['name'];
+//    print(2);die;
+    // Try loading by email.
+    if ($user = user_load_by_name($name_input)) {
+//        print(123);
+//        die;
+        // Set the username for further validation.
+        drupal_set_message("Số điện thoại này đã được đăng ký!");
+        drupal_goto("/user/register");
+//        return FALSE;
+    }
+//    else{
+//        drupal_set_message("Email hoặc mật khẩu không đúng, vui lòng kiểm tra lại!");
+//        drupal_goto("/");
+//    }
+
+    // Try loading by username.
+//    if ($user = user_load_by_name($name_input)) {
+//        return FALSE;
+//    }
+//print("jkl");die;
+    return TRUE;
+}
+function cassiopeia_user_password_confirm_process($element) {
+    $element['pass1']['#attributes']['placeholder'] = 'Nhập mật khẩu';
+    $element['pass1']['#title'] = 'Nhập mật khẩu';
+    $element['pass2']['#title'] = 'Nhập lại mật khẩu';
+    $element['pass2']['#attributes']['placeholder'] = 'Nhập lại mật khẩu';
+    return $element;
+}
+function _cassiopeia_user_register_submit($form, &$form_state) {
+    $arg = arg();
+
+    $admin = $form_state['values']['administer_users'];
+
+    if (!variable_get('user_email_verification', TRUE) || $admin) {
+        $pass = $form_state['values']['pass'];
+    }
+    else {
+        $pass = user_password();
+    }
+    $notify = !empty($form_state['values']['notify']);
+
+    // Remove unneeded values.
+    form_state_values_clean($form_state);
+
+    $form_state['values']['pass'] = $pass;
+    $form_state['values']['init'] = $form_state['values']['mail'];
+
+    $account = $form['#user'];
+
+    entity_form_submit_build_entity('user', $account, $form, $form_state);
+
+    // Populate $edit with the properties of $account, which have been edited on
+    // this form by taking over all values, which appear in the form values too.
+    $edit = array_intersect_key((array) $account, $form_state['values']);
+    $account = user_save($account, $edit);
+
+    // Terminate if an error occurred during user_save().
+    if (!$account) {
+        drupal_set_message(t("Error saving user account."), 'error');
+        $form_state['redirect'] = '';
+        return;
+    }
+    $form_state['user'] = $account;
+    $form_state['values']['uid'] = $account->uid;
+
+    watchdog('user', 'New user: %name (%email).', array('%name' => $form_state['values']['name'], '%email' => $form_state['values']['mail']), WATCHDOG_NOTICE, l(t('edit'), 'user/' . $account->uid . '/edit'));
+
+    // Add plain text password into user account to generate mail tokens.
+    $account->password = $pass;
+
+    // New administrative account without notification.
+    $uri = entity_uri('user', $account);
+//    print(1);
+//    die;
+    if ($admin && !$notify) {
+//        print(2);
+//        die;
+        drupal_set_message(t('Created a new user account for <a href="@url">%name</a>. No e-mail has been sent.', array('@url' => url($uri['path'], $uri['options']), '%name' => $account->name)));
+    }
+    // No e-mail verification required; log in user immediately.
+    elseif (!$admin && !variable_get('user_email_verification', TRUE) && $account->status) {
+//        print(3);
+//        die;
+        _user_mail_notify('register_no_approval_required', $account);
+        $form_state['uid'] = $account->uid;
+        user_login_submit(array(), $form_state);
+        drupal_set_message(t('Registration successful. You are now logged in.'));
+        $form_state['redirect'] = '';
+    }
+    // No administrator approval required.
+    elseif ($account->status || $notify) {
+//        print(4);
+//        die;
+//        $op = $notify ? 'register_admin_created' : 'register_no_approval_required';
+        $op = "register_no_approval_required";
+        _user_mail_notify($op, $account);
+        if ($notify) {
+            drupal_set_message(t('A welcome message with further instructions has been e-mailed to the new user <a href="@url">%name</a>.', array('@url' => url($uri['path'], $uri['options']), '%name' => $account->name)));
+        }
+        else {
+            drupal_set_message(t('A welcome message with further instructions has been sent to your e-mail address.'));
+            $form_state['redirect'] = '';
+        }
+    }
+    // Administrator approval required.
+    else {
+       try{
+           $existingUser = user_load($account->uid);
+           $existingUser -> roles[4] = 1;
+           $existingUser->field_account_transaction_name['und'][0]['value'] = $form_state['values']['field_account_full_name']['und'][0]['value'];
+           $existingUser->field_account_status['und'][0]['tid'] = 10;
+           $existingUser->field_tx_rank['und'][0]['tid'] = 120;
+           if($arg[0]=="node" || $arg[0]=="partner" || $arg[0]=="partner-new"){
+               $existingUser->field_account_source['und'][0]['value'] = 2;
+           }
+           $data = new stdClass();
+           $data->phone_office = $existingUser->name;
+           $data->account_name = $form_state['values']['field_account_full_name']['und'][0]['value'];
+           $data->email = $existingUser->mail;
+           cassiopeia_get_fly_create_account($data);
+           user_save($existingUser);
+       }catch (Exception $e){
+           print_r($e);
+           die;
+       }
+        drupal_set_message(t('Cảm ơn Quý Đại lí đã đăng kí hợp tác làm thêm vé máy bay với Quang Trang. Chúng tôi sẽ liên hệ để xác minh thông tin và hướng dẫn chi tiết trong vòng 24h tới.'));
+        drupal_goto("/");
+
+    }
+}
+
+function cassiopeia_user_form_user_profile_form_alter(&$form, &$form_state, $form_id)
+{
+    $arg = arg();
+    global $user;
+    global $theme_key;
+    global $theme;
+    $_is_admin = FALSE;
+    if (!empty($user->roles)) {
+        foreach ($user->roles as $_key => $_value) {
+            if ($_value == 'administrator') {
+                $_is_admin = TRUE;
+                break;
+            }
+        }
+    }
+    $form['account']['roles']['#options'] = array(
+        3   => "administrator",
+        4   => "Đại lí",
+        5   => "Sale",
+        6   => "Cộng tác viên",
+        7   => "Kế toán",
+        8   => "Booker",
+        9   => "Marketing",
+    );
+    if(!user_has_role(3) && !user_has_role(5)){
+        $form['account']['#access'] = FALSE;
+        unset($form['field_account_sale']);
+
+        unset($form['field_account_balance']);
+
+        unset($form['field_partner_code']);
+        unset($form['account']['mail']['#description']);
+        unset($form['account']['pass']['#description']);
+        $form['#theme'] = array('cassiopeia_user_profile_form');
+    }
+    unset($form['field_account_sale']);
+    if(user_has_role(3)){
+        $query = db_select("users","tbl_user");
+        $query -> fields("tbl_user");
+        $query -> join("users_roles","tbl_role","tbl_role.uid = tbl_user.uid");
+        $query -> condition("tbl_role.rid",array(3,5),"IN");
+        $result  = $query -> execute() -> fetchAll();
+        $sale_options = array();
+        $sale_options['_none'] = "Tất cả";
+        if(!empty($result)){
+            foreach($result as $value){
+                $sale = user_load($value->uid);
+                $sale_code = !empty($sale->field_account_code['und'][0]['value'])?$sale->field_account_code['und'][0]['value']:"";
+                $sale_transaction_name = !empty($sale->field_account_transaction_name['und'][0]['value'])?$sale->field_account_transaction_name['und'][0]['value']:"";
+                $sale_options[$value->uid] = $sale_transaction_name;
+            }
+        }
+        $form['_sale'] = array(
+            '#type' => 'select',
+            '#title' => t('Sale'),
+            '#options' => $sale_options,
+            '#weight'   => 15
+        );
+        if(!empty($form['#user']->field_account_sale['und'][0]['target_id'])){
+            $form['_sale']['#default_value'] = $form['#user']->field_account_sale['und'][0]['target_id'];
+        }
+    }else{
+        unset($form['field_tx_rank']);
+        unset($form['field_account_sale']);
+        unset($form['field_account_status']);
+        unset($form['language']);
+        unset($form['field_account_code']);
+        unset($form['field_partner_code']);
+        unset($form['timezone']);
+        unset($form['language']);
+
+    }
+    unset($form['field_account_sale']);
+    if($user->uid!=1){
+        unset($form['field_account_balance']);
+        unset($form['field_account_source']);
+        unset($form['field_used_point']);
+        unset($form['field_point']);
+        unset($form['field_account_point']);
+        unset($form['field_account_used_point']);
+        unset($form['field_account_updated_date']);
+    }
+    $form['field_gender']['und'][0]['value'] = array(
+        '#type' => 'radios',
+        '#title' => t('Gender'),
+        '#default_value' => 0,
+        '#options' => array(
+            0   => "Nam",
+            1   => "Nữ",
+            2   => "Khác",
+        ),
+    );
+  if($user->uid==1){
+    $form['actions']['login_with'] = [
+      '#type' => 'submit',
+      '#submit' => array("cassiopeia_user_profile_form_login_with"),
+      '#value' => t('Đăng nhập'),
+      '#attributes' => ['class' => ['btn', 'bg-blue', 'clr-white', 'btn-success']],
+    ];
+    $form_state['#lastUid'] = $user->uid;
+  }
+    $form['field_birthday']['und'][0]['#theme_wrappers'] = array();
+    $form['#submit'][] = "cassiopeia_user_form_user_profile_form_alter_submit";
+    $form['#validate'][] = 'cassiopeia_user_form_user_profile_form_validate';
+}
+function cassiopeia_user_login_with_form($form,&$form_state,$data = array("uid")){
+  $form_state['user'] = user_load($data['uid']);
+  $form['login_with'] = [
+    '#type' => 'submit',
+    '#submit' => array("cassiopeia_user_profile_form_login_with"),
+    '#value' => 'B',
+    '#attributes' => ['class' => ["btn-small"]],
+  ];
+  return $form;
+}
+function cassiopeia_user_profile_form_login_with($form, &$form_state) {
+  global $user;
+  $user = user_load($form_state['user']->uid);
+  if(isset($form_state['#lastUid'])){
+    $_SESSION['lastUid'] = $form_state['#lastUid'];
+  }else{
+    $_SESSION['lastUid'] = null;
+  }
+  $form_state['redirect'] = "/";
+}
+function cassiopeia_user_form_user_profile_form_validate($form, &$form_state){
+    global $user;
+    if(user_has_role(3)){
+        if($form_state['values']['_sale']!=="_none"){
+            $form_state['values']['field_account_sale']['und'][0]['target_id'] = $form_state['values']['_sale'];
+            $form_state['values']['change_sale'] = true;
+        }
+    }
+}
+function cassiopeia_user_form_user_profile_form_alter_submit(&$form,&$form_state){
+
+}
+function cassiopeia_user_user_presave(&$edit, $account, $category) {
+    global $user;
+    if(!empty($edit)&&!empty($edit['change_sale'])){
+        if(!empty($edit['_sale'])){
+            $edit['field_account_sale']['und'][0]['target_id'] = $edit['_sale'];
+        }
+    }
+//    }
+}
+function cassiopeia_user_theme($existing, $type, $theme, $path) {
+    $themes = array(
+        'cassiopeia_user_profile_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_user_profile_form',
+            'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms'
+        ),
+        'cassiopeia_custom_user_login_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_custom_user_login_form',
+            'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms'
+        ),
+        'cassiopeia_user_form_user_register_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_user_form_user_register_form',
+            'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms'
+        ),
+        'cassiopeia_agent_fee_config_form' => array(
+            'render element' => 'form',
+            'template' => 'cassiopeia_agent_fee_config_form',
+            'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms'
+        ),
+
+    );
+    return $themes;
+}
+function cassiopeia_custom_user_login_form($form,&$form_state){
+    $form = array();
+    $form['agent_code'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Mã đại lý'),
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#required'     => TRUE,
+        '#attributes'   => array("placeholder"=>array(t("Mã đại lý"))),
+//        '#prefix'       => "<div class=\"input-group mail\"><img src='/sites/all/themes/cassiopeia_theme/img/icons/agent.png'></span>",
+//        '#suffix'       => "</div>",
+    );
+    $form['username'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Nhập số điện thoại'),
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#required'     => TRUE,
+        '#attributes'   => array("placeholder"=>array(t("Số điện thoại"))),
+//        '#prefix'       => "<div class=\"input-group mail\"><img src='/sites/all/themes/cassiopeia_theme/img/icons/fullname.png'></span>",
+//        '#suffix'       => "</div>",
+    );
+    $form['password'] = array(
+        '#type'         => 'password',
+        '#title'        => t('Nhập mật khẩu'),
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#required'     => TRUE,
+        '#attributes'   => array("placeholder"=>array(t("Nhập mật khẩu"))),
+//        '#prefix'       => "<div class=\"input-group mail\"><img src='/sites/all/themes/cassiopeia_theme/img/icons/password.png'></span>",
+//        '#suffix'       => "</div>",
+    );
+    $form['remember_me'] = array(
+        '#type'     => 'checkbox',
+        '#title'    => "<span>Ghi nhớ mật khẩu</span>",
+    );
+    if(isset($_COOKIE['agent_username'])){
+        $form['username']['#default_value'] = $_COOKIE['agent_username'];
+    }
+    if(isset($_COOKIE['agent_code'])){
+        $form['agent_code']['#default_value'] = $_COOKIE['agent_code'];
+    }
+    if(isset($_COOKIE['agent_password'])){
+        $form['password']['#type'] = "textfield";
+        $form['password']['#default_value'] = $_COOKIE['agent_password'];
+    }
+    $form['submit'] = array(
+        '#type'         => 'submit',
+        '#value'        => t('Đăng nhập'),
+        '#attributes'   => array("class"=>array("btn bg-secondary ff-semibold clr-white radius-36"))
+    );
+    return $form;
+}
+function cassiopeia_custom_user_login_form_submit($form,&$form_state){
+    try{
+        if(user_authenticate($form_state['values']['username'], $form_state['values']['password']))
+        {
+            $query = db_select("users","tbl_user");
+            $query -> fields("tbl_user");
+            $query -> join("field_data_field_account_code","tbl_account_code","tbl_account_code.entity_id = tbl_user.uid");
+            $query -> condition("tbl_account_code.field_account_code_value",$form_state['values']['agent_code']);
+            $query -> condition("tbl_user.name",$form_state['values']['username']);
+            $result = $query -> execute() -> fetchAssoc();
+            if(!empty($result)){
+                $user_obj = user_load_by_name($form_state['values']['username']);
+                $form_state = array();
+                $form_state['uid'] = $user_obj->uid;
+                user_login_submit(array(), $form_state);
+                drupal_set_message("Đăng nhập thành công");
+                if(!empty($form_state['values']['remember_me'])){
+                    setcookie("agent_username", $form_state['values']['agent_username'], time() + (86400 * 30), "/");
+                    setcookie("agent_password", $form_state['values']['password'], time() + (86400 * 30), "/");
+                    setcookie("agent_code", $form_state['values']['agent_code'], time() + (86400 * 30), "/");
+                }else{
+                    setcookie("agent_username", "", 1, "/");
+                    setcookie("agent_password", "", 1, "/");
+                    setcookie("agent_code", "", 1, "/");
+                }
+                drupal_goto("/");
+            }else{
+                drupal_set_message("Không tìm thấy tài khoản phù hợp!");
+            }
+        }
+        else
+        {
+           drupal_set_message("Không tìm thấy tài khoản phù hợp!");
+        }
+    }catch (Exception $e){
+        print("Lỗi");
+        die;
+    }
+//    $form_state['redirect'] = "/";
+}
+function cassiopeia_user_user_topup_form($form,&$form_state){
+    global  $user;
+    $_user = user_load($user->uid);
+    $code = !empty($_user->field_account_code['und'][0]['value'])?$_user->field_account_code['und'][0]['value']:"";
+    $form = array();
+    $conditions = array();
+    $conditions['status'] = array(
+        "type" => "propertyCondition",
+        "value" => 1,
+        "condition" => "=",
+    );
+    $conditions['field_weight'] = array(
+        "type"      => "fieldOrderBy",
+        "column"    => "value",
+        "direction" => "ASC",
+    );
+    $banks = cassiopeia_get_items_by_conditions($conditions,"bank","node");
+    $options = array();
+    foreach($banks as $bank){
+        $options[$bank->nid] = $bank->field_code['und'][0]['value'];
+    }
+    $_banking = variable_get('vietinbank_tutorial', array(
+        'value' => '',
+        'format' => 'full_html'
+    ));
+    $form['topup_time'] = array(
+        '#markup' => !empty($_banking['value'])?$_banking['value']:"",
+    );
+//    $form['amount'] = array(
+//        '#type'         => 'textfield',
+//        '#title'        => t('Số tiền'),
+//        '#size'         => 60,
+//        '#maxlength'    => 128,
+//        '#required'     => TRUE,
+//        '#attributes'   => array("class"=>array("number_format"),"placeholder"=>"Là bội số 100.000, ví dụ: 100.000, 200.000...")
+//    );
+//    $banks = (array)cassiopeia_get_items_by_conditions(array(), "bank_info", "node");
+//    $options = array();
+//    $default_value = !empty($banks)?array_values($banks)[0]->nid:null;
+//    if(!empty($banks)){
+//        foreach($banks as $bank){
+//            $options[$bank->nid] = _cassiopeia_render_theme("module","cassiopeia","templates/parts/bank-type-1.tpl.php",array("node"=>$bank,"image_style"=>"original"));
+//        }
+//    }
+//    $form['bank'] = array(
+//        '#type' => 'radios',
+//        '#title' => t(''),
+//        '#options' => $options,
+//        '#default_value' => $default_value,
+//    );
+//    $form['note'] = array(
+//        '#title'    => t('Nội dung chuyển khoản'),
+//        '#type'     => 'textarea'
+//        //'#default_value'    => $code
+//    );
+//    $form['submit'] = array(
+//        '#type' => 'submit',
+//        '#value' => t('Nạp tiền'),
+//        '#attributes' => array("class"=>array("btn bg-secondary clr-white text ff-bold radius-36 mt-4"))
+//    );
+
+    return $form;
+}
+
+function cassiopeia_user_user_topup_form_submit($form,&$form_state){
+    global $user;
+	if(!empty($user->uid)){
+		try{
+			$query = db_insert("tbl_user_topup")->fields(array("created","uid","amount","bank","note","status"));
+			$query->values(array(REQUEST_TIME,$user->uid,str_replace(".","",$form_state['values']['amount']),$form_state['values']['bank'],$form_state['values']['note'],0));
+			$query->execute();		
+			$data_mail = (object)[];
+			$data_mail->created = REQUEST_TIME;
+			$data_mail->uid = $user->uid;
+			$data_mail->amount = str_replace(".","",$form_state['values']['amount']);
+			$data_mail->bank = $form_state['values']['bank'];
+			$data_mail->note = $form_state['values']['note'];
+//			cassiopeia_send_mail_topup($data_mail,'topup.augroup@gmail.com');
+			drupal_set_message("Vui lòng đợi 5 - 10 phút để kế toán duyệt tiền tự động lên tài khoản Đại lý!");
+		}catch (Exception $e){
+			_print_r($e);
+			die;
+		}
+	}else{
+		$message = "Phiên làm việc đã hết hạn, vui lòng đăng nhập lại!";
+		$flag = false;
+	}
+}
+function cassiopeia_send_mail_topup($data_mail, $_mail)
+{
+	global $user;
+		if(!empty($user->uid)){
+			$site_mail = variable_get("site_mail");
+			$mail_content = _cassiopeia_render_theme("module", "cassiopeia_user", "templates/mail/mail_noti_topup.tpl.php", array("data_topup" => $data_mail));
+			$headers['From'] = $headers['Sender'] = $headers['Return-Path'] = $site_mail;
+			$body[] = $mail_content;
+			$headers['MIME-Version'] = '1.0';
+			$headers['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+			$params = array(
+				'body' => $body,
+				'subject' => "Thông báo topup",
+				'headers' => $headers,
+			);
+			if (drupal_mail('cassiopeia', 'custom_key', $_mail, language_default(), $params)) {
+		};
+	}
+}
+function cassiopeia_agent_fee_config_form($form, &$form_state,$config = null){
+    $arg = arg();
+    $form_state['#config'] = $config;
+    $form['infant'] = array(
+        '#type'             =>'checkbox',
+        '#title'            => t('Phí dịch vụ em bé'),
+        '#default_value'    => !empty($config)?$config->infant:0
+    );
+    if($arg[0]!="admin"){
+
+    }else{
+        $vocal = taxonomy_vocabulary_machine_name_load("tx_agent_rank");
+        $tx_ranks = (array)taxonomy_get_tree($vocal->vid,0,1);
+        $tx_rank_options = array();
+        $tx_rank_options[0] = "Khách thường";
+        foreach($tx_ranks as $tx_rank){
+            $tx_rank_options[$tx_rank->tid] = $tx_rank->name;
+        }
+        $form['rank'] = array(
+            '#type' => 'select',
+            '#title' => t('Phân loại'),
+            '#options' => $tx_rank_options,
+            '#attributes' => array('onchange' => 'this.form.submit();'),
+        );
+    }
+    $form['ECO_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+        '#default_value'    => 1
+
+    );
+    $form['BUSINESS_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+        '#default_value'    => 1
+
+    );
+    $form['VN_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VN_ECO,0,",","."):0,
+    );
+    $form['VN_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VN_OTHER,0,",","."):0,
+    );
+
+    $form['QH_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->QH_ECO,0,",","."):0,
+    );
+    $form['QH_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->QH_OTHER,0,",","."):0,
+    );
+    $form['VJ_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VJ_ECO,0,",","."):0,
+    );
+    $form['VJ_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VJ_OTHER,0,",","."):0,
+    );
+    $form['VT_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VT_ECO,0,",","."):0,
+    );
+    $form['VT_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->VT_OTHER,0,",","."):0,
+    );
+    $form['SPA_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->SPA_ECO,0,",","."):0,
+    );
+    $form['SPA_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->SPA_OTHER,0,",","."):0,
+    );
+//    $form['percent'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t(''),
+//        '#size' => 60,
+//        '#maxlength' => 128,
+//        '#required' => TRUE,
+//        '#default_value'    => !empty($config)?number_format($config->international_percent,0,",","."):0,
+//    );
+    $form['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($config)?number_format($config->international_fee,0,",","."):0,
+    );
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Lưu'),
+        '#attributes' => array("class" => array("btn btn-primary"))
+    );
+    return $form;
+}
+function cassiopeia_agent_fee_config_form_submit($form,&$form_state){
+    global $user;
+    $_user = user_load($user->uid);
+    $uid = user_has_role(3)?0:$user->uid;
+    $_tid = !empty($_user->field_tx_rank['und'][0]['tid'])?$_user->field_tx_rank['und'][0]['tid']:0;
+    $tid = isset($_REQUEST['tx'])?$_REQUEST['tx']:$_tid;
+    $agent_fee_config = !empty($form_state['#config'])?$form_state['#config']:new stdClass();
+    $agent_fee_config->VN_ECO = !empty($form_state['values']['VN_ECO'])?str_replace(".","",$form_state['values']['VN_ECO']):0;
+    $agent_fee_config->VN_OTHER = !empty($form_state['values']['VN_OTHER'])?str_replace(".","",$form_state['values']['VN_OTHER']):0;
+    $agent_fee_config->QH_ECO = !empty($form_state['values']['QH_ECO'])?str_replace(".","",$form_state['values']['QH_ECO']):0;
+    $agent_fee_config->QH_OTHER = !empty($form_state['values']['QH_OTHER'])?str_replace(".","",$form_state['values']['QH_OTHER']):0;
+    $agent_fee_config->VJ_ECO = !empty($form_state['values']['VJ_ECO'])?str_replace(".","",$form_state['values']['VJ_ECO']):0;
+    $agent_fee_config->VJ_OTHER = !empty($form_state['values']['VJ_OTHER'])?str_replace(".","",$form_state['values']['VJ_OTHER']):0;
+    $agent_fee_config->VT_ECO = !empty($form_state['values']['VT_ECO'])?str_replace(".","",$form_state['values']['VT_ECO']):0;
+    $agent_fee_config->VT_OTHER = !empty($form_state['values']['VT_OTHER'])?str_replace(".","",$form_state['values']['VT_OTHER']):0;
+    $agent_fee_config->SPA_ECO = !empty($form_state['values']['SPA_ECO'])?str_replace(".","",$form_state['values']['SPA_ECO']):0;
+    $agent_fee_config->SPA_OTHER = !empty($form_state['values']['SPA_OTHER'])?str_replace(".","",$form_state['values']['SPA_OTHER']):0;
+    $agent_fee_config->international_percent = !empty($form_state['values']['percent'])?str_replace(".","",$form_state['values']['percent']):0;
+    $agent_fee_config->international_fee = !empty($form_state['values']['amount'])?str_replace(".","",$form_state['values']['amount']):0;
+    $agent_fee_config->infant = $form_state['values']['infant'];
+    $agent_fee_config->tid = $tid;
+    $agent_fee_config->uid = $uid;
+    cassiopeia_qt_agent_fee_config_save($agent_fee_config);
+}
+
+function cassiopeia_user_agent_fee_load_by_class($Airline,$_Class){
+    global $user;
+    $Price = 0;
+    $config = cassiopeia_qt_agent_fee_config_load($user);
+//    _print_r($config);
+    if(!empty($config)){
+        switch ($Airline){
+            case "VN" :
+                switch (strtoupper($_Class)){
+                    case "J" :
+                    case "C" :
+                    case "I" :
+                    case "D" :
+                        $Price=$config->VN_OTHER;
+                        break;
+                    default :
+                        $Price=$config->VN_ECO;;
+                }
+                break;
+            case "QH" :
+                switch (strtoupper($_Class)){
+                    case "BUSINESS" :
+                        $Price=$config->QH_OTHER;
+                        break;
+                    default :
+                        $Price=$config->QH_ECO;;
+                }
+                break;
+            case "VJ" :
+                switch (strtoupper($_Class)){
+                    case "ECO" :
+                    case "DELUXE" :
+                        $Price=$config->VJ_ECO;
+                        break;
+                    default : $Price=$config->VJ_OTHER;;
+                }
+                break;
+            case "VU" :
+                $Price=$config->VT_ECO;;
+                break;
+            case "9G" :
+                switch (strtoupper($_Class)){
+                    case "J" :
+                    case "C" :
+                    case "I" :
+                    case "D" :
+                        $Price=$config->SPA_OTHER;
+                        break;
+                    default :
+                        $Price=$config->SPA_ECO;
+                        break;
+                }
+                break;
+        }
+    }
+    if(in_array($Airline,unserialize(DOMESTIC_AIRLINES))){ // hãng nội địa -> phí nội địa
+        $config->international_fee = $Price;
+    }
+    if(!empty($config) && $config->infant==1){
+        $return = array(
+            "infant"    => $Price,
+            "fee"       => $Price,
+            "international_fee"       => $config->international_fee,
+            "international_percent"       => $config->international_percent,
+        );
+    }else{
+        $return = array(
+            "infant"    => 0,
+            "fee"       => $Price,
+            "international_fee"       => $config->international_fee,
+            "international_percent"       => $config->international_percent,
+        );
+    }
+    return $return;
+}
+function cassiopeia_user_service_fee_load_by_class($Airline,$_Class){
+    global $user;
+    $Price = 0;
+    $config = cassiopeia_qt_service_fee_config_load($user);
+    if(!empty($config)){
+        switch ($Airline){
+            case "VN" :
+                switch (strtoupper($_Class)){
+                    case "J" :
+                    case "C" :
+                    case "I" :
+                    case "D" :
+                        $Price=$config->VN_OTHER;
+                        break;
+                    default :
+                        $Price=$config->VN_ECO;;
+                }
+                break;
+            case "QH" :
+                switch (strtoupper($_Class)){
+                    case "BUSINESS" :
+                        $Price=$config->QH_OTHER;
+                        break;
+                    default :
+                        $Price=$config->QH_ECO;;
+                }
+                break;
+            case "VJ" :
+                switch (strtoupper($_Class)){
+                    case "ECO" :
+                    case "DELUXE" :
+                        $Price=$config->VJ_ECO;
+                        break;
+                    default : $Price=$config->VJ_OTHER;;
+                }
+                break;
+            case "VU" :
+                $Price=$config->VT_ECO;;
+                break;
+            case "9G" :
+                switch (strtoupper($_Class)){
+                    case "J" :
+                    case "C" :
+                    case "I" :
+                    case "D" :
+                        $Price=$config->SPA_OTHER;
+                        break;
+                    default : $Price=$config->SPA_ECO;
+                }
+                break;
+        }
+    }
+    if(in_array($Airline,unserialize(DOMESTIC_AIRLINES))){ // hãng nội địa -> phí nội địa
+        $config->international_fee = $Price;
+    }
+    if(!empty($config) && $config->infant==1){
+        $return = array(
+            "infant"    => $Price,
+            "fee"       => $Price,
+            "international_fee"       => $config->international_fee,
+            "international_percent"       => $config->international_percent,
+            "international_domestic_fee"       => $config->international_domestic_fee,
+        );
+    }else{
+        $return = array(
+            "infant"    => 0,
+            "fee"       => $Price,
+            "international_fee"       => $config->international_fee,
+            "international_percent"       => $config->international_percent,
+            "international_domestic_fee"       => $config->international_domestic_fee,
+        );
+    }
+
+    return $return;
+}
+function cassiopeia_user_customer_filter_form($form, &$form_state, $cache = array())
+{
+    $form = array();
+    $form['name'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#attributes'=> array("placeholder"=>"Tìm kiếm tên, sdt..."),
+    );
+    if(!empty($cache['name'])){
+        $form['name']['#default_value'] = $cache['name'];
+    }
+//    $form['tel'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Số điện thoại'),
+//    );
+//    if(!empty($cache['tel'])){
+//        $form['tel']['#default_value'] = $cache['tel'];
+//    }
+//    $form['code'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Mã KHTX'),
+//    );
+//    if(!empty($cache['code'])){
+//        $form['code']['#default_value'] = $cache['code'];
+//    }
+//    $form['note'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t('Ghi chú'),
+//    );
+//    if(!empty($cache['note'])){
+//        $form['note']['#default_value'] = $cache['note'];
+//    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+        '#attributes'   => array("class"=>array("btn bg-secondary clr-white ff-semibold radius-4"))
+    );
+    return $form;
+}
+
+function cassiopeia_user_customer_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('/user/manager/customer', "data" => $options);
+}
+function cassiopeia_user_customer_form($form,&$form_state,$customer = null){
+    $form_state['#customer'] = $customer;
+    $form['name'] = array(
+        '#type'     => 'textfield',
+        '#title'    => t('Họ và tên'),
+        '#default_value'    => !empty($customer)?$customer->name:""
+    );
+    $form['mail'] = array(
+        '#type'     => 'textfield',
+        '#title'    => t('Email'),
+        '#default_value'    => !empty($customer)?$customer->mail:""
+    );
+    $form['tel'] = array(
+        '#type'     => 'textfield',
+        '#title'    => t('Số điện thoại'),
+        '#default_value'    => !empty($customer)?$customer->tel:""
+    );
+    $form['birthday'] = array(
+        '#type' => 'date_popup',
+        '#date_type' => DATE_DATETIME,
+        '#date_timezone' => date_default_timezone(),
+        '#date_format' => 'd-m-Y',
+        '#date_increment' => 1,
+        '#date_year_range' => '-70:+0',
+        '#prefix'   => "<div class='item birthday'>",
+        '#suffix'   => "<i class='fa fa-calendar'></i></div>",
+        '#default_value'    => !empty($customer)?date("Y-m-d H:i",$customer->birthday):""
+    );
+    $form['gender'] = array(
+        '#type' => 'select',
+        '#title' => t('Giới tính'),
+        '#options' => array(
+            1 => "Nam",
+            0 => "Nữ",
+        ),
+        '#default_value'    => !empty($customer)?$customer->gender:""
+    );
+    $form['note'] = array(
+        '#title' => t(''),
+        '#type' => 'textarea',
+        '#attributes'   => array("placeholder"=>array("Ghi chú")),
+        '#default_value'    => !empty($customer)?$customer->note:""
+    );
+    $form['VN'] = array(
+        '#type'     => 'textfield',
+        '#title'    => t('Mã KHTX VN'),
+        '#default_value'    => !empty($customer)?$customer->VN:""
+    );
+    $form['QH'] = array(
+        '#type'     => 'textfield',
+        '#title'    => t('Mã KHTX QH'),
+        '#default_value'    => !empty($customer)?$customer->QH:""
+    );
+    $form['submit'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Xác nhận'),
+        '#prefix'   => "<div class='form-buttons'>",
+        '#suffix'   => "</div>"
+    );
+    return $form;
+}
+function cassiopeia_user_customer_form_submit($form,&$form_state){
+    global $user;
+    $customer = !empty($form_state['#customer'])?$form_state['#customer']:new stdClass();
+    $customer->name = !empty($form_state['values']['name'])?$form_state['values']['name']:"";
+    $customer->tel = !empty($form_state['values']['tel'])?$form_state['values']['tel']:"";
+    $customer->mail = !empty($form_state['values']['mail'])?$form_state['values']['mail']:"";
+    $customer->note = !empty($form_state['values']['note'])?$form_state['values']['note']:"";
+    $customer->VN = !empty($form_state['values']['VN'])?$form_state['values']['VN']:"";
+    $customer->QH = !empty($form_state['values']['QH'])?$form_state['values']['QH']:"";
+    $customer->birthday = !empty($form_state['values']['birthday'])?strtotime($form_state['values']['birthday']):"";
+    $customer->gender = $form_state['values']['gender'];
+    if(!empty($customer) && !empty($customer->id)){
+        $customer->changed = REQUEST_TIME;
+        drupal_write_record("tbl_customer",$customer,array("id"));
+        drupal_set_message("Cập nhật thành công!");
+    }else{
+        $customer->uid = $user->uid;
+        $customer->created = REQUEST_TIME;
+        $customer->changed = REQUEST_TIME;
+        drupal_write_record("tbl_customer",$customer);
+        drupal_set_message("Thêm mới thành công!");
+    }
+}
+
+function cassiopeia_user_customer_delete_form ($form, &$form_state, $customer) {
+    $customer = $form_state['#customer'] = $customer;
+    $form = confirm_form($form,
+        t('Bạn có chắc chắn muốn xóa khách hàng %name?', array('%name' => $customer->name)),
+        'user/manager/customer',
+        '<p>' . t('This action cannot be undone.') .'</p>',
+        t('Delete'),
+        t('Cancel'),
+        'confirm'
+    );
+    $form['actions']['cancel']['#attributes'] = array('class'=>array('btn btn-icon-before btn-open-search bg-primary c-white'), 'style'=>array('display: inline-block;'));
+    $form['actions']['cancel']['#options']['html']  = true;
+//  $form['actions']['cancel']['#options']['text']  = '<i class="fal fa-magnifying-glass fa-fw" aria-hidden="true"></i> Cancel';
+    $form['actions']['cancel']['#title']  = '<i class="fal fa-ban fa-fw" aria-hidden="true"></i> '. t('Cancel');
+    $form['actions']['submit']['#icon'] ='<span class="fal fa-trash fa-fw"></span>';
+    $form['#submit'][] = 'cassiopeia_user_customer_delete_form_submit';
+    return $form;
+}
+function cassiopeia_user_customer_delete_form_submit($form, &$form_state) {
+    try{
+        db_delete("tbl_customer")->condition("id",$form_state['#customer']->id)->execute();
+        drupal_set_message("Đã xóa khách hàng ".$form_state['#customer']->name);
+    }catch (Exception $e){
+        print_r($e);
+        die;
+    }
+}
+function cassiopeia_user_check_permission($account,$permission_type,$permission){
+    global $user;
+    $account = !empty($account)?$account:$user;
+    if(empty($account->uid)){ // chưa đăng nhập thì không kiểm tra quyền nữa
+        return false;
+    }
+    if(!empty($user->uid)&&user_has_role(3)){ // admin full quyền
+        return true;
+    }
+    return cassiopeia_user_role_check_permission($account,$permission_type,$permission);
+    if(cassiopeia_user_role_check_permission($account,$permission_type,$permission)){
+        return true;
+    }
+    $USER_PERMISSIONS_LIST = unserialize(USER_PERMISSIONS_LIST);
+    $permission_table = $USER_PERMISSIONS_LIST[$permission_type]['table'];
+    $query = db_select($permission_table, 'p');
+    $query->fields('p');
+    $query->condition('p.uid', $account->uid,'=');
+    $query->condition('p.permission', $permission,'=');
+    $permissions = $query->execute()->fetchObject();
+    if(!empty($permissions) && $permissions->status==1){
+        return true; // kiểm tra quyền đơn
+    }
+    return false;
+}
+function cassiopeia_user_role_check_permission($account,$permission_type,$permission){
+    global $user;
+    $account = !empty($account)?$account:$user;
+
+    $USER_ROLE_PERMISSIONS_LIST = unserialize(USER_ROLE_PERMISSIONS_LIST);
+    $permission_table = $USER_ROLE_PERMISSIONS_LIST[$permission_type]['table'];
+    foreach($account->roles as $role => $name){
+        if($role>3){
+            $query = db_select($permission_table, 'p');
+            $query->fields('p');
+            $query->condition('p.rid', $role,'=');
+            $query->condition('p.permission', $permission,'=');
+            $permissions = $query->execute()->fetchObject();
+            if(!empty($permissions) && $permissions->status==1){
+                return true; // kiểm tra quyền đơn
+            }
+        }
+    }
+    return false;
+}
+function cassiopeia_user_permissions_form ($form, &$form_state, $data = array('user' => NULL, 'type' => 'f1')) {
+    $form = array();
+    $type = $data['type'];
+    $form['#user'] = $form_state['#user'] = $data['user'];
+    $permissions = array();
+    $form['#permissiontype'] = $form_state['#permissiontype'] = $type;
+    $USER_PERMISSIONS_LIST = unserialize(USER_PERMISSIONS_LIST);
+    if(!empty($USER_PERMISSIONS_LIST[$type])){
+        $list_permissions = $USER_PERMISSIONS_LIST[$type]['list'];
+        $permission_table = $USER_PERMISSIONS_LIST[$type]['table'];
+        $form['#permission_table'] = $permission_table;
+        if(!empty($list_permissions)){
+            foreach ($list_permissions as $_list_permission_key_ => $_list_permission_value_) {
+                $permissions[$_list_permission_key_]=(object)$_list_permission_value_;
+            }
+
+            if (!empty($permissions)) {
+                usort($permissions, function($a, $b) {
+                    return strcmp(mb_strtoupper($a->mark) .' '. $a->title, mb_strtoupper($b->mark) .' '.$b->title);
+                });
+
+                foreach ($permissions as $key => $permission) {
+                    $query = db_select($permission_table, 'p');
+                    $query->fields('p');
+                    $query->condition('p.permission', $permission->permission, '=');
+                    $query->condition('p.uid', $form_state['#user']->uid, '=');
+                    $user_permission = $query->execute()->fetchObject();
+                    $form[$key] = array(
+                        '#type' => 'markup',
+                        '#tree' => TRUE,
+                    );
+                    $form[$key]['title'] = array(
+                        '#markup' =>  mb_strtoupper($permission->mark) .' '. $permission->title,
+                    );
+                    $form[$key]['description'] = array(
+                        '#markup' => !empty($permission->description) ? $permission->description : '',
+                    );
+                    $form[$key]['expired'] = array(
+                        '#markup' => !empty($permission->expired) ? date('d/m/Y H:i', $permission->expired) : '',
+                    );
+                    $form[$key]['check'] = array(
+                        '#type' => 'checkbox',
+                        '#title' => '',
+                        '#default_value' => !empty($user_permission->status) ? $user_permission->status : 0,
+                        '#checkmark' =>TRUE,
+
+                    );
+                }
+            }
+
+        }
+
+        $form['submit'] = array('#type' => 'submit', '#value' => 'Lưu', '#attributes'=> array('class'=> array('btn','btn-border','btn-small','btn-icon')));
+    }
+    $form['#permissions'] = $form_state['#permissions'] = $permissions;
+
+    return $form;
+}
+function cassiopeia_user_permissions_form_submit($form, &$form_state) {
+    $transaction = db_transaction();
+    try {
+//        if ($form['#permissiontype'] == 'f1') {
+        $updates = array();
+        $inserts = array();
+        foreach ($form_state['#permissions'] as $key => $permission) {
+            $query = db_select($form['#permission_table'], 'p');
+            $query->fields('p');
+            $query->condition('p.permission', $permission->permission, '=');
+            $query->condition('p.uid', $form_state['#user']->uid, '=');
+            $user_permission = $query->execute()->fetchObject();
+            if (!empty($user_permission)) {
+                $updates[] = array(
+                    'uid' => $user_permission->uid,
+                    'permission' => $user_permission->permission,
+                    'status' => $form_state['values'][$key]['check'],
+                );
+            }
+            else {
+                $inserts[] = array(
+                    'uid' => $form_state['#user']->uid,
+                    'permission' => $permission->permission,
+                    'status' => $form_state['values'][$key]['check'],
+                );
+            }
+        }
+        if (!empty($updates)) {
+            foreach ($updates as $update) {
+                db_update($form['#permission_table'])
+                    ->fields(array(
+                        'status' => $update['status'],
+                    ))
+                    ->condition('permission', $update['permission'], '=')
+                    ->condition('uid', $update['uid'], '=')
+                    ->execute();
+            }
+        }
+        if (!empty($inserts)) {
+            $query = db_insert($form['#permission_table'])->fields(array(
+                'uid',
+                'permission',
+                'status',
+            ));
+            foreach ($inserts as $insert) {
+                $query->values($insert);
+            }
+            $query->execute();
+        }
+//        }
+    } catch (Exception $e) {
+        $transaction->rollback();
+    }
+}
+function cassiopeia_user_role_permissions_form ($form, &$form_state, $data = array('role' => NULL, 'type' => 'f1')) {
+    $form = array();
+    $type = $data['type'];
+    $form['#role'] = $form_state['#role'] = $data['role'];
+    $permissions = array();
+    $form['#permissiontype'] = $form_state['#permissiontype'] = $type;
+    $USER_ROLE_PERMISSIONS_LIST = unserialize(USER_ROLE_PERMISSIONS_LIST);
+    if(!empty($USER_ROLE_PERMISSIONS_LIST[$type])){
+        $list_permissions = $USER_ROLE_PERMISSIONS_LIST[$type]['list'];
+        $permission_table = $USER_ROLE_PERMISSIONS_LIST[$type]['table'];
+        $form['#permission_table'] = $permission_table;
+        if(!empty($list_permissions)){
+            foreach ($list_permissions as $_list_permission_key_ => $_list_permission_value_) {
+                $permissions[$_list_permission_key_]=(object)$_list_permission_value_;
+            }
+
+            if (!empty($permissions)) {
+                usort($permissions, function($a, $b) {
+                    return strcmp(mb_strtoupper($a->mark) .' '. $a->title, mb_strtoupper($b->mark) .' '.$b->title);
+                });
+
+                foreach ($permissions as $key => $permission) {
+                    $query = db_select($permission_table, 'p');
+                    $query->fields('p');
+                    $query->condition('p.permission', $permission->permission, '=');
+                    $query->condition('p.rid', $form_state['#role']->rid, '=');
+                    $user_permission = $query->execute()->fetchObject();
+                    $form[$key] = array(
+                        '#type' => 'markup',
+                        '#tree' => TRUE,
+                    );
+                    $form[$key]['title'] = array(
+                        '#markup' =>  mb_strtoupper($permission->mark) .' '. $permission->title,
+                    );
+                    $form[$key]['description'] = array(
+                        '#markup' => !empty($permission->description) ? $permission->description : '',
+                    );
+                    $form[$key]['expired'] = array(
+                        '#markup' => !empty($permission->expired) ? date('d/m/Y H:i', $permission->expired) : '',
+                    );
+                    $form[$key]['check'] = array(
+                        '#type' => 'checkbox',
+                        '#title' => '',
+                        '#default_value' => !empty($user_permission->status) ? $user_permission->status : 0,
+                        '#checkmark' =>TRUE,
+
+                    );
+                }
+            }
+
+        }
+
+        $form['submit'] = array('#type' => 'submit', '#value' => 'Lưu', '#attributes'=> array('class'=> array('btn','btn-border','btn-small','btn-icon')));
+    }
+    $form['#permissions'] = $form_state['#permissions'] = $permissions;
+
+    return $form;
+}
+function cassiopeia_user_role_permissions_form_submit($form, &$form_state) {
+    $transaction = db_transaction();
+    try {
+//        if ($form['#permissiontype'] == 'f1') {
+        $updates = array();
+        $inserts = array();
+        foreach ($form_state['#permissions'] as $key => $permission) {
+            $query = db_select($form['#permission_table'], 'p');
+            $query->fields('p');
+            $query->condition('p.permission', $permission->permission, '=');
+            $query->condition('p.rid', $form_state['#role']->rid, '=');
+            $user_permission = $query->execute()->fetchObject();
+            if (!empty($user_permission)) {
+                $updates[] = array(
+                    'rid' => $user_permission->rid,
+                    'permission' => $user_permission->permission,
+                    'status' => $form_state['values'][$key]['check'],
+                );
+            }
+            else {
+                $inserts[] = array(
+                    'rid' => $form_state['#role']->rid,
+                    'permission' => $permission->permission,
+                    'status' => $form_state['values'][$key]['check'],
+                );
+            }
+        }
+        if (!empty($updates)) {
+            foreach ($updates as $update) {
+                db_update($form['#permission_table'])
+                    ->fields(array(
+                        'status' => $update['status'],
+                    ))
+                    ->condition('permission', $update['permission'], '=')
+                    ->condition('rid', $update['rid'], '=')
+                    ->execute();
+            }
+        }
+        if (!empty($inserts)) {
+            $query = db_insert($form['#permission_table'])->fields(array(
+                'rid',
+                'permission',
+                'status',
+            ));
+            foreach ($inserts as $insert) {
+                $query->values($insert);
+            }
+            $query->execute();
+        }
+//        }
+    } catch (Exception $e) {
+        $transaction->rollback();
+    }
+}
+function cassiopeia_user_user_permission_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f0","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_article_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f1","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_article_add_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f1","2"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_article_edit_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f1","3"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_article_delete_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f1","4"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_page_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f2","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_notify_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f3","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_partner_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f4","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_user_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f5","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_user_edit_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f5","3"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_add_top_up_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f6","2"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_top_up_request_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f6","3"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_top_up_history_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f6","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_top_up_update_status_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f6","4"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_ticket_booking_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f7","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_issue_ticket_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f8","2"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_open_pnr_ticket_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f8","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_VNA_void_ticket_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f8","3"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_issue_ticket_report_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f9","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_void_ticket_report_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f10","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_payment_report_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f11","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_general_report_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f12","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_balance_report_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f13","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_issue_report_history_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f14","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_gift_history_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f15","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_gift_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f16","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_setting_access(){
+    global $user;
+    return cassiopeia_user_check_permission($user,"f0","1"); // check quyền quản trị trademark_diary
+}
+function cassiopeia_user_manager_access(){
+    if(user_has_role(3)||user_has_role(ROLE_SALE)||user_has_role(ROLE_KE_TOAN)||user_has_role(ROLE_MARKETING)){
+        return true;
+    }
+    return false;
+}
+function cassiopeia_user_user_load_by_code($code){
+    try{
+        $query = db_select("users","users");
+        $query->fields("users");
+        $query->join("field_data_field_account_code","field_account_code","field_account_code.entity_id=users.uid");
+        $query->condition("field_account_code.field_account_code_value",$code);
+        $result = $query->execute()->fetchObject();
+        if(!empty($result)){
+            $result = user_load($result->uid);
+        }
+        return $result;
+    }catch (Exception $E){
+        return null;
+    }
+}

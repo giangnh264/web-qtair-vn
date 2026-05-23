@@ -1,0 +1,2899 @@
+<?php
+
+
+/**
+ * Implements hook_permission().
+ */
+function cassiopeia_admin_permission() {
+  return  array (
+    'cassiopeia admin content' => array(
+      'title' => t('Administrator content manager'),
+      'description' => t('Cassiopeia admin content'),
+    ),
+    'cassiopeia admin block manager' => array(
+      'title' => t('Administrator block Manager'),
+      'description' => t('Cassiopeia admin block manager'),
+    ),
+  );
+}
+
+
+/**
+ * Implementation of hook_menu
+ *
+ * @return unknown
+ */
+function cassiopeia_admin_menu() {
+    $items['admin/manager/user/role/%user_role/permissions'] = array(
+        'type'              => MENU_NORMAL_ITEM,
+        'title'             => 'Phân quyền',
+        'page arguments'    => array(4),
+        'page callback'     => 'cassiopeia_admin_manager_user_role_permission_page',
+        'access callback'   => 'cassiopeia_user_user_permission_access',
+        'file'              => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/user/%user/permissions'] = array(
+        'type'              => MENU_NORMAL_ITEM,
+        'title'             => 'Phân quyền',
+        'page arguments'    => array(3),
+        'page callback'     => 'cassiopeia_admin_manager_user_permission_page',
+        'access callback'   => 'cassiopeia_user_user_permission_access',
+        'file'              => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/partners/config'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_partners_config',
+        'title' => t('Partners Config'),
+        'access arguments' => array('cassiopeia module'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/hotel/rating'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_hotel_rating_page_callback',
+        'title' => t('Đánh giá khách sạn'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_point','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/contact'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_manager_contact_callback',
+        'title' => t('Danh sách liên hệ'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_point','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/contact/%cassiopeia_contact/delete'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_manager_contact_delete_callback',
+        'page arguments' => array(3),
+        'title' => t('Danh sách liên hệ'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_point','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/point'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_manager_point_call_back',
+        'title' => t('Tích điểm đổi quà'),
+        'access callback' => 'cassiopeia_user_gift_history_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/issue-log'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_issue_log',
+        'title' => t('Lịch sử xuất vé'),
+        'access callback' => 'cassiopeia_user_issue_report_history_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-so-du'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_agent_report_call_back',
+        'title' => t('Báo cáo số dư đại lý'),
+        'access callback' => 'cassiopeia_user_balance_report_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-thanh-toan'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_payment_report_call_back',
+        'title' => t('Báo cáo thanh toán'),
+        'access callback' => 'cassiopeia_user_payment_report_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-xuat-ve'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_issue_report_call_back',
+        'title' => t('Báo cáo xuất vé'),
+        'access callback' => 'cassiopeia_user_issue_ticket_report_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-xuat-ve/export'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_issue_report_export_call_back',
+        'title' => t('Báo cáo xuất vé'),
+        'access callback' => 'cassiopeia_user_issue_ticket_report_access',
+//        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-void-ve'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_void_report_callback',
+        'title' => t('Báo cáo Void vé'),
+        'access callback' => 'cassiopeia_user_void_ticket_report_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+//    $items['admin/manager/bao-cao-tich-diem'] = array(
+//        'type' => MENU_CALLBACK,
+//        'page callback' => 'cassiopeia_agent_point_report_callback',
+//        'title' => t('Báo cáo tích điểm'),
+//        'access callback' => 'cassiopeia_user_issue_ticket_report_access',
+//        'file' => 'cassiopeia_admin.admin.inc',
+//    );
+    $items['admin/manager/ticketVoid'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticketVoid_call_back',
+        'title' => t('Void vé'),
+        'access callback' => 'cassiopeia_user_issue_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/ticketIssue'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticketIssue_call_back',
+        'title' => t('Xuất vé & mở mặt vé'),
+        'access callback' => 'cassiopeia_user_issue_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/ticketReview'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticketReview_call_back',
+        'title' => t('Mở mã đặt chỗ'),
+        'access callback' => 'cassiopeia_user_open_pnr_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/edit-booking-vn'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_edit_booking_vn_callback',
+        'title' => t('Nghiệp vụ đặt chỗ VN'),
+        'access callback' => 'cassiopeia_user_open_pnr_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/cancelbooking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_cancel_booking_callback',
+        'title' => t('Hủy hành trình'),
+        'access callback' => 'cassiopeia_user_open_pnr_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/add-segment'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_add_segment_callback',
+        'title' => t('Thêm hành trình'),
+        'access callback' => 'cassiopeia_user_open_pnr_ticket_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room/booking/edit/%room_booking_code'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_room_booking_edit',
+        'page arguments' => array(5),
+        'title' => t('Cập nhật đặt phòng'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_booking','p_edit'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room/booking/add-booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_add_room_booking',
+//        'page arguments' => array(5),
+        'title' => t('Thêm mới đặt phòng'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_booking','p_add'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room/booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_room_booking',
+        'title' => t('Danh sách đặt phòng'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_booking','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/booking'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_booking',
+        'title' => t('Booking Manager'),
+        'access callback' => 'cassiopeia_user_ticket_booking_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/partners'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_partners',
+        'title' => t('Partners'),
+        'access callback' => 'cassiopeia_user_partner_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/alepay/fee/config'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Cấu hình phí Alepay'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_alepay_fee_config_form'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_price_config','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room/booking-fee'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Cấu hình phí công thêm'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_room_booking_fee_form'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_price_config','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/ticket-note/config'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Ghi chú mặt vé'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_ticket_note_config'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_price_config','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room/payment/config'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Thông tin thanh toán chuyển khoản'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_room_payment_config_form'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_price_config','p_view'),
+//        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room-price'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_room_price',
+        'title' => t('Giá phòng'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_price','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_room',
+        'title' => t('Phòng khách sạn'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/room'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_room',
+        'title' => t('Phòng khách sạn'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/hotel'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_manager_hotel_callback',
+        'title' => t('Danh sách khách sạn'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_hotel','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['taxonomy/term/%taxonomy_term/delete'] = array(
+        'type' => MENU_CALLBACK,
+        'title' => t('Xóa khu vực'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_tx_area_delete_form',2),
+        'access callback' => "cassiopeia_check_permission",
+        'access arguments' => array('cassiopeia_user_permission_hotel_tx_area','p_delete'),
+        'theme callback'    => "_cassiopeia_switch_theme_"
+    );
+    $items['admin/manager/tx-hotel'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_tx_hotel_call_back',
+        'title' => t('Đề nghị topup'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_tx_hotel','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/hotel-tx-area'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_hotel_tx_area_call_back',
+        'title' => t('Khu vực/ địa danh'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_hotel_tx_area','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/topup/%topup/edit'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_admin_topup_edit_form',3,8),
+        'title' => t('Đề nghị topup'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_topup','p_edit'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/topup'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_topup_call_back',
+        'title' => t('Đề nghị topup'),
+        'access callback' => 'cassiopeia_user_top_up_request_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/top-up'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_manager_topup_page_callback',
+        'title' => t('Lịch sử top-up'),
+        'access callback' => "cassiopeia_user_top_up_history_access",
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/report/room'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_room_report_call_back',
+        'title' => t('Đặt phòng'),
+        'access callback' => 'cassiopeia_admin_report_accept',
+        'access arguments' => array('cassiopeia content'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/report/ticket'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_ticket_report_call_back',
+        'title' => t('Vé máy bay'),
+        'access callback' => 'cassiopeia_admin_report_accept',
+        'access arguments' => array('cassiopeia content'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/report/general'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_general_report_call_back',
+        'title' => t('Báo cáo tổng hợp'),
+        'access callback' => 'cassiopeia_user_general_report_access',
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+    $items['admin/manager/bao-cao-dat-phong'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_room_booking_report_call_back',
+        'title' => t('Báo cáo đặt phòng'),
+        'access callback' => 'cassiopeia_check_permission',
+        'access arguments' => array('cassiopeia_user_permission_room_report','p_view'),
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+//
+    $items['cassiopeia_admin/ajax'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_admin_ajax_page',
+        'delivery callback' => 'drupal_json_output',
+        'access callback' => "cassiopeia_admin_ajax_accept",
+//        'access arguments' => array('cassiopeia module'),
+        'weight' => -99,
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+  //block
+
+    $items['admin/cassiopeia/administrator'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'cassiopeia_admin_administrator_page_block',
+    'title' => 'Quản lý trang chính',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'weight' => -99,
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+
+  $items['admin/cassiopeia/administrator/block'] = array(
+    'type' => MENU_NORMAL_ITEM,
+    'page callback' => 'cassiopeia_admin_administrator_page_block',
+    'title' => 'Quản lý khối',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'weight' => 1,
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+    $items['admin/cassiopeia/administrator/menu'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'page callback' => 'cassiopeia_admin_administrator_menu_config',
+        'title' => 'Quản lý menu',
+        'access arguments' => array('cassiopeia admin block manager'),
+        'weight' => 1,
+        'file' => 'cassiopeia_admin.admin.inc',
+    );
+  $items['admin/cassiopeia/administrator/block/%cassiopeia_admin_block/delete'] = array(
+    'page callback' => 'cassiopeia_admin_administrator_page_block_delete',
+    'page arguments' => array(4),
+    'title' => 'Xóa khối',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+  $items['admin/cassiopeia/administrator/block/%cassiopeia_admin_block/edit'] = array(
+    'page callback' => 'cassiopeia_admin_administrator_page_block_edit',
+    'page arguments' => array(4),
+    'title' => 'Sửa khối',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+  $items['admin/cassiopeia/administrator/block/%cassiopeia_admin_block/items'] = array(
+    'page callback' => 'cassiopeia_admin_administrator_page_block_items',
+    'page arguments' => array(4),
+    'title' => 'Biểu tượng',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+  $items['admin/cassiopeia/administrator/block/%cassiopeia_admin_block/items/%cassiopeia_admin_block_items/delete'] = array(
+    'page callback' => 'cassiopeia_admin_administrator_page_block_items_delete',
+    'page arguments' => array(4, 6),
+    'title' => 'Xóa biểu tượng',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+  $items['admin/cassiopeia/administrator/block/%cassiopeia_admin_block/items/%cassiopeia_admin_block_items/edit'] = array(
+    'page callback' => 'cassiopeia_admin_administrator_page_block_items_edit',
+    'page arguments' => array(4, 6),
+    'title' => 'Sửa biểu tượng',
+    'access arguments' => array('cassiopeia admin block manager'),
+    'file' => 'cassiopeia_admin.admin.inc',
+  );
+
+  $items['admin/manager/accountant/config'] = array(
+      'type' => MENU_NORMAL_ITEM,
+      'title' => t('Bộ phận kế toán'),  
+      'page callback' => 'drupal_get_form',
+      'page arguments' => array('cassiopeia_admin_manager_accountant_email_form'),
+      //'access arguments' => array('cassiopeia admin block manager'),
+	  'access arguments' => array('cassiopeia module'),      
+      
+  );
+
+  return $items;
+}
+
+
+function cassiopeia_admin_manager_accountant_email_form($form,&$form_state){
+    $form['value'] = array(
+        '#type'             => 'textfield',
+        '#title'            => t('Email Kế toán viên'),
+        '#size'             => 60,
+        '#maxlength'        => 128,
+        '#required'         => TRUE,
+        '#default_value'    => variable_get("mod_accountant_email")
+    );
+    $form['submit'] = array(
+        '#type'         => 'submit',
+        '#value'        => t('Xác nhận'),
+        '#attributes'   => array("class" => array("btn btn-primary"))
+    );
+    return $form;
+}
+
+function cassiopeia_admin_manager_accountant_email_form_submit($form,&$form_state){
+    variable_set("mod_accountant_email",$form_state['values']['value']);
+}
+
+
+
+function cassiopeia_admin_report_accept(){
+    if(user_has_role(3)){
+        return true;
+    }
+}
+function topup_load($id){
+    return $id;
+}
+function cassiopeia_admin_block_items_load($id_items) {
+  $sql = "SELECT id, name, link, icon, position FROM cassiopeia_admin_items WHERE id = :id";
+  $result = db_query($sql, array(":id" => $id_items))->fetchAll();
+  if (!empty($result[0])) {
+    return $result[0];
+  }
+  return FALSE;
+}
+
+function cassiopeia_admin_block_load($id) {
+  $sql = "SELECT id, name, icon, position FROM cassiopeia_admin_block WHERE id = :id";
+  $result = db_query($sql, array(":id" => $id))->fetchAll();
+  if (!empty($result[0])) {
+    return $result[0];
+  }
+  return FALSE;
+}
+
+function cassiopeia_admin_administrator_page_content() {
+  include_once 'cassiopeia_admin.admin.inc';
+  return cassiopeia_admin_administrator_page();
+}
+
+
+/**
+ * Implementation of hook_menu_alter
+ *
+ * @param unknown_type $items
+ */
+function cassiopeia_admin_menu_alter(&$items) {
+  $items['node']['access callback'] = FALSE;
+//  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name']['access callback'] = 'cassiopeia_admin_taxonomy_term_edit_access';
+//  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name']['access arguments'] = array(3);
+//  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access callback'] = 'cassiopeia_admin_taxonomy_term_edit_access';
+//  $items['admin/structure/taxonomy/%taxonomy_vocabulary_machine_name/add']['access arguments'] = array(3);
+//  $items['user']['page callback'] = 'cassiopeia_admin_user_page';
+//  $items['user/%user']['access callback'] = FALSE;
+//  $items['user/%user/view']['access callback'] = FALSE;
+    foreach($items as $path => $item){
+        $splitter = explode("/",$path);
+        if($splitter[0]=="admin"){
+//            $items[$path]['theme callback'] = "_cassiopeia_admin_theme_white";
+        }
+    }
+}
+
+
+
+function cassiopeia_admin_taxonomy_term_edit_access($voca) {
+  return user_access("edit terms in $voca->vid") || user_access('administer taxonomy');
+}
+
+function cassiopeia_admin_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'user_login') {
+    if (user_access('cassiopeia admin content')) {
+      $form['#submit'] = array('cassiopeia_admin_custom_login');
+    }
+  }
+  elseif ($form_id == 'system_cron_settings') {
+    $form['cron']['cron_safe_threshold']['#options'][1800] = "30 min";
+    $form['cron']['cron_safe_threshold']['#options'][300] = "5 min";
+  }
+  if (strpos($form_id, "node_form") !== FALSE) {
+    $form['domain']['#group'] = 'additional_settings';
+  }
+}
+
+function cassiopeia_admin_custom_login($form, &$form_state) {
+  global $user;
+  $user = user_load($form_state['uid']);
+  $form_state['redirect'] = 'administrator';
+  user_login_finalize($form_state);
+}
+
+function _cassiopeia_admin_block_add($name, $icon, $position) {
+  db_insert('cassiopeia_admin_block')
+    ->fields(array(
+      'name' => $name,
+      'icon' => $icon,
+      'position' => $position,
+    ))
+    ->execute();
+}
+
+function _cassiopeia_admin_block_edit($block, $edit) {
+  db_update('cassiopeia_admin_block')
+    ->fields(array(
+      'name' => empty($edit['name']) ? $block->name : $edit['name'],
+      'icon' => empty($edit['icon']) ? $block->icon : $edit['icon'],
+      'position' => empty($edit['position']) ? $block->position : $edit['position'],
+    ))
+    ->condition('id', $block->id, '=')
+    ->execute();
+}
+
+function _cassiopeia_admin_block_position_update($id, $position) {
+  db_update('cassiopeia_admin_block')
+    ->fields(array(
+      'position' => $position,
+    ))
+    ->condition('id', $id, '=')
+    ->execute();
+}
+
+function _cassiopeia_admin_block_items_add($id_khoi, $name, $link, $icon, $position) {
+  db_insert('cassiopeia_admin_items')
+    ->fields(array(
+      'bid' => $id_khoi,
+      'name' => $name,
+      'link' => $link,
+      'icon' => $icon,
+      'position' => $position,
+    ))
+    ->execute();
+}
+
+function _cassiopeia_admin_block_items_edit($items, $edit) {
+  db_update('cassiopeia_admin_items')
+    ->fields(array(
+      'name' => empty($edit['name']) ? $items->name : $edit['name'],
+      'link' => empty($edit['link']) ? $items->link : $edit['link'],
+      'icon' => empty($edit['icon']) ? $items->icon : $edit['icon'],
+      'position' => empty($edit['position']) ? $items->position : $edit['position'],
+    ))
+    ->condition('id', $items->id, '=')
+    ->execute();
+}
+
+function _cassiopeia_admin_block_items_position_update($id, $position) {
+  db_update('cassiopeia_admin_items')
+    ->fields(array(
+      'position' => $position,
+    ))
+    ->condition('id', $id, '=')
+    ->execute();
+}
+
+function cassiopeia_admin_theme($existing, $type, $theme, $path) {
+  return array(
+    'cassiopeia_admin_administrator_page_block_load_all' => array(
+      'render element' => 'form',
+      'file' => 'cassiopeia_admin.theme.inc'
+    ),
+    'cassiopeia_admin_administrator_page_block_load_items' => array(
+      'render element' => 'form',
+      'file' => 'cassiopeia_admin.theme.inc'
+    ),
+    'cassiopeia_admin_administrator_icon' => array(
+      'variables' => array('icon' => NULL),
+      'file' => 'cassiopeia_admin.theme.inc'
+    ),
+    'cassiopeia_admin_get_menu_left' => array(
+      'variables' => array('items' => NULL),
+      'file' => 'cassiopeia_admin.theme.inc'
+    ),
+    'cassiopeia_admin_get_menu_left_cassiopeia_admin_theme' => array(
+      'variables' => array('items' => NULL),
+      'file' => 'cassiopeia_admin.theme.inc'
+    ),
+      'cassiopeia_admin_general_report_revenue_form_theme' => array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_admin_general_report_general_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/parts/report/general'
+      ),
+      'cassiopeia_admin_general_report_agent_form_theme' => array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_admin_general_report_agent_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/parts/report/general'
+      ),
+      'cassiopeia_admin_report_ajax_form_theme' => array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_admin_report_ajax_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/forms'
+      ),
+      'cassiopeia_admin_ticket_booking_manager_form_theme' => array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_admin_ticket_booking_manager_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/forms'
+      ),
+      'cassiopeia_admin_fee_config_form' => array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_admin_fee_config_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/forms'
+      ),
+      'cassiopeia_user_permissions_form' =>  array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_user_permissions_form',
+          'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms',
+      ),
+      'cassiopeia_user_role_permissions_form' =>  array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_user_role_permissions_form',
+          'path' => drupal_get_path('module', 'cassiopeia_user') . '/templates/forms',
+      ),
+      'cassiopeia_room_booking_fee_form' =>  array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_room_booking_fee_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/forms',
+      ),
+      'cassiopeia_alepay_fee_config_form' =>  array(
+          'render element' => 'form',
+          'template' => 'cassiopeia_alepay_fee_config_form',
+          'path' => drupal_get_path('module', 'cassiopeia_admin') . '/templates/forms',
+      ),
+  );
+}
+
+function cassiopeia_admin_get_icon() {
+  $sql = "SELECT icon FROM cassiopeia_admin_items WHERE link = :link";
+  $result = db_query($sql, array(':link' => $_GET['q']))->fetchAll();
+  if (!empty($result[0])) {
+    return 'c3s-icon c3s-icon-' . $result[0]->icon;
+  }
+  elseif (arg(0) == 'user') {
+    return 'c3s-icon c3s-icon-nguoidung2';
+  }
+  return FALSE;
+}
+
+function cassiopeia_admin_get_items_all() {
+  $sql = "SELECT b.id, b.name as name, b.position, b.icon, i.id as item_id, i.name as item_name, i.link, i.icon as item_icon, i.position as item_position 
+  FROM {cassiopeia_admin_block} b JOIN {cassiopeia_admin_items} i ON b.id = i.bid ORDER BY b.position, i.position";
+  $result = db_query($sql)->fetchAll();
+  return $result;
+}
+
+function cassiopeia_admin_get_menu_left($theme = '') {
+  //if(!user_access('cassiopeia admin content')) return '';
+  $result = cassiopeia_admin_get_items_all();
+  //todo
+  $list = array();
+  foreach ($result as $item) {
+    if (empty($list[$item->id])) {
+      $list[$item->id] = array(
+        '#title' => theme('cassiopeia_admin_administrator_icon', array('icon' => $item->icon)) . '<span>' . $item->name . '</span>',
+        '#href' => $_GET['q'],
+        '#attributes' => array(),
+        '#localized_options' => array('html' => TRUE, 'fragment' => 'top'),
+      );
+    }
+    if (!empty($list[$item->id])) {
+      $argument = explode('?', $item->link);
+      if (drupal_valid_path($argument[0])) {
+        $args = array();
+        if (count($argument) == 2) {
+          $ex = explode('&', $argument[1]);
+          foreach ($ex as $part) {
+            $ex1 = explode('=', $part);
+            if (count($ex1) == 2) {
+              $args[$ex1[0]] = $ex1[1];
+            }
+          }
+        }
+        $list[$item->id]['#below'][$item->item_id] = array(
+          '#title' => theme('cassiopeia_admin_administrator_icon', array('icon' => $item->item_icon)) . '<span>' . $item->item_name . '</span>',
+          '#href' => $argument[0],
+          '#attributes' => array(),
+          '#localized_options' => array('html' => TRUE, 'query' => $args),
+        );
+      }
+    }
+  }
+  drupal_alter('cassiopeia_admin_get_menu_left', $list);
+  if ($theme) {
+    return theme($theme, array('items' => $list));
+  }
+  return theme('cassiopeia_admin_get_menu_left', array('items' => $list));
+}
+
+function cassiopeia_admin_page_build(&$page) {
+  global $user, $theme_key;
+  //todo
+  if ((user_access('cassiopeia admin content') || user_access('c3s quantri access theme')) && $theme_key == 'my_theme') {
+    $page['page_bottom']['cassiopeia_admin_menu'] = array(
+      '#markup' => '<div style="position: fixed; top: 40%; left: 10px; background: #ccc; border-radius: 5px; padding: 5px; z-index: 999;">' . l('Quản trị', user_access('cassiopeia admin content') ? 'administrator' : 'manager') . '</div>'
+    );
+  }
+}
+
+function cassiopeia_admin_taxonomy_menu_insert(&$item) {
+  $item = _cassiopeia_admin_taxonomy_menu_item($item);
+}
+
+function cassiopeia_admin_taxonomy_menu_update(&$item) {
+  $item = _cassiopeia_admin_taxonomy_menu_item($item);
+}
+
+function _cassiopeia_admin_taxonomy_menu_item($item) {
+  $mlid = _taxonomy_menu_get_mlid($item['tid'], $item['vid']);
+  if ($link = menu_link_load($mlid)) {
+    if ($link['depth'] == 1) {
+      $item['weight'] = $link['weight'];
+    }
+  }
+  return $item;
+}
+
+
+function cassiopeia_admin_get_function() {
+  $args = func_get_args();
+  $func = $args[0];
+  if (!function_exists($func)) {
+    return FALSE;
+  }
+  unset($args[0]);
+  return call_user_func_array($func, $args);
+}
+
+function cassiopeia_room_filter_form($form, &$form_state, $data = array()){
+    $form = array();
+    $hotels = cassiopeia_get_nodes_by_category("hotel");
+    $options = array();
+    $options['_none'] = "Chọn khách sạn";
+    foreach($hotels as $hotel){
+        $options[$hotel->nid] = $hotel->title;
+    }
+    $form['hotel'] = array(
+        '#type' => 'select',
+        '#title' => t('Khách sạn'),
+        '#options' => $options,
+    );
+    if(isset($data['hotel'])){
+        $form['hotel']['#default_value'] = $data['hotel'];
+    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+    );
+    return $form;
+}
+function cassiopeia_room_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('/admin/manager/room', "data" => $options);
+}
+function cassiopeia_general_report_filter_form($form, &$form_state, $caches){
+    $form = array();
+    $form['#redirect'] = $caches['redirect'];
+    $form = array();
+    $form['#redirect'] = $caches['redirect'];
+    $month_options = array();
+    for ($i = 11; $i >= 0; $i--) {
+        $check_point = strtotime(date("01-m-Y", REQUEST_TIME));
+        $month_options[date("m-Y", strtotime(date("d-m-Y", $check_point) . " - " . $i . " months"))] = date("m/Y", strtotime(date("d-m-Y", $check_point) . " - " . $i . " months"));
+    }
+    $form['date_filter'] = array(
+        '#type' => 'select',
+        '#title' => t('Chọn tháng'),
+        '#options' => $month_options,
+        '#attributes' => array("onchange" => "this.form.submit();"),
+        '#default_value' => !empty($caches['date_filter']) ? $caches['date_filter'] : date("m-Y", REQUEST_TIME),
+    );
+    if($form['#redirect'] =="admin/manager/report/room/hotel"){
+        $areas = cassiopeia_get_items_by_conditions($conditions,"tx_area","taxonomy_term");
+        $areas_option = array();
+        $areas_option['all'] = "Tất cả";
+        if (!empty($areas)) {
+            foreach ($areas as $value) {
+                $areas_option[$value->tid] = $value->name;
+            }
+        }
+        $form['areas_filter'] = array(
+            '#type' => 'select',
+            '#title' => t('Chọn khu vực'),
+            '#options' => $areas_option,
+            '#attributes' => array("onchange" => "this.form.submit();"),
+            '#default_value' => !empty($caches['areas_filter']) ? $caches['areas_filter'] : "all",
+        );
+    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+        '#attributes' => array("class" => array("hidden")),
+    );
+    return $form;
+}
+
+function cassiopeia_general_report_filter_form_submit($form, &$form_state)
+{
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array($form['#redirect'], "data" => $options);
+}
+function cassiopeia_general_revenue_report_filter_form($form, &$form_state, $caches){
+    $form = array();
+    $form['#redirect'] = $caches['redirect'];
+    $month_options = array();
+    $year_options = array();
+    for($i=2019;$i<=date("Y",REQUEST_TIME);$i++){
+        $year_options[$i] = $i;
+    }
+    $month_options['all'] = "Tất cả";
+    for ($i = 1; $i <= 12; $i++) {
+        $month_options[$i] = $i;
+    }
+    $form['year'] = array(
+        '#type' => 'select',
+        '#title' => t('Chọn Năm'),
+        '#options' => $year_options,
+        '#default_value' => !empty($caches['year']) ? $caches['year'] : date("m-Y", REQUEST_TIME),
+    );
+    $form['month'] = array(
+        '#type' => 'select',
+        '#title' => t('Chọn tháng'),
+        '#options' => $month_options,
+        '#attributes' => array("onchange" => "this.form.submit();"),
+        '#default_value' => !empty($caches['month']) ? $caches['month'] : date("m-Y", REQUEST_TIME),
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+        '#attributes' => array("class" => array("hidden")),
+    );
+    return $form;
+}
+
+function cassiopeia_general_revenue_report_filter_form_submit($form, &$form_state)
+{
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array($form['#redirect'], "data" => $options);
+}
+function cassiopeia_admin_report_AG_filter_form($form, &$form_state, $caches)
+{
+    global $user;
+    $form = array();
+    $form['#redirect'] = $caches['redirect'];
+    $query = db_select("users", "tbl_user");
+    $query->fields("tbl_user");
+    $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+    $query->condition("tbl_role.rid", 4);
+    $query->leftJoin("field_data_field_account_sale", "tbl_sale", "tbl_sale.entity_id = tbl_user.uid");
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_code", "field_account_code_value", "field_account_code_value");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "field_account_transaction_name_value");
+    $result = $query->execute()->fetchAll();
+    $agent_options = array();
+    $agent_options['all'] = "Chọn Đại lý";
+    if (!empty($result)) {
+        foreach ($result as $value) {
+            $transaction_name = !empty($value->field_account_transaction_name_value) ? $value->field_account_transaction_name_value : "";
+            $account_code = !empty($value->field_account_code_value) ? $value->field_account_code_value : "";
+            $agent_options[$value->uid] = $account_code . " - " . $transaction_name;
+        }
+    }
+    $form['#attributes'] = array("class" => array("filter_form"));
+    if (user_has_role(3, $user) || user_has_role(7, $user)) {
+        $form['agent'] = array(
+            '#type' => 'select',
+            '#title' => t('Đại lý'),
+            '#options' => $agent_options,
+            '#chosen' => TRUE,
+            '#attributes' => array("onchange" => "this.form.submit();"),
+        );
+        if (!empty($caches['agent'])) {
+            $form['agent']['#default_value'] = $caches['agent'];
+        }
+        $query = db_select("users", "tbl_user");
+        $query->fields("tbl_user");
+        $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+        $query->condition("tbl_role.rid", 5);
+        $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+        $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+        $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+        $query->addField("field_account_code", "field_account_code_value", "agent_code");
+        $result = $query->execute()->fetchAll();
+        $options = array();
+        $options['all'] = "Chọn sale";
+        if (!empty($result)) {
+            foreach ($result as $value) {
+                $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+            }
+        }
+        $form['sale'] = array(
+            '#type' => 'select',
+            '#title' => t('Sale'),
+            '#options' => $options,
+            '#chosen' => TRUE,
+            '#attributes' => array("onchange" => "this.form.submit();"),
+        );
+        if (!empty($caches['sale'])) {
+            $form['sale']['#default_value'] = $caches['sale'];
+        }
+    }
+    $month_options = array();
+    for ($i = 11; $i >= 0; $i--) {
+        $check_point = strtotime(date("01-m-Y", REQUEST_TIME));
+        $month_options[date("m-Y", strtotime(date("d-m-Y", $check_point) . " - " . $i . " months"))] = date("m/Y", strtotime(date("d-m-Y", $check_point) . " - " . $i . " months"));
+    }
+    $form['date_filter'] = array(
+        '#type' => 'select',
+        '#title' => t('Chọn tháng'),
+        '#options' => $month_options,
+//        '#attributes'   => array("onchange"=>"this.form.submit();"),
+        '#default_value' => !empty($caches['date_filter']) ? $caches['date_filter'] : date("m-Y", REQUEST_TIME),
+        '#attributes' => array("onchange" => "this.form.submit();"),
+    );
+    $form['order_by'] = array(
+        '#type' => 'select',
+        '#title' => t(''),
+        '#options' => array(
+            "agent_code" => "Tên giao dịch",
+            "transaction_name" => "Tên giao dịch",
+            "quantity" => "Tên giao dịch",
+            "partner_price" => "Tên giao dịch",
+            "price" => "Tên giao dịch",
+            "revenue" => "Tên giao dịch",
+        ),
+        '#resquired' => TRUE,
+        '#attributes' => array("class" => array("hidden")),
+    );
+    if (!empty($caches['order_by'])) {
+        $form['order_by']['#default_value'] = $caches['order_by'];
+    }
+    $form['direction'] = array(
+        '#type' => 'select',
+        '#title' => t(''),
+        '#options' => array(
+            "none" => "Không",
+            "ASC" => "Tăng dần",
+            "DESC" => "Giảm dần",
+        ),
+        '#resquired' => TRUE,
+        '#attributes' => array("class" => array("hidden")),
+    );
+    if (!empty($caches['direction'])) {
+        $form['direction']['#default_value'] = $caches['direction'];
+    }
+
+
+//    $form['num_per_page'] = array(
+//        '#type' => 'select',
+//        '#title' => t('Hiển thị'),
+//        '#options' => array(
+//            "50" => "50",
+//            "100" => "100",
+//            "200" => "200",
+//        ),
+//        '#attributes' => array("onchange" => "this.form.submit();"),
+//        '#resquired' => TRUE,
+//    );
+//    if (!empty($caches['num_per_page'])) {
+//        $form['num_per_page']['#default_value'] = $caches['num_per_page'];
+//    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Lọc'),
+        '#attributes' => array("class" => array("hidden")),
+//        '#prefix' => '<div class="buttons">',
+//        '#suffix' => '<span class="btn btn-default btn-close-modal">Đóng</span></div>',
+    );
+    return $form;
+}
+
+function cassiopeia_admin_report_AG_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array($form['#redirect'], "data" => $options);
+}
+function cassiopeia_admin_topup_edit_form($form,&$form_state,$id){
+    $query = db_select("tbl_user_topup","tbl_user_topup");
+    $query->fields("tbl_user_topup");
+    $query->condition("id",$id);
+    $query->join("users","tbl_user","tbl_user.uid=tbl_user_topup.uid");
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+    $query->addField("field_account_code", "field_account_code_value", "agent_code");
+    $query->join("node","tbl_bank","tbl_bank.nid=tbl_user_topup.bank");
+    $query->addField("tbl_bank","title","bank_title");
+    $query->join("field_data_field_code","field_code","field_code.entity_id=tbl_bank.nid");
+    $query->addField("field_code","field_code_value","bank_code");
+    $result = $query->execute()->fetchObject();
+    $form = array();
+    $form['#action'] = "/admin/manager/topup/".$result->id."/edit";
+    $form['#topup'] = $result;
+    $form['created'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Ngày tạo'),
+        '#value'        => date("d/m/Y H:i",$result->created),
+        '#attributes'   => array("readonly"=>TRUE)
+    );
+    $form['title'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Đại  lý'),
+        '#value'        => $result->agent_code." - ".$result->agent_transaction_name,
+        '#attributes'   => array("readonly"=>TRUE)
+    );
+    $form['amount'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Số tiền'),
+        '#value'        => number_format($result->amount,0,",","."),
+        '#attributes'   => array("readonly"=>TRUE)
+    );
+    $form['bank'] = array(
+        '#type'         => 'textfield',
+        '#title'        => t('Ngân hàng'),
+        '#value'        => $result->bank_title,
+        '#attributes'   => array("readonly"=>TRUE)
+    );
+    $form['note'] = array(
+        '#title'        => t('Ghi chú của Đại lý'),
+        '#type'         => 'textarea',
+        '#value'        => $result->note,
+        '#attributes'   => array("readonly"=>TRUE)
+    );
+     $form['tran_user_note'] = array(
+        '#title'        => t('Ghi chú'),
+        '#type'         => 'textarea',
+        '#default_value'=> !empty($result->tran_user_note)?$result->tran_user_note:"",
+    );
+//    $form['status'] = array(
+//        '#type' => 'select',
+//        '#title' => t('Tình trạng'),
+//        '#options' => array(
+//            0 => t('Đề nghị'),
+//            1 => t('Duyệt'),
+//            2 => t('Từ chối'),
+//        ),
+//        '#default_value' => $result->status,
+//    );
+    $form['submit'] = array(
+        '#type'     => 'submit',
+        '#value'    => t('Từ chối yêu cầu'),
+        '#attributes'   => array("class"=>array("btn btn-danger")),
+        '#prefix'   => "<div class='form-buttons'>",
+        '#suffix'   => "</div>"
+    );
+    return $form;
+}
+function cassiopeia_admin_topup_edit_form_submit($form,&$form_state){
+    global $user;
+    try{
+        db_update("tbl_user_topup")->fields(array(
+            "tran_user"         => $user->uid,
+            "tran_user_note"    => !empty($form_state['values']['tran_user_note']),
+            "status"            => 2
+        ))->condition("id",$form['#topup']->id)->execute();
+        drupal_set_message("Cập nhật thành công!");
+        $form_state['redirect'] = "admin/manager/topup";
+    }catch (Exception $e){
+        drupal_set_message("Đã xảy ra lỗi!","error");
+    }
+}
+function cassiopeia_admin_topup_filter_form($form, &$form_state, $cache = array()){
+    $form = array();
+    $form['#redirect'] = $cache['redirect'];
+    $form['date_filter'] = array(
+        '#type' => 'select',
+        '#title' => t('Theo ngày'),
+        '#options' => array(
+            "all" => "Tất cả",
+            "today" => "Trong ngày",
+            "yesterday" => "Hôm qua",
+            "thismonth" => "Trong tháng",
+            "other" => "Theo ngày",
+        ),
+    );
+    if (!empty($cache['date_filter'])) {
+        $form['date_filter']['#default_value'] = $cache['date_filter'];
+    }
+    $form['from_date'] = array(
+        '#type' => 'date_popup',
+        '#default_value' => !empty($cache['from_date']) ? $cache['from_date'] : date("Y-m-d H:i:s", REQUEST_TIME),
+        '#date_type' => DATE_DATETIME,
+        '#date_timezone' => date_default_timezone(),
+        '#date_format' => 'd-m-Y',
+        '#date_increment' => 1,
+        '#date_year_range' => '-10:+10',
+        '#attributes' => array( "class" => array("form_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    $form['to_date'] = array(
+        '#type' => 'date_popup',
+        '#default_value' => !empty($cache['to_date']) ? $cache['to_date'] : date("Y-m-d H:i:s", REQUEST_TIME),
+        '#date_type' => DATE_DATETIME,
+        '#date_timezone' => date_default_timezone(),
+        '#date_format' => 'd-m-Y',
+        '#date_increment' => 1,
+        '#date_year_range' => '-10:+10',
+        '#attributes' => array("class" => array("to_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    if(isset($cache['admin'])&&$cache['admin']){
+        $query = db_select("users", "tbl_user");
+        $query->fields("tbl_user");
+        $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+        $query->condition("tbl_role.rid", 4);
+        $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+        $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+        $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+        $query->addField("field_account_code", "field_account_code_value", "agent_code");
+        $result = $query->execute()->fetchAll();
+        $options = array();
+        $options['all'] = "Chọn Đại lý";
+        if (!empty($result)) {
+            foreach ($result as $value) {
+                $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+            }
+        }
+        $form['agent'] = array(
+            '#type' => 'select',
+            '#title' => t('Đại lý'),
+            '#options' => $options,
+            '#chosen' => TRUE,
+            '#attributes' => array("onchange" => "this.form.submit();"),
+        );
+        if (!empty($cache['agent'])) {
+            $form['agent']['#default_value'] = $cache['agent'];
+        }
+    }
+    $conditions = array();
+    $conditions['status'] = array(
+        "type" => "propertyCondition",
+        "value" => 1,
+        "condition" => "=",
+    );
+    $conditions['field_weight'] = array(
+        "type"      => "fieldOrderBy",
+        "column"    => "value",
+        "direction" => "ASC",
+    );
+    $banks = cassiopeia_get_items_by_conditions($conditions,"bank","node");
+    $options = array();
+    $options['all'] = "Tất cả";
+    foreach($banks as $bank){
+        $options[$bank->nid] = $bank->field_code['und'][0]['value'];
+    }
+    $form['bank'] = array(
+        '#type' => 'select',
+        '#title' => t('Ngân hàng'),
+        '#options' => $options,
+    );
+    if (!empty($cache['bank'])) {
+        $form['bank']['#default_value'] = $cache['bank'];
+    }
+    $query = db_select("users", "tbl_user");
+    $query->fields("tbl_user");
+    $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+    $query->condition("tbl_role.rid", array(3,8));
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+    $query->addField("field_account_code", "field_account_code_value", "agent_code");
+    $result = $query->execute()->fetchAll();
+    $options = array();
+    $options['all'] = "Tất cả";
+    if (!empty($result)) {
+        foreach ($result as $value) {
+            $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+        }
+    }
+    $form['tran_user'] = array(
+        '#type' => 'select',
+        '#title' => t('Người duyệt'),
+        '#options' => $options,
+        '#chosen' => TRUE,
+    );
+    if (!empty($cache['tran_user'])) {
+        $form['tran_user']['#default_value'] = $cache['tran_user'];
+    }
+    $form['statuscondition'] = array(
+        '#type' => 'select',
+        '#title' => t('Tình trạng'),
+        '#options' => array(
+            'all'       => "Tất cả",
+            0           => "Đề nghị",
+            1           => "Đã duyệt",
+            2           => "Từ chối",
+        ),
+    );
+    if (isset($cache['statuscondition'])) {
+        $form['statuscondition']['#default_value'] = $cache['statuscondition'];
+    }
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+    );
+    return $form;
+}
+function cassiopeia_admin_topup_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array($form['#redirect'], "data" => $options);
+}
+function cassiopeia_admin_report_ajax_form($form,&$form_state,$cache){
+    global $user;
+    $sort_options = $cache['sort_options'];
+    $form['#cache'] = $cache;
+    $form['#prefix'] = "<div id='formContainer'>";
+    $form['#suffix'] = "</div>";
+    $form['sort_by'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => $sort_options,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+//        '#attributes'   => array("class"=>array("hidden"))
+    );
+    if($user->uid!=1){
+        $form['sort_by']['#attributes'] = array("class"=>array("hidden"));
+    }
+    if(!empty($cache['sort_by'])){
+        $form['sort_by']['#default_value'] = $cache['sort_by'];
+    }
+    $form['sort_direction'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => array(
+            'ASC'   => "ASC",
+            'DESC'  => "DESC",
+        ),
+        '#default_value'    => "ASC",
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden"))
+    );
+    if(!empty($cache['direction'])){
+        $form['sort_direction']['#default_value'] = $cache['direction'];
+    }
+    if(!empty($form_state['values'])){
+        $form['#form_state'] = $form_state['values'];
+        $form['#cache']['form_state'] = $form_state['values'];
+    }else{
+        $form['#cache']['form_state'] = array(
+            "sort_by"  =>  !empty($cache['sort_by'])?$cache['sort_by']:"",
+            "sort_direction"  =>  !empty($cache['direction'])?$cache['direction']:"",
+        );
+    }
+    $form['page'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden")),
+        '#default_value' => 1
+    );
+    $form['#theme'][] = "cassiopeia_admin_report_ajax_form_theme";
+    return $form;
+}
+function cassiopeia_admin_general_report_agent_form($form,&$form_state,$cache){
+    $date_filter = !empty($cache['date_filter'])?$cache['date_filter']:date("m-Y",REQUEST_TIME);
+    $cache['date_filter'] = $date_filter;
+
+    $form['#caches'] = $cache;
+    $form['#prefix'] = "<div id='formContainer'>";
+    $form['#suffix'] = "</div>";$form['sort_by'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => array(
+            'field_account_code_value'                  => "Mã đại lý",
+            'field_account_transaction_name_value'   => "Tên giao dịch",
+            'email'   => "Email",
+            'total_quantity'   => "Số lượng",
+            'total_partner_price'   => "Doanh thu",
+            'total_price'   => "Giá vốn",
+            'total_revenue'   => "Lợi nhuận",
+        ),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden"))
+    );
+    if(!empty($cache['sort_by'])){
+        $form['sort_by']['#default_value'] = $cache['sort_by'];
+    }
+    $form['sort_direction'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => array(
+            'ASC'   => "ASC",
+            'DESC'  => "DESC",
+        ),
+        '#default_value'    => "ASC",
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden"))
+    );
+
+    if(!empty($form_state['values'])){
+        $form['#form_state'] = $form_state['values'];
+    }
+    $form['page'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden")),
+        '#default_value' => 1
+    );
+    $form['#theme'][] = "cassiopeia_admin_general_report_agent_form_theme";
+    return $form;
+}
+function cassiopeia_admin_general_report_revenue_form_theme($form,&$form_state,$cache){
+    $date_filter = !empty($cache['date_filter'])?$cache['date_filter']:date("m-Y",REQUEST_TIME);
+    $cache['date_filter'] = $date_filter;
+    $form['#prefix'] = "<div id='formContainer'>";
+    $form['#suffix'] = "</div>";
+    $form['sort_by'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => array(
+            'date'                  => "Ngày",
+            'total_partner_price'   => "Doanh thu",
+            'total_price'           => "Giá vốn",
+            'total_revenue'         => "Lợi nhuận",
+        ),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden"))
+    );
+    if(!empty($cache['sort_by'])){
+        $form['sort_by']['#default_value'] = $cache['sort_by'];
+    }
+    $form['sort_direction'] = array(
+        '#type' => 'radios',
+        '#title' => t(''),
+        '#options' => array(
+            'ASC'   => "ASC",
+            'DESC'  => "DESC",
+        ),
+        '#default_value'    => "ASC",
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden"))
+    );
+    try{
+        $issue_query = db_select("tbl_issue_report","tbl_issue_report");
+        $issue_query->fields("tbl_issue_report",array("created"));
+        $issue_query->addExpression("1","type");
+        $issue_query->addField("tbl_issue_report","date","date");
+        $issue_query->addField("tbl_issue_report","partner_price","partner_price");
+        $issue_query->addField("tbl_issue_report","price","price");
+        $issue_query->addField("tbl_issue_report","quantity","quantity");
+
+        $room_query = db_select("tbl_room_booking_report","tbl_room_booking_report");
+        $room_query->fields("tbl_room_booking_report",array("created"));
+        $room_query->addExpression("2","type");
+        $room_query->addField("tbl_room_booking_report","created","date");
+        $room_query->addField("tbl_room_booking_report","partner_price","partner_price");
+        $room_query->addField("tbl_room_booking_report","price","price");
+        $room_query->addField("tbl_room_booking_report","night","quantity");
+        $daily_sub_query = Database::getConnection()
+            ->select($issue_query->union($room_query))
+            ->fields(NULL, array("date","type","partner_price","price"));
+        if(!empty($date_filter && $date_filter!="all")){
+            $first_day_of_moth = strtotime(date('Y-m-01 00:00:00',strtotime("01-".$date_filter)));
+            $last_day_of_moth = strtotime(date("Y-m-t 23:59:59",strtotime("01-".$date_filter)));
+            $daily_sub_query ->condition("date",array($first_day_of_moth,$last_day_of_moth),"BETWEEN");
+        }
+
+        $daily_sub_query->addExpression("DATE_FORMAT(FROM_UNIXTIME(date), '%d-%m-%Y') ","cr");
+
+        $daily_query = db_select($daily_sub_query,"tbl_daily_query");
+        $daily_query->fields("tbl_daily_query");
+        $daily_query->groupBy("cr");
+        $daily_query->addExpression("SUM(tbl_daily_query.partner_price)","total_partner_price");
+        $daily_query->addExpression("SUM(tbl_daily_query.price)","total_price");
+        $daily_query->addExpression("SUM(tbl_daily_query.partner_price-tbl_daily_query.price)","total_revenue");
+
+        $finalQuery = db_select($daily_query,"tbl_final_query");
+        $finalQuery->fields("tbl_final_query");
+        if(!empty($form_state['values'])){
+            $sort_by = $form_state['values']['sort_by'];
+            $sort_direction = $form_state['values']['sort_direction'];
+            if($sort_by=="date"){
+                $finalQuery->orderBy($sort_by,$sort_direction);
+            }else{
+                $finalQuery->orderBy("CAST(".$sort_by." AS int)",$sort_direction);
+            }
+        }else{
+            $finalQuery->orderBy("date","ASC");
+        }
+        $result_daily = $finalQuery->execute()->fetchAll();
+        $daily_items = [];
+        if(!empty($result_daily)){
+            foreach($result_daily as $value){
+                $daily_items[$value->cr] = $value;
+            }
+        }
+        for($i=1;$i<=date('t',strtotime("01-".$date_filter));$i++){
+            $item = !empty($daily_items[date("d-m-Y",strtotime($i."-".$date_filter))])?$daily_items[date("d-m-Y",strtotime($i."-".$date_filter))]:null;
+            if(empty($item)){
+                $daily_items[date("d-m-Y",strtotime($i."-".$date_filter))] = array();
+            }
+        }
+    }catch (Exception $e){
+        _print_r($e);
+    }
+    $form['#daily_items'] = $daily_items;
+    $form['#date_filter'] = $date_filter;
+    $form['#theme'][] = "cassiopeia_admin_general_report_revenue_form_theme";
+    return $form;
+}
+function cassiopeia_ajax_form_callback($form,&$form_state){
+    return $form;
+}
+function cassiopeia_admin_ajax_accept(){
+    return true;
+    if(user_has_role(3)||user_has_role(12)){
+    }
+}
+function cassiopeia_admin_tx_area_delete_form($form,&$form_state,$term=null){
+    $form = array();
+    $title = "";
+    _print_r($_REQUEST);
+    switch ($term->vocabulary_machine_name){
+        case "tx_hotel": $title = "Xóa Loại lưu trú"; break;
+        case "tx_area": $title = "Xóa khu vực"; break;
+    }
+    drupal_set_title($title);
+    $form['#term'] = $term;
+    $form['delete'] = array(
+        '#type' => 'container',
+        '#prefix'   => "<div class=''>",
+        '#suffix'   => "<label for=''>Bạn có muốn mục này?</label></div>",
+    );
+    $form['submit'] = array(
+        '#type'     => 'submit',
+        '#prefix'   => "<div class='form-buttons'>",
+        '#suffix'   => "<a href='/".$_REQUEST['destination']."' class='btn btn-default'>Hủy</a></div>",
+        '#value'    => t('Xóa')
+    );
+    return $form;
+}
+function cassiopeia_admin_tx_area_delete_form_submit(&$form,&$form_state){
+    try{
+        $term = taxonomy_term_load($form['#term']->tid);
+		db_delete('taxonomy_term_data')
+			->condition('tid', $form['#term']->tid)
+			->execute();
+	    drupal_set_message('Đã xóa ' . $form['#term']->name);
+    }catch (Exception $e){
+		drupal_set_message('Đã gặp lỗi trong quá trình xóa, vui lòng liên hệ kỹ thuật!');
+    }
+    $form_state['redirect'] = "/admin/manager/hotel-tx-area";
+}
+function cassiopeia_alepay_fee_config_form($form, &$form_state){
+    $query = db_select("cassiopeia_qt_alepay_fee_config", "cassiopeia_qt_alepay_fee_config");
+    $query->fields("cassiopeia_qt_alepay_fee_config");
+    $result = $query->execute()->fetchAll();
+    $default_values = array();
+    if(!empty($result)){
+        foreach($result as $item){
+            $default_values[$item->type] = $item;
+        }
+    }
+
+    $form_wrapper = "cassiopeia-alepay-fee-config-form-wrapper";
+    $form['#prefix'] = "<div id='".$form_wrapper."'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes']['class'][] = "cassiopeia-alepay-fee-config-form";
+    $form['feeContainer'] = array(
+        '#type' => 'container',
+        '#prefix' => '<div id="feeContainer">',
+        '#suffix' => '</div>',
+        '#tree' => TRUE
+    );
+    $form['feeContainer'][INTERNATIONAL_CARD]['percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t('<i class="fa fa-percent"></i>'),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[INTERNATIONAL_CARD])?$default_values[INTERNATIONAL_CARD]->percent:0,
+    );
+    $form['feeContainer'][INTERNATIONAL_CARD]['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[INTERNATIONAL_CARD])?$default_values[INTERNATIONAL_CARD]->amount:0,
+    );
+    $form['feeContainer'][DOMESTIC_CARD]['percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t('<i class="fa fa-percent"></i>'),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[DOMESTIC_CARD])?$default_values[DOMESTIC_CARD]->percent:0,
+    );
+    $form['feeContainer'][DOMESTIC_CARD]['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[DOMESTIC_CARD])?$default_values[DOMESTIC_CARD]->amount:0,
+    );
+    $form['feeContainer'][INTERNET_BANKING]['percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t('<i class="fa fa-percent"></i>'),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[INTERNET_BANKING])?$default_values[INTERNET_BANKING]->percent:0,
+    );
+    $form['feeContainer'][INTERNET_BANKING]['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[INTERNET_BANKING])?$default_values[INTERNET_BANKING]->amount:0,
+    );
+    $form['feeContainer'][QR_PAY]['percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t('<i class="fa fa-percent"></i>'),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[QR_PAY])?$default_values[QR_PAY]->percent:0,
+    );
+    $form['feeContainer'][QR_PAY]['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[QR_PAY])?$default_values[QR_PAY]->amount:0,
+    );
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Lưu')
+    );
+    return $form;
+}
+function cassiopeia_alepay_fee_config_form_submit($form, &$form_state){
+    global $user;
+    $db_transaction = db_transaction();
+
+    try {
+        db_delete("cassiopeia_qt_alepay_fee_config")->execute();
+        $query = db_insert("cassiopeia_qt_alepay_fee_config")->fields(array("uid","created","changed","type","amount","percent"));
+        foreach($form_state['values']['feeContainer'] as $key => $_value){
+            $query->values(array($user->uid,REQUEST_TIME,REQUEST_TIME,$key,$_value['amount'],$_value['percent']));
+        }
+        $query->execute();
+    } catch (Exception $e) {
+        _print_r($e);
+        die;
+        $db_transaction->rollback();
+    }
+
+}
+function cassiopeia_room_booking_fee_form($form, &$form_state){
+    $query = db_select("cassiopeia_room_room_booking_fee", "cassiopeia_room_room_booking_fee");
+    $query->fields("cassiopeia_room_room_booking_fee");
+    $result = $query->execute()->fetchAll();
+    $default_values = array();
+    if(!empty($result)){
+        foreach($result as $item){
+            $default_values[$item->star] = $item;
+        }
+    }
+    $form_wrapper = "cassiopeia-room-booking-fee-form-wrapper";
+    $form['#prefix'] = "<div id='".$form_wrapper."'>";
+    $form['#suffix'] = "</div>";
+    $form['#attributes']['class'][] = "cassiopeia-room-booking-fee-form";
+    $form['feeContainer'] = array(
+        '#type' => 'container',
+        '#prefix' => '<div id="feeContainer">',
+        '#suffix' => '</div>',
+        '#tree' => TRUE
+    );
+    $form['feeContainer'][0]['percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t('<i class="fa fa-percent"></i>'),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[0])?$default_values[0]->percent:0,
+    );
+    $form['feeContainer'][0]['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#default_value' => !empty($default_values[0])?$default_values[0]->amount:0,
+    );
+    $form['by_star'] = array(
+        '#type' =>'checkbox',
+        '#title' => t('Thiết lập riêng'),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_ajax_form_callback',
+            'wrapper' => $form_wrapper,
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#default_value' => !empty(variable_get("room_booking_fee_by_start"))?variable_get("room_booking_fee_by_start"):0,
+    );
+    $by_star = !empty(variable_get("room_booking_fee_by_start"))?variable_get("room_booking_fee_by_start"):0;
+    $form['#by_star'] = $form_stare['#by_star'] = $by_star = isset($form_state['values']['by_star'])?$form_state['values']['by_star']:$by_star;
+
+    for($i=1;$i<=5;$i++){
+        $form['feeContainer'][$i]['percent'] = array(
+            '#type' => 'textfield',
+            '#title' => t('<i class="fa fa-percent"></i>'),
+            '#size' => 60,
+            '#maxlength' => 128,
+            '#default_value' => !empty($default_values[$i])?$default_values[$i]->percent:0,
+        );
+        $form['feeContainer'][$i]['amount'] = array(
+            '#type' => 'textfield',
+            '#title' => t(''),
+            '#size' => 60,
+            '#maxlength' => 128,
+            '#default_value' => !empty($default_values[$i])?$default_values[$i]->amount:0,
+        );
+    }
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#prefix' => "<div class='form-buttons'>",
+        '#suffix' => "</div>",
+        '#value' => t('Lưu')
+    );
+    return $form;
+}
+
+function cassiopeia_room_booking_fee_form_submit($form, &$form_state){
+    global $user;
+    $db_transaction = db_transaction();
+    variable_set("room_booking_fee_by_start",0);
+    if(!empty($form_state['values']['by_star'])){
+        variable_set("room_booking_fee_by_start",1);
+    }
+    try {
+        db_delete("cassiopeia_room_room_booking_fee")->execute();
+        $query = db_insert("cassiopeia_room_room_booking_fee")->fields(array("uid","created","changed","star","amount","percent","agent_rank","agent"));
+        for($i=0;$i<=5;$i++){
+            $_value = $form_state['values']['feeContainer'][$i];
+            $query->values(array($user->uid,REQUEST_TIME,REQUEST_TIME,$i,$_value['amount'],$_value['percent'],0,0));
+        }
+        $query->execute();
+    } catch (Exception $e) {
+        _print_r($e);
+        die;
+        $db_transaction->rollback();
+    }
+
+}
+function cassiopeia_admin_ticket_booking_manager_form($form, &$form_state, $cache = null){
+    $form = array();
+    $form['#prefix'] = "<div id='formContainer'>";
+    $form['#suffix'] = "</div>";
+    $data_filter = !empty($cache['date_filter'])?$cache['date_filter']:"today";
+    $data_filter = !empty($form_state['values']['date_filter'])?$form_state['values']['date_filter']:$data_filter;
+    $cache['date_filter'] = $data_filter;
+    $form['#cache'] = $cache;
+    $form['date_filter'] = array(
+        '#type' => 'select',
+        '#title' => t('Theo ngày'),
+        '#options' => array(
+//            "all" => "Tất cả",
+            "today" => "Trong ngày",
+            "yesterday" => "Hôm qua",
+            "thismonth" => "Trong tháng",
+            "other" => "Theo ngày",
+        ),
+        '#ajax' => array(
+            'callback' => 'cassiopeia_admin_ticket_booking_manager_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+    );
+    if (!empty($cache['date_filter'])) {
+        $form['date_filter']['#default_value'] = $cache['date_filter'];
+    }
+    if($data_filter=="other"){
+        $form['from_date'] = array(
+            '#type' => 'date_popup',
+            '#default_value' => !empty($cache['from_date']) ? $cache['from_date'] : date("Y-m-d H:i:s", REQUEST_TIME),
+            '#date_type' => DATE_DATETIME,
+            '#date_timezone' => date_default_timezone(),
+            '#date_format' => 'd-m-Y',
+            '#date_increment' => 1,
+            '#date_year_range' => '-10:+10',
+            '#attributes' => array( "class" => array("form_date")),
+            '#prefix'           => "<div class='date-filter-group'>",
+            '#suffix'           => "</div>",
+            '#ajax' => array(
+                'callback' => 'cassiopeia_admin_ticket_booking_manager_form_callback',
+                'wrapper' => 'formContainer',
+                'method' => 'replace',
+                'effect' => 'fade',
+            ),
+        );
+        $form['to_date'] = array(
+            '#type' => 'date_popup',
+            '#default_value' => !empty($cache['to_date']) ? $cache['to_date'] : date("Y-m-d H:i:s", REQUEST_TIME),
+            '#date_type' => DATE_DATETIME,
+            '#date_timezone' => date_default_timezone(),
+            '#date_format' => 'd-m-Y',
+            '#date_increment' => 1,
+            '#date_year_range' => '-10:+10',
+            '#attributes' => array("class" => array("to_date")),
+            '#prefix'           => "<div class='date-filter-group'>",
+            '#suffix'           => "</div>",
+            '#ajax' => array(
+                'callback' => 'cassiopeia_admin_ticket_booking_manager_form_callback',
+                'wrapper' => 'formContainer',
+                'method' => 'replace',
+                'effect' => 'fade',
+            ),
+        );
+    }
+    $form['booking_code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Mã giao dịch'),
+        '#attributes' => array("placeholder" => "Mã giao dịch"),
+        '#default_value' => !empty($cache['booking_code']) ? $cache['booking_code'] : "",
+    );
+    $form['pnr_code'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Mã đặt chỗ'),
+        '#attributes' => array("placeholder" => "Mã đặt chỗ"),
+        '#default_value' => !empty($cache['pnr_code']) ? $cache['pnr_code'] : "",
+    );
+
+    $form['status'] = array(
+        '#type' => 'select',
+        '#title' => t('Tình trạng'),
+        '#options' => array(
+            'all' => t('Tất cả'),
+            'OK' => t('Đặt chỗ'),
+            'FAIL' => t('Đặt lỗi'),
+            'EXPIRED' => t('Hết hạn'),
+//            'HOLD'          => t("Chờ xuất vé"),
+            'TICKETED' => t('Xuất vé'),
+//            'CANCELED'      => t('Hủy đặt chỗ'),
+        ),
+        '#attributes' => array("onchange" => "this.form.submit()"),
+        '#default_value' => !empty($cache['status']) ? $cache['status'] : "",
+    );
+    if(cassiopeia_booking_manager_accept()){
+        $role_query = db_select("role","tbl_role");
+        $role_query->fields("tbl_role");
+        $role_query->condition("rid",4);
+        $role_query->addExpression("GROUP_CONCAT(rid SEPARATOR ',')","rids");
+        $roles = $role_query->execute()->fetchObject();
+
+        $query = db_select("users", "tbl_user");
+        $query->fields("tbl_user");
+        $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+        $query->condition("tbl_role.rid", explode(",",$roles->rids));
+        $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+        $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+        $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+        $query->addField("field_account_code", "field_account_code_value", "agent_code");
+        $result = $query->execute()->fetchAll();
+        $options = array();
+        $options['all'] = "Chọn Đại lý";
+        if (!empty($result)) {
+            foreach ($result as $value) {
+                $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+            }
+        }
+        $form['agent'] = array(
+            '#type' => 'select',
+            '#title' => t('Đại lý'),
+            '#options' => $options,
+            '#chosen' => TRUE,
+            '#attributes' => array("onchange" => "this.form.submit();"),
+        );
+        if (!empty($cache['agent'])) {
+            $form['agent']['#default_value'] = $cache['agent'];
+        }
+    }
+
+    $form['airline'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Hãng hàng không'),
+        '#attributes' => array("placeholder" => "Hãng hàng không"),
+        '#default_value' => !empty($cache['airline']) ? $cache['airline'] : "",
+    );
+    $form['full_name'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Tên khách hàng'),
+        '#attributes' => array("placeholder" => "Tên khách hàng"),
+        '#default_value' => !empty($cache['full_name']) ? $cache['full_name'] : "",
+    );
+    $form['email'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Email'),
+        '#attributes' => array("placeholder" => "Email"),
+        '#default_value' => !empty($cache['email']) ? $cache['email'] : "",
+    );
+    $form['tel'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Điện thoại'),
+        '#attributes' => array("placeholder" => "Điện thoại"),
+        '#default_value' => !empty($cache['tel']) ? $cache['tel'] : "",
+    );
+    $form['item_per_page'] = array(
+        '#type' => 'select',
+        '#title' => t('Hiển thị'),
+        '#options' => array(
+            '50' => t('50'),
+            '100' => t('100'),
+            '200' => t('200'),
+        ),
+        '#attributes' => array("onchange" => "this.form.submit()"),
+        '#default_value' => !empty($cache['item_per_page']) ? $cache['item_per_page'] : "",
+    );
+
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+        '#attributes' => array("class" => array("hidden")),
+    );
+    $form['page'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#ajax' => array(
+            'callback' => 'cassiopeia_admin_ticket_booking_manager_form_callback',
+            'wrapper' => 'formContainer',
+            'method' => 'replace',
+            'effect' => 'fade',
+        ),
+        '#attributes'   => array("class"=>array("hidden")),
+        '#default_value' => 1
+    );
+    $form['#theme'][] = "cassiopeia_admin_ticket_booking_manager_form_theme";
+    return $form;
+}
+function cassiopeia_admin_ticket_booking_manager_form_callback($form,&$form_state){
+    return $form;
+}
+function cassiopeia_admin_ticket_booking_manager_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('/admin/manager/booking', "data" => $options);
+}
+function cassiopeia_contact_delete_form ($form, &$form_state,$contact) {
+    $form_state['#contact'] = $contact;
+    $form = confirm_form($form,
+        t('Bạn có chắc chắn muốn xóa liên hệ này?'),
+        'admin/manager/contact',
+        '<p>' . t('This action cannot be undone.') .'</p>',
+        t('Delete'),
+        t('Cancel'),
+        'confirm'
+    );
+    $form['actions']['cancel']['#attributes'] = array('class'=>array('btn btn-icon-before btn-open-search bg-primary c-white'), 'style'=>array('display: inline-block;'));
+    $form['actions']['cancel']['#options']['html']  = true;
+//  $form['actions']['cancel']['#options']['text']  = '<i class="fal fa-magnifying-glass fa-fw" aria-hidden="true"></i> Cancel';
+    $form['actions']['cancel']['#title']  = '<i class="fal fa-ban fa-fw" aria-hidden="true"></i> '. t('Cancel');
+    $form['actions']['submit']['#icon'] ='<span class="fal fa-trash fa-fw"></span>';
+//    $form['#theme'] = 'kenfox_trademark_trademark_registration_debit_note_description_delete_form';
+    $form['#submit'][] = 'cassiopeia_contact_delete_form_submit';
+
+    return $form;
+}
+function cassiopeia_contact_delete_form_submit ($form, &$form_state) {
+    $contact = $form_state['#contact'];
+    try{
+        db_delete("tbl_contact")->condition("contact_id",$contact->contact_id)->execute();
+        drupal_set_message(t('Đã xóa thành công!'));
+    }catch (Exception $e){
+        drupal_set_message(t('Xóa thất bại!'));
+    }
+}
+function cassiopeia_admin_fee_config_form($form, &$form_state,$data=array("agent_fee"=>null,"service_fee"=>null)){
+    global $user;
+    $service_fee = $form_state['#service_fee'] = !empty($data['service_fee'])?$data['service_fee']:null;
+    $agent_fee = $form_state['#agent_fee'] = !empty($data['agent_fee'])?$data['agent_fee']:null;
+    $form['infant'] = array(
+        '#type'             =>'checkbox',
+        '#title'            => t('Phí dịch vụ em bé'),
+        '#default_value'    => !empty($agent_fee)?1:0
+    );
+    $vocal = taxonomy_vocabulary_machine_name_load("tx_agent_rank");
+    $tx_ranks = (array)taxonomy_get_tree($vocal->vid,0,1);
+    $tx_rank_options = array();
+    $tx_rank_options[0] = "Khách thường";
+    foreach($tx_ranks as $tx_rank){
+        $tx_rank_options[$tx_rank->tid] = $tx_rank->name;
+    }
+    $form['rank'] = array(
+        '#type' => 'select',
+        '#title' => t('Phân loại'),
+        '#options' => $tx_rank_options,
+        '#attributes' => array('onchange' => 'this.form.submit();'),
+    );
+    $form['ECO_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+        '#default_value'    => 1
+
+    );
+    $form['BUSINESS_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+        '#default_value'    => 1
+
+    );
+    $form['VN_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VN_ECO,0,",","."):0,
+    );
+    $form['VN_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VN_OTHER,0,",","."):0,
+    );
+    $form['QH_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->QH_ECO,0,",","."):0,
+    );
+    $form['QH_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->QH_OTHER,0,",","."):0,
+    );
+    $form['VJ_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VJ_ECO,0,",","."):0,
+    );
+    $form['VJ_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VJ_OTHER,0,",","."):0,
+    );
+    $form['VT_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VT_ECO,0,",","."):0,
+    );
+    $form['VT_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->VT_OTHER,0,",","."):0,
+    );
+
+//    $form['percent'] = array(
+//        '#type' => 'textfield',
+//        '#title' => t(''),
+//        '#size' => 60,
+//        '#maxlength' => 128,
+//        '#required' => TRUE,
+//        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->international_percent,0,",","."):0,
+//    );
+    $form['amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($agent_fee)?number_format($agent_fee->international_fee,0,",","."):0,
+    );
+    // service fee
+    $form['S_infant'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t('Phí dịch vụ em bé'),
+        '#default_value' => !empty($infant)?1:0
+
+    );
+    $form['S_ECO_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+
+    );
+    $form['S_BUSINESS_SYNC'] = array(
+
+        '#type' =>
+            'checkbox',
+
+        '#title' => t(''),
+
+    );
+    $form['S_VN_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VN_ECO,0,",","."):0,
+    );
+    $form['S_VN_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VN_OTHER,0,",","."):0,
+    );
+    $form['S_QH_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->QH_ECO,0,",","."):0,
+    );
+    $form['S_QH_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->QH_OTHER,0,",","."):0,
+    );
+    $form['S_VJ_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VJ_ECO,0,",","."):0,
+    );
+    $form['S_VJ_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VJ_OTHER,0,",","."):0,
+    );
+    $form['S_VT_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VT_ECO,0,",","."):0,
+    );
+    $form['S_VT_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->VT_OTHER,0,",","."):0,
+    );
+    $form['S_SPA_ECO'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->SPA_ECO,0,",","."):0,
+    );
+    $form['S_SPA_OTHER'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->SPA_OTHER,0,",","."):0,
+    );
+    $form['S_percent'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->international_percent,0,",","."):0,
+    );
+    $form['S_amount'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->international_fee,0,",","."):0,
+    );
+    $form['S_amount_domestic'] = array(
+        '#type' => 'textfield',
+        '#title' => t(''),
+        '#size' => 60,
+        '#maxlength' => 128,
+        '#required' => TRUE,
+        '#default_value'    => !empty($service_fee)?number_format($service_fee->international_domestic_fee,0,",","."):0,
+    );
+    
+    // end service fee
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => t('Lưu'),
+        '#attributes' => array("class" => array("btn btn-primary"))
+    );
+//    _print_r($service_fee);
+    return $form;
+}
+function cassiopeia_admin_fee_config_form_submit($form,&$form_state){
+    global $user;
+    $_user = user_load($user->uid);
+    $uid = user_has_role(3)?0:$user->uid;
+    $_tid = !empty($_user->field_tx_rank['und'][0]['tid'])?$_user->field_tx_rank['und'][0]['tid']:0;
+    $tid = isset($_REQUEST['tx'])?$_REQUEST['tx']:$_tid;
+    if(user_has_role(8)){
+        $_user->field_tx_rank['und'][0]['tid'] = $tid;
+        user_save($_user);
+    }
+    $agent_fee_config = !empty($form_state['#agent_fee'])?$form_state['#agent_fee']:new stdClass();
+    $agent_fee_config->VN_ECO = !empty($form_state['values']['VN_ECO'])?str_replace(".","",$form_state['values']['VN_ECO']):0;
+    $agent_fee_config->VN_OTHER = !empty($form_state['values']['VN_OTHER'])?str_replace(".","",$form_state['values']['VN_OTHER']):0;
+    $agent_fee_config->QH_ECO = !empty($form_state['values']['QH_ECO'])?str_replace(".","",$form_state['values']['QH_ECO']):0;
+    $agent_fee_config->QH_OTHER = !empty($form_state['values']['QH_OTHER'])?str_replace(".","",$form_state['values']['QH_OTHER']):0;
+    $agent_fee_config->VJ_ECO = !empty($form_state['values']['VJ_ECO'])?str_replace(".","",$form_state['values']['VJ_ECO']):0;
+    $agent_fee_config->VJ_OTHER = !empty($form_state['values']['VJ_OTHER'])?str_replace(".","",$form_state['values']['VJ_OTHER']):0;
+    $agent_fee_config->VT_ECO = !empty($form_state['values']['VT_ECO'])?str_replace(".","",$form_state['values']['VT_ECO']):0;
+    $agent_fee_config->VT_OTHER = !empty($form_state['values']['VT_OTHER'])?str_replace(".","",$form_state['values']['VT_OTHER']):0;
+    $agent_fee_config->SPA_ECO = !empty($form_state['values']['SPA_ECO'])?str_replace(".","",$form_state['values']['SPA_ECO']):0;
+    $agent_fee_config->SPA_OTHER = !empty($form_state['values']['SPA_OTHER'])?str_replace(".","",$form_state['values']['SPA_OTHER']):0;
+    $agent_fee_config->international_percent = !empty($form_state['values']['percent'])?str_replace(".","",$form_state['values']['percent']):0;
+    $agent_fee_config->international_fee = !empty($form_state['values']['amount'])?str_replace(".","",$form_state['values']['amount']):0;
+    $agent_fee_config->infant = $form_state['values']['infant'];
+    $agent_fee_config->tid = $tid;
+    $agent_fee_config->uid = $uid;
+    cassiopeia_qt_agent_fee_config_save($agent_fee_config);
+
+    $service_fee_config = !empty($form_state['#service_fee'])?$form_state['#service_fee']:new stdClass();
+    $service_fee_config->VN_ECO = !empty($form_state['values']['S_VN_ECO'])?str_replace(".","",$form_state['values']['S_VN_ECO']):0;
+    $service_fee_config->VN_OTHER = !empty($form_state['values']['S_VN_OTHER'])?str_replace(".","",$form_state['values']['S_VN_OTHER']):0;
+    $service_fee_config->QH_ECO = !empty($form_state['values']['S_QH_ECO'])?str_replace(".","",$form_state['values']['S_QH_ECO']):0;
+    $service_fee_config->QH_OTHER = !empty($form_state['values']['S_QH_OTHER'])?str_replace(".","",$form_state['values']['S_QH_OTHER']):0;
+    $service_fee_config->VJ_ECO = !empty($form_state['values']['S_VJ_ECO'])?str_replace(".","",$form_state['values']['S_VJ_ECO']):0;
+    $service_fee_config->VJ_OTHER = !empty($form_state['values']['S_VJ_OTHER'])?str_replace(".","",$form_state['values']['S_VJ_OTHER']):0;
+    $service_fee_config->VT_ECO = !empty($form_state['values']['S_VT_ECO'])?str_replace(".","",$form_state['values']['S_VT_ECO']):0;
+    $service_fee_config->VT_OTHER = !empty($form_state['values']['S_VT_OTHER'])?str_replace(".","",$form_state['values']['S_VT_OTHER']):0;
+    $service_fee_config->SPA_ECO = !empty($form_state['values']['S_SPA_ECO'])?str_replace(".","",$form_state['values']['S_SPA_ECO']):0;
+    $service_fee_config->SPA_OTHER = !empty($form_state['values']['S_SPA_OTHER'])?str_replace(".","",$form_state['values']['S_SPA_OTHER']):0;
+    $service_fee_config->international_percent = !empty($form_state['values']['S_percent'])?str_replace(".","",$form_state['values']['S_percent']):0;
+    $service_fee_config->international_fee = !empty($form_state['values']['S_amount'])?str_replace(".","",$form_state['values']['S_amount']):0;
+    $service_fee_config->international_domestic_fee = !empty($form_state['values']['S_amount_domestic'])?str_replace(".","",$form_state['values']['S_amount_domestic']):0;
+    $service_fee_config->infant = $form_state['values']['S_infant'];
+    $service_fee_config->tid = $tid;
+    $service_fee_config->uid = $uid;
+    cassiopeia_qt_service_fee_config_save($service_fee_config);
+}
+function cassiopeia_admin_form_home_config_node_form_alter(&$form,&$form_state){
+    unset($form['actions']['preview']);
+    unset($form['actions']['delete']);
+}
+
+function cassiopeia_admin_manager_top_up_filter_form($form, &$form_state, $data = array()){
+    $form = array();
+    $form['#attributes'] = array("class" => array("filter_form"));
+    $form['from_date'] = array(
+        '#type'             => 'date_popup',
+        '#default_value'    => !empty($cache['from_date']) ? $cache['from_date'] : date("Y-m-01 H:i:s", REQUEST_TIME),
+        '#date_type'        => DATE_DATETIME,
+        '#date_timezone'    => date_default_timezone(),
+        '#date_format'      => 'd-m-Y',
+        '#date_increment'   => 1,
+        '#date_year_range'  => '-10:+10',
+        '#attributes'       => array( "class" => array("form_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    $form['to_date'] = array(
+        '#type'             => 'date_popup',
+        '#default_value'    => !empty($cache['to_date']) ? $cache['to_date'] : date("Y-m-t H:i:s", REQUEST_TIME),
+        '#date_type'        => DATE_DATETIME,
+        '#date_timezone'    => date_default_timezone(),
+        '#date_format'      => 'd-m-Y',
+        '#date_increment'   => 1,
+        '#date_year_range'  => '-10:+10',
+        '#attributes'       => array("class" => array("to_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    $query = db_select("users", "tbl_user");
+    $query->fields("tbl_user");
+    $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+    $query->condition("tbl_role.rid", array(3,8));
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+    $query->addField("field_account_code", "field_account_code_value", "agent_code");
+    $result = $query->execute()->fetchAll();
+    $options = array();
+    $options['all'] = "Tất cả";
+    if (!empty($result)) {
+        foreach ($result as $value) {
+            $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+        }
+    }
+    $form['tran_user'] = array(
+        '#type'         => 'select',
+        '#title'        => t('Người tạo'),
+        '#options'      => $options,
+        '#chosen'       => TRUE,
+    );
+    if (!empty($cache['tran_user'])) {
+        $form['tran_user']['#default_value'] = $cache['tran_user'];
+    }
+    $query = db_select("users", "tbl_user");
+    $query->fields("tbl_user");
+    $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+    $query->condition("tbl_role.rid", 4);
+    $query->leftJoin("field_data_field_account_sale", "tbl_sale", "tbl_sale.entity_id = tbl_user.uid");
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_code", "field_account_code_value", "field_account_code_value");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "field_account_transaction_name_value");
+    $result = $query->execute()->fetchAll();
+    $agent_options = array();
+    $agent_options['all'] = "Chọn Đại lý";
+    if (!empty($result)) {
+        foreach ($result as $value) {
+            $transaction_name = !empty($value->field_account_transaction_name_value) ? $value->field_account_transaction_name_value : "";
+            $account_code = !empty($value->field_account_code_value) ? $value->field_account_code_value : "";
+            $agent_options[$value->uid] = $account_code . " - " . $transaction_name;
+        }
+    }
+    $form['agent'] = array(
+        '#type'         => 'select',
+        '#title'        => t('Đại lý'),
+        '#options'      => $agent_options,
+        '#chosen'       => TRUE,
+        '#attributes'   => array("onchange" => "this.form.submit();"),
+    );
+    if (!empty($caches['agent'])) {
+        $form['agent']['#default_value'] = $caches['agent'];
+    }
+    $form['note'] = array(
+        '#type'     => 'textfield',
+        '#title' => t('Ghi chú'),
+    );
+    $form['submit'] = array(
+        '#type'     => 'submit',
+        '#value'    => 'Lọc',
+        '#prefix'   => "<div class='form-buttons'>",
+        '#suffix'   => "</div>",
+    );
+    return $form;
+}
+function cassiopeia_admin_manager_top_up_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('/admin/manager/room', "data" => $options);
+}
+
+function cassiopeia_admin_room_payment_config_form(){
+    $form = array();
+    $cassiopeia_admin_room_payment_config_form_content = variable_get('cassiopeia_admin_room_payment_config_form_content', array(
+        'value' => '',
+        'format' => 'full_html'
+    ));
+    $form['cassiopeia_admin_room_payment_config_form_content'] = array(
+        '#type' => "text_format",
+        '#title' => 'Nội dung chuyển khoản',
+        '#resizable' => TRUE,
+        '#format' => 'full_html',
+        "#default_value" => $cassiopeia_admin_room_payment_config_form_content['value'],
+//        '#description'  => "#name: tên giao dịch,#code : mã đại lý, #tel : số điện thoại đăng nhập, #pass : mật khẩu",
+    );
+    return system_settings_form($form);
+}
+function cassiopeia_admin_ticket_note_config(){
+    $form = array();
+    $cassiopeia_admin_ticket_note_config_content = variable_get('cassiopeia_admin_ticket_note_config', array(
+        'value' => '',
+        'format' => 'full_html'
+    ));
+    $form['cassiopeia_admin_ticket_note_config'] = array(
+        '#type' => "text_format",
+        '#title' => 'Nội dung',
+        '#resizable' => TRUE,
+        '#format' => 'full_html',
+        "#default_value" => $cassiopeia_admin_ticket_note_config_content['value'],
+//        '#description'  => "#name: tên giao dịch,#code : mã đại lý, #tel : số điện thoại đăng nhập, #pass : mật khẩu",
+    );
+    return system_settings_form($form);
+}
+function cassiopeia_qt_alepay_fee_config_load($type){
+    try{
+        $query = db_select("cassiopeia_qt_alepay_fee_config","cassiopeia_qt_alepay_fee_config");
+        $query->fields("cassiopeia_qt_alepay_fee_config");
+        $query->condition("cassiopeia_qt_alepay_fee_config.type",$type);
+        $result = $query->execute()->fetchObject();
+        return $result;
+    }catch (Exception $e){
+        return null;
+    }
+}
+
+function cassiopeia_admin_hotel_rating_filter_form($form, &$form_state, $cache){
+    $form = array();
+    $form['#attributes']['class'][] = "custom-filter-form";
+    $form['from_date'] = array(
+        '#type' => 'date_popup',
+        '#default_value' => $cache['from_date'],
+        '#date_type' => DATE_DATETIME,
+        '#date_timezone' => date_default_timezone(),
+        '#date_format' => 'd-m-Y',
+        '#date_increment' => 1,
+        '#date_year_range' => '-10:+10',
+        '#attributes' => array( "class" => array("form_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    $form['to_date'] = array(
+        '#type' => 'date_popup',
+        '#default_value' => $cache['to_date'],
+        '#date_type' => DATE_DATETIME,
+        '#date_timezone' => date_default_timezone(),
+        '#date_format' => 'd-m-Y',
+        '#date_increment' => 1,
+        '#date_year_range' => '-10:+10',
+        '#attributes' => array("class" => array("to_date")),
+        '#prefix'           => "<div class='date-filter-group'>",
+        '#suffix'           => "</div>"
+    );
+    $hotels = cassiopeia_get_nodes_by_category("hotel");
+    $options = array();
+    $options['all'] = "Chọn khách sạn";
+    foreach($hotels as $hotel){
+        $options[$hotel->nid] = $hotel->title;
+    }
+    $form['hotel'] = array(
+        '#type' => 'select',
+        '#title' => t('Khách sạn'),
+        '#options' => $options,
+        '#chosen' => TRUE,
+    );
+    if(isset($cache['hotel'])){
+        $form['hotel']['#default_value'] = $cache['hotel'];
+    }
+    $form['point'] = array(
+        '#type' => 'select',
+        '#title' => t('Đánh giá'),
+        '#options' => array(
+            "all" => "Tất cả",
+            1 => "1 sao",
+            2 => "2 sao",
+            3 => "3 sao",
+            4 => "4 sao",
+            5 => "5 sao",
+        ),
+    );
+    if(isset($cache['point'])){
+        $form['point']['#default_value'] = $cache['point'];
+    }
+    $form['status'] = array(
+        '#type' => 'select',
+        '#title' => t('Tình trạng'),
+        '#options' => array(
+            "all" => "Tất cả",
+            0 => "Chưa duyệt",
+            1 => "Đã duyệt",
+            2 => "Hủy",
+        ),
+    );
+    if(isset($cache['status'])){
+        $form['status']['#default_value'] = $cache['status'];
+    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#value' => 'Lọc',
+        '#suffix'   => "<button class='btn btn-warning btn-change-status-all'>Duyệt tất cả</button>"
+    );
+    return $form;
+}
+function cassiopeia_admin_hotel_rating_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('/admin/manager/hotel/rating', "data" => $options);
+}
+function cassiopeia_issue_report_export_call_back(){
+    $datas = $_REQUEST;
+    if(!empty($datas)){
+        $caches['content'] = $datas['content'];
+        $caches['date_filter'] = $datas['date_filter'];
+        $caches['from_date'] = $datas['from_date']['date'];
+        $caches['to_date'] = $datas['to_date']['date'];
+        $caches['airline'] = $datas['airline'];
+        $caches['tran_kind'] = $datas['tran_kind'];
+        $caches['profit_filter'] = $datas['profit_filter'];
+        $caches['PNR'] = $datas['code'];
+        $caches['agent'] = !empty($datas['agent'])?$datas['agent']:null;
+        $caches['tran_user'] = $datas['tran_user'];
+    }
+    try{
+        $query = db_select("tbl_issue_report","tbl_issue_report");
+        $query -> fields("tbl_issue_report");
+        $query->join("tbl_tran_kind","tbl_tran_kind","tbl_tran_kind.id=tbl_issue_report.tran_kind");
+        $query2 = db_select("tbl_issue_report","tbl_issue_report");
+        $query2 -> fields("tbl_issue_report");
+        $query2->join("tbl_tran_kind","tbl_tran_kind","tbl_tran_kind.id=tbl_issue_report.tran_kind");
+        $query2 -> addExpression("SUM(partner_price)","total_partner_price");
+        $query2 -> addExpression("SUM(quantity)","total_quantity");
+        $query2 -> addExpression("SUM(price)","total_price");
+        $query2 -> addExpression("SUM(partner_price-price)","total_revenue");
+        $query2 -> addExpression("COUNT(partner_price)","total_items");
+        if(!empty($caches)){
+//        _print_r($datas);
+            if(!empty($caches['date_filter']&& $caches['date_filter']!="all")){
+                switch ($caches['date_filter']){
+                    case "today" :
+                        $query2->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME)),strtotime(date("d-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
+                        $query->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME)),strtotime(date("d-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
+                        break;
+                    case "yesterday" :
+                        $query2->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME-86400)),strtotime(date("d-m-Y 23:59",REQUEST_TIME-86400))),"BETWEEN");
+                        $query->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME-86400)),strtotime(date("d-m-Y 23:59",REQUEST_TIME-86400))),"BETWEEN");
+                        break;
+                    case "thismonth" :
+                        $query2->condition("date",array(strtotime(date("01-m-Y 00:00",REQUEST_TIME)),strtotime(date("t-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
+                        $query->condition("date",array(strtotime(date("01-m-Y 00:00",REQUEST_TIME)),strtotime(date("t-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
+                        break;
+                    case "other":
+                        if(!empty($caches['from_date'])){
+                            $query2->condition("date",strtotime(date("d-m-Y 00:00",strtotime($caches['from_date']))),">=");
+                            $query->condition("date",strtotime(date("d-m-Y 00:00",strtotime($caches['from_date']))),">=");
+                        }
+                        if($caches['to_date']){
+                            $query2->condition("date",strtotime(date("d-m-Y 23:59",strtotime($caches['to_date']))),"<=");
+                            $query->condition("date",strtotime(date("d-m-Y 23:59",strtotime($caches['to_date']))),"<=");
+                        }
+                        break;
+                }
+            }
+            if(!empty($caches['airline'] && $caches['airline']!="all")){
+                $query->condition("airline",$caches['airline']);
+                $query2->condition("airline",$caches['airline']);
+            }
+            if(!empty($caches['tran_kind']&& $caches['tran_kind']!="all")){
+                $query->condition("tran_kind",$caches['tran_kind']);
+                $query2->condition("tran_kind",$caches['tran_kind']);
+            }
+            if(!empty($caches['profit_filter']&& $caches['profit_filter']!="all")){
+                switch ($datas['profit_filter']){
+                    case "morethanZero":
+                        $query->condition("revenue",0,">");
+                        $query2->condition("revenue",0,">");
+                        break;
+                    case "lessthanZero":
+                        $query->condition("revenue",0,"<");
+                        $query2->condition("revenue",0,"<");
+                        break;
+                    case "equalZero":
+                        $query->condition("revenue",0,"=");
+                        $query2->condition("revenue",0,"=");
+                        break;
+                }
+            }
+            if(!empty($caches['PNR'])){
+                $query->condition("PNR",$caches['PNR']);
+                $query2->condition("PNR",$caches['PNR']);
+            }
+            if(!empty($caches['content']&& $caches['content']!="all")){
+                $query->condition("content","%".$caches['content']."%","LIKE");
+                $query2->condition("content","%".$caches['content']."%","LIKE");
+            }
+            if(!empty($caches['agent']) && $caches['agent']!="all"){
+                $query->condition("agent",$caches['agent']);
+                $query2->condition("agent",$caches['agent']);
+            }
+            if(!empty($caches['tran_user']) && $caches['tran_user']!="all"){
+                $query->condition("tran_user",$caches['tran_user']);
+                $query2->condition("tran_user",$caches['tran_user']);
+            }
+        }
+
+        $query->orderBy("created","DESC");
+        $result = $query -> execute() -> fetchAll();
+    }catch (Exception $e){
+        _print_r($e);
+    }
+    include  drupal_get_path('module','cassiopeia')."/phpspreadsheet.inc";
+
+    $worksheets = array();
+    $worksheet = array('title' => 'Báo cáo xuất vé','data'=>array(), 'merge_cells'=> array());
+    $worksheet['data'][] = array(
+        mb_convert_encoding('Ngày thực hiện' ,  "UTF-8"),
+        mb_convert_encoding('Hãng' ,  "UTF-8"),
+        mb_convert_encoding('Loại giao dịch' ,  "UTF-8"),
+        mb_convert_encoding('Code' ,  "UTF-8"),
+        mb_convert_encoding('Số lượng' ,  "UTF-8"),
+        mb_convert_encoding('Doanh thu' ,  "UTF-8"),
+        mb_convert_encoding('Giá vốn' ,  "UTF-8"),
+        mb_convert_encoding('lợi nhuận' ,  "UTF-8"),
+        mb_convert_encoding('Đại lý' ,  "UTF-8"),
+        mb_convert_encoding('Sale' ,  "UTF-8"),
+        mb_convert_encoding('Người xuất' ,  "UTF-8"),
+        mb_convert_encoding('Khách bay' ,  "UTF-8"),
+        mb_convert_encoding('Nội dung' ,  "UTF-8"),
+    );
+//    _print_r($result);
+//    die;
+    if(!empty($result)){
+        foreach($result as $value){
+            $booking = cassiopeia_qt_ticket_booking_load_by_PNR($value->PNR,$value->airline);
+            $airline = cassiopeia_get_airline($value->airline);
+            $tran_kind = cassiopeia_get_tran_kind_by_id($value->tran_kind);
+            $agent = user_load($value->agent);
+            $agent_name = $agent->field_account_code['und'][0]['value'];
+            if(!empty($agent->field_account_transaction_name['und'][0]['value'])){
+                $agent_name.=" - ".$agent->field_account_transaction_name['und'][0]['value'];
+            }
+            $sale = !empty($agent->field_account_sale['und'][0]['target_id'])?user_load($agent->field_account_sale['und'][0]['target_id']):null;
+            $tran_user = user_load($value->tran_user);
+            $worksheet['data'][] = array(
+                mb_convert_encoding(date("d/m/Y H:i",$value->date) ,  "UTF-8"),
+                mb_convert_encoding(!empty($airline)?$airline->iata:"" ,  "UTF-8"),
+                mb_convert_encoding(!empty($tran_kind)?$tran_kind['name']:"" ,  "UTF-8"),
+                mb_convert_encoding($value->PNR ,  "UTF-8"),
+                mb_convert_encoding($value->quantity ,  "UTF-8"),
+                mb_convert_encoding($value->partner_price ,  "UTF-8"),
+                mb_convert_encoding($value->price ,  "UTF-8"),
+                mb_convert_encoding($value->revenue ,  "UTF-8"),
+                mb_convert_encoding($agent_name,  "UTF-8"),
+                mb_convert_encoding(!empty($sale->field_account_transaction_name['und'][0]['value'])?$sale->field_account_transaction_name['und'][0]['value']:"",  "UTF-8"),
+                mb_convert_encoding(!empty($tran_user->field_account_transaction_name['und'][0]['value'])?$tran_user->field_account_transaction_name['und'][0]['value']:$tran_user->name,  "UTF-8"),
+                mb_convert_encoding(!empty($booking)?$booking->passengers[0]->FirstName." ".$booking->passengers[0]->LastName:"",  "UTF-8"),
+                mb_convert_encoding($value->content,  "UTF-8"),
+            );
+        }
+        $worksheets[]=$worksheet;
+        phpspreadsheet_export($worksheets, 'file_'.date('d_m_Y',REQUEST_TIME));
+    }else{
+        drupal_set_message("Không có dữ liệu phù hợp!");
+        drupal_goto("admin/manager/bao-cao-xuat-ve");
+    }
+}
+function cassiopeia_admin_point_report_filter_form($form,&$form_state,$data){
+    $form_state['#redirect'] = $data['redirect']; 
+    $query = db_select("users", "tbl_user");
+    $query->fields("tbl_user");
+    $query->join("users_roles", "tbl_role", "tbl_role.uid = tbl_user.uid");
+    $query->condition("tbl_role.rid", array(4));
+    $query->join("field_data_field_account_transaction_name", "field_account_transaction_name", "field_account_transaction_name.entity_id=tbl_user.uid");
+    $query->join("field_data_field_account_code", "field_account_code", "field_account_code.entity_id=tbl_user.uid");
+    $query->addField("field_account_transaction_name", "field_account_transaction_name_value", "agent_transaction_name");
+    $query->addField("field_account_code", "field_account_code_value", "agent_code");
+    $result = $query->execute()->fetchAll();
+    $options = array();
+    $options['all'] = "Chọn";
+    if (!empty($result)) {
+        foreach ($result as $value) {
+            $options[$value->uid] = $value->agent_code . " - " . $value->agent_transaction_name;
+        }
+    }
+
+    $form['month'] = array(
+        '#type' => 'select',
+        '#title' => 'Tháng',
+        '#options' => array(
+            1       => "Tháng 1",
+            2       => "Tháng 2",
+            3       => "Tháng 3",
+            4       => "Tháng 4",
+            5       => "Tháng 5",
+            6       => "Tháng 6",
+            7       => "Tháng 7",
+            8       => "Tháng 8",
+            9       => "Tháng 9",
+            10      => "Tháng 10",
+            11      => "Tháng 11",
+            12      => "Tháng 12",
+        ),
+    );
+    if (!empty($data['month'])) {
+        $form['month']['#default_value'] = $data['month'];
+    }
+    $year_options = array();
+    for($i=date("Y",REQUEST_TIME);$i>=2022;$i--){
+        $year_options[$i] = $i;
+    }
+    $form['year'] = array(
+        '#type' => 'select',
+        '#title' => 'Năm',
+        '#options' => $year_options,
+        '#default_value' => $data['year']
+    );
+    global $theme;
+    if($theme!="cassiopeia_theme"){
+        $form['agent'] = array(
+            '#type' => 'select',
+            '#title' => t('Đại lý'),
+            '#options' => $options,
+            '#chosen' => TRUE,
+            '#default_value' => !empty($data['agent'])?$data['agent']:'all'
+        );
+    }
+    $form['sort_direction'] = [
+        '#type' => 'select',
+        '#title' => t('Sắp xếp'),
+        '#options' => [
+            '_none' => t('Mặc định'),
+            'ASC' => t('Tích điểm tăng dần'),
+            'DESC' => t('Tích điểm giảm dần'),
+        ],
+        '#default_value' => '_none',
+//        '#attributes' => ["class" => ["hidden"]],
+    ];
+    if (!empty($data['sort_direction'])) {
+        $form['sort_direction']['#default_value'] = $data['sort_direction'];
+    }
+    $form['submit'] = array(
+        '#type' => 'submit',
+        '#prefix' => "<div class='form-buttons'>",
+        '#suffix' => "</div>",
+        '#value' => t('Lọc'),
+        '#attributes'   => array("class"=>array("btn bg-secondary clr-white ff-semibold radius-4 btn-filter"))
+    );
+    $form['export'] = array(
+        '#type' => 'submit',
+        '#submit' => array('cassiopeia_admin_point_report_filter_form_export'),
+        '#value' => t('Xuất excel'),
+        '#attributes'   => array("class"=>array("btn bg-secondary clr-white ff-semibold radius-4 btn-filter"))
+    );
+    return $form;
+}
+function cassiopeia_admin_point_report_filter_form_export($form,&$form_state){
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array('admin/manager/bao-cao-tich-diem/export', "data" => $options);
+}
+function cassiopeia_admin_point_report_filter_form_submit($form, &$form_state)
+{
+    $arg = arg();
+    $options = array(
+        'query' => array(
+            'data' => $form_state['values'],
+        )
+    );
+    $form_state['redirect'] = array($form_state['#redirect'], "data" => $options);
+}
+function cassiopeia_admin_airline_edit_form($form, &$form_state, $data = ["airline"]) {
+  $form_state['#airline'] = $form['#airline'] = $airline = !empty($data['airline']) ? $data['airline'] : NULL;
+  $form['iata'] = [
+    '#type' => 'textfield',
+    '#title' => t('Code'),
+    '#default_value' => !empty($airline) ? $airline->iata : "",
+  ];
+  $form['name'] = [
+    '#type' => 'textfield',
+    '#title' => t('Hãng'),
+    '#default_value' => !empty($airline) ? $airline->name : "",
+  ];
+  $form['type'] = [
+    '#type' => 'textfield',
+    '#title' => t('Kiểu'),
+    '#default_value' => !empty($airline) ? $airline->type : "",
+  ];
+  $form['image'] = [
+    '#title' => 'Logo',
+    '#type' => 'managed_file',
+    '#upload_location' => 'public://',
+  ];
+  if (!empty($airline->fid)) {
+    $form['image']['#default_value'] = $airline->fid;
+  }
+  $form['submit'] = [
+    '#type' => 'submit',
+    '#value' => 'Cập nhật',
+    '#ajax' => [
+      "callback" => "cassiopeia_admin_airline_edit_form_ajax_submit",
+    ],
+    '#prefix' => "<div style='margin-top: 15px;;'>",
+    '#suffix' => "</div>",
+  ];
+  return $form;
+}
+
+function cassiopeia_admin_airline_edit_form_submit($form, &$form_state) {
+  global $user;
+  if (!empty($form_state['#airline']->iata)) { // edit
+    if (!empty($form_state['values']['image'])) {
+      // Load the file via file.fid.
+      $file = file_load($form_state['values']['image']);
+      // Change status to permanent.
+      $file->status = FILE_STATUS_PERMANENT;
+      // Save.
+      file_save($file);
+      // Record that the module (in this example, user module) is using the file.
+      file_usage_add($file, 'user', 'user', $user->uid);
+      try {
+        db_update("tbl_airlines")->fields([
+          "iata" => $form_state['values']['iata'],
+          "name" => $form_state['values']['name'],
+          "type" => $form_state['values']['type'],
+          "fid" => $file->fid,
+        ])->condition("iata", $form_state['#airline']->iata)->execute();
+      } catch (Exception $e) {
+      }
+    }
+    else {
+      try {
+        db_update("tbl_airlines")->fields([
+          "iata" => $form_state['values']['iata'],
+          "name" => $form_state['values']['name'],
+          "type" => $form_state['values']['type'],
+          "fid" => 0,
+        ])->condition("iata", $form_state['#airline']->iata)->execute();
+      } catch (Exception $e) {
+      }
+    }
+  }
+}
+
+function cassiopeia_admin_airline_edit_form_ajax_submit($form, &$form_state) {
+  ctools_include('ajax');
+  ctools_include('modal');
+  $commands[] = ctools_modal_command_dismiss();
+  $commands[] = ctools_ajax_command_reload();
+  return [
+    '#type' => 'ajax',
+    '#commands' => $commands,
+  ];
+}

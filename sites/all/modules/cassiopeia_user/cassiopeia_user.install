@@ -1,0 +1,2288 @@
+<?php
+function cassiopeia_user_schema() {
+    $schema = array();
+    $schema['user_setting_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'k_u_setting_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_setting_p_uid' => array('uid'),
+            'c_u_setting_p_permission' => array('permission'),
+            'c_u_setting_p_status' => array('status'),
+        ),
+    );
+    $schema['user_article_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_article_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_article_p_uid' => array('uid'),
+            'c_u_article_p_permission' => array('permission'),
+            'c_u_article_p_status' => array('status'),
+        ),
+    );
+    $schema['user_page_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_page_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_page_p_uid' => array('uid'),
+            'c_u_page_p_permission' => array('permission'),
+            'c_u_page_p_status' => array('status'),
+        ),
+    );
+    $schema['user_notify_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_notify_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_notify_p_uid' => array('uid'),
+            'c_u_notify_p_permission' => array('permission'),
+            'c_u_notify_p_status' => array('status'),
+        ),
+    );
+    $schema['user_partner_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_partner_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_partner_p_uid' => array('uid'),
+            'c_u_partner_p_permission' => array('permission'),
+            'c_u_partner_p_status' => array('status'),
+        ),
+    );
+    $schema['user_user_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_user_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_user_p_uid' => array('uid'),
+            'c_u_user_p_permission' => array('permission'),
+            'c_u_user_p_status' => array('status'),
+        ),
+    );
+    $schema['user_topup_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_top_up_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_top_up_p_uid' => array('uid'),
+            'c_u_top_up_p_permission' => array('permission'),
+            'c_u_top_up_p_status' => array('status'),
+        ),
+    );
+    $schema['user_ticket_booking_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_ticket_booking_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_ticket_booking_p_uid' => array('uid'),
+            'c_u_ticket_booking_p_permission' => array('permission'),
+            'c_u_ticket_booking_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_ticket_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_ticket_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_ticket_p_uid' => array('uid'),
+            'c_u_issue_ticket_p_permission' => array('permission'),
+            'c_u_issue_ticket_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_ticket_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_ticket_report_p_uid' => array('uid'),
+            'c_u_issue_ticket_report_p_permission' => array('permission'),
+            'c_u_issue_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_void_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_void_ticket_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_void_ticket_report_p_uid' => array('uid'),
+            'c_u_void_ticket_report_p_permission' => array('permission'),
+            'c_u_void_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_payment_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_payment_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_payment_report_p_uid' => array('uid'),
+            'c_u_payment_report_p_permission' => array('permission'),
+            'c_u_payment_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_general_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_general_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_general_report_p_uid' => array('uid'),
+            'c_u_general_report_p_permission' => array('permission'),
+            'c_u_general_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_balance_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_balance_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_balance_report_p_uid' => array('uid'),
+            'c_u_balance_report_p_permission' => array('permission'),
+            'c_u_balance_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_history_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_history_p_uid' => array('uid'),
+            'c_u_issue_history_p_permission' => array('permission'),
+            'c_u_issue_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_gift_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_gift_history_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_gift_history_p_uid' => array('uid'),
+            'c_u_gift_history_p_permission' => array('permission'),
+            'c_u_gift_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_gift_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_gift_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_gift_p_uid' => array('uid'),
+            'c_u_gift_p_permission' => array('permission'),
+            'c_u_gift_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_setting_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'k_u_setting_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_setting_p_rid' => array('rid'),
+            'c_u_r_setting_p_permission' => array('permission'),
+            'c_u_r_setting_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_article_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_article_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_article_p_rid' => array('rid'),
+            'c_u_r_article_p_permission' => array('permission'),
+            'c_u_r_article_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_page_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_page_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_page_p_rid' => array('rid'),
+            'c_u_r_page_p_permission' => array('permission'),
+            'c_u_r_page_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_notify_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_notify_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_notify_p_rid' => array('rid'),
+            'c_u_r_notify_p_permission' => array('permission'),
+            'c_u_r_notify_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_partner_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_partner_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_partner_p_rid' => array('rid'),
+            'c_u_r_partner_p_permission' => array('permission'),
+            'c_u_r_partner_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_user_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_user_role_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_user_role_p_rid' => array('rid'),
+            'c_u_r_user_role_p_permission' => array('permission'),
+            'c_u_r_user_role_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_topup_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_top_up_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_top_up_p_rid' => array('rid'),
+            'c_u_r_top_up_p_permission' => array('permission'),
+            'c_u_r_top_up_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_ticket_booking_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_ticket_booking_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_ticket_booking_p_rid' => array('rid'),
+            'c_u_r_ticket_booking_p_permission' => array('permission'),
+            'c_u_r_ticket_booking_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_ticket_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_ticket_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_ticket_p_rid' => array('rid'),
+            'c_u_r_issue_ticket_p_permission' => array('permission'),
+            'c_u_r_issue_ticket_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_ticket_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_ticket_report_p_rid' => array('rid'),
+            'c_u_r_issue_ticket_report_p_permission' => array('permission'),
+            'c_u_r_issue_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_void_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_void_ticket_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_void_ticket_report_p_rid' => array('rid'),
+            'c_u_r_void_ticket_report_p_permission' => array('permission'),
+            'c_u_r_void_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_payment_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_payment_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_payment_report_p_rid' => array('rid'),
+            'c_u_r_payment_report_p_permission' => array('permission'),
+            'c_u_r_payment_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_general_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_general_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_general_report_p_rid' => array('rid'),
+            'c_u_r_general_report_p_permission' => array('permission'),
+            'c_u_r_general_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_balance_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_balance_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_balance_report_p_rid' => array('rid'),
+            'c_u_r_balance_report_p_permission' => array('permission'),
+            'c_u_r_balance_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_history_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_history_p_rid' => array('rid'),
+            'c_u_r_issue_history_p_permission' => array('permission'),
+            'c_u_r_issue_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_gift_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_gift_history_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_gift_history_p_rid' => array('rid'),
+            'c_u_r_gift_history_p_permission' => array('permission'),
+            'c_u_r_gift_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_gift_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_gift_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_gift_p_rid' => array('rid'),
+            'c_u_r_gift_p_permission' => array('permission'),
+            'c_u_r_gift_p_status' => array('status'),
+        ),
+    );
+    return $schema;
+}
+function cassiopeia_user_update_7101() {
+    $schema['user_setting_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'k_u_setting_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_setting_p_uid' => array('uid'),
+            'c_u_setting_p_permission' => array('permission'),
+            'c_u_setting_p_status' => array('status'),
+        ),
+    );
+    $schema['user_article_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_article_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_article_p_uid' => array('uid'),
+            'c_u_article_p_permission' => array('permission'),
+            'c_u_article_p_status' => array('status'),
+        ),
+    );
+    $schema['user_page_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_page_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_page_p_uid' => array('uid'),
+            'c_u_page_p_permission' => array('permission'),
+            'c_u_page_p_status' => array('status'),
+        ),
+    );
+    $schema['user_notify_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_notify_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_notify_p_uid' => array('uid'),
+            'c_u_notify_p_permission' => array('permission'),
+            'c_u_notify_p_status' => array('status'),
+        ),
+    );
+    $schema['user_partner_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_partner_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_partner_p_uid' => array('uid'),
+            'c_u_partner_p_permission' => array('permission'),
+            'c_u_partner_p_status' => array('status'),
+        ),
+    );
+    $schema['user_user_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_user_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_user_p_uid' => array('uid'),
+            'c_u_user_p_permission' => array('permission'),
+            'c_u_user_p_status' => array('status'),
+        ),
+    );
+    $schema['user_topup_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_top_up_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_top_up_p_uid' => array('uid'),
+            'c_u_top_up_p_permission' => array('permission'),
+            'c_u_top_up_p_status' => array('status'),
+        ),
+    );
+    $schema['user_ticket_booking_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_ticket_booking_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_ticket_booking_p_uid' => array('uid'),
+            'c_u_ticket_booking_p_permission' => array('permission'),
+            'c_u_ticket_booking_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_ticket_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_ticket_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_ticket_p_uid' => array('uid'),
+            'c_u_issue_ticket_p_permission' => array('permission'),
+            'c_u_issue_ticket_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_ticket_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_ticket_report_p_uid' => array('uid'),
+            'c_u_issue_ticket_report_p_permission' => array('permission'),
+            'c_u_issue_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_void_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_void_ticket_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_void_ticket_report_p_uid' => array('uid'),
+            'c_u_void_ticket_report_p_permission' => array('permission'),
+            'c_u_void_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_payment_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_payment_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_payment_report_p_uid' => array('uid'),
+            'c_u_payment_report_p_permission' => array('permission'),
+            'c_u_payment_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_general_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_general_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_general_report_p_uid' => array('uid'),
+            'c_u_general_report_p_permission' => array('permission'),
+            'c_u_general_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_balance_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_balance_report_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_balance_report_p_uid' => array('uid'),
+            'c_u_balance_report_p_permission' => array('permission'),
+            'c_u_balance_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_issue_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_issue_history_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_issue_history_p_uid' => array('uid'),
+            'c_u_issue_history_p_permission' => array('permission'),
+            'c_u_issue_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_gift_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_gift_history_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_gift_history_p_uid' => array('uid'),
+            'c_u_gift_history_p_permission' => array('permission'),
+            'c_u_gift_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_gift_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'uid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_gift_p_permission_uid' => array(
+                'uid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_gift_p_uid' => array('uid'),
+            'c_u_gift_p_permission' => array('permission'),
+            'c_u_gift_p_status' => array('status'),
+        ),
+    );
+
+    db_create_table('user_setting_permissions', $schema['user_setting_permissions']);
+    db_create_table('user_article_permissions', $schema['user_article_permissions']);
+    db_create_table('user_page_permissions', $schema['user_page_permissions']);
+    db_create_table('user_notify_permissions', $schema['user_notify_permissions']);
+    db_create_table('user_partner_permissions', $schema['user_partner_permissions']);
+    db_create_table('user_user_permissions', $schema['user_user_permissions']);
+    db_create_table('user_topup_permissions', $schema['user_topup_permissions']);
+    db_create_table('user_ticket_booking_permissions', $schema['user_ticket_booking_permissions']);
+    db_create_table('user_issue_ticket_permissions', $schema['user_issue_ticket_permissions']);
+    db_create_table('user_issue_ticket_report_permissions', $schema['user_issue_ticket_report_permissions']);
+    db_create_table('user_void_ticket_report_permissions', $schema['user_void_ticket_report_permissions']);
+    db_create_table('user_payment_report_permissions', $schema['user_payment_report_permissions']);
+    db_create_table('user_general_report_permissions', $schema['user_general_report_permissions']);
+    db_create_table('user_balance_report_permissions', $schema['user_balance_report_permissions']);
+    db_create_table('user_issue_history_permissions', $schema['user_issue_history_permissions']);
+    db_create_table('user_gift_history_permissions', $schema['user_gift_history_permissions']);
+    db_create_table('user_gift_permissions', $schema['user_gift_permissions']);
+}
+function cassiopeia_user_update_7102() {
+    $schema['user_role_setting_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'k_u_setting_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_setting_p_rid' => array('rid'),
+            'c_u_r_setting_p_permission' => array('permission'),
+            'c_u_r_setting_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_article_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_article_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_article_p_rid' => array('rid'),
+            'c_u_r_article_p_permission' => array('permission'),
+            'c_u_r_article_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_page_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_page_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_page_p_rid' => array('rid'),
+            'c_u_r_page_p_permission' => array('permission'),
+            'c_u_r_page_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_notify_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_notify_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_notify_p_rid' => array('rid'),
+            'c_u_r_notify_p_permission' => array('permission'),
+            'c_u_r_notify_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_partner_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_partner_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_partner_p_rid' => array('rid'),
+            'c_u_r_partner_p_permission' => array('permission'),
+            'c_u_r_partner_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_user_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_user_role_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_user_role_p_rid' => array('rid'),
+            'c_u_r_user_role_p_permission' => array('permission'),
+            'c_u_r_user_role_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_topup_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_top_up_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_top_up_p_rid' => array('rid'),
+            'c_u_r_top_up_p_permission' => array('permission'),
+            'c_u_r_top_up_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_ticket_booking_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_ticket_booking_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_ticket_booking_p_rid' => array('rid'),
+            'c_u_r_ticket_booking_p_permission' => array('permission'),
+            'c_u_r_ticket_booking_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_ticket_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_ticket_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_ticket_p_rid' => array('rid'),
+            'c_u_r_issue_ticket_p_permission' => array('permission'),
+            'c_u_r_issue_ticket_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_ticket_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_ticket_report_p_rid' => array('rid'),
+            'c_u_r_issue_ticket_report_p_permission' => array('permission'),
+            'c_u_r_issue_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_void_ticket_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_void_ticket_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_void_ticket_report_p_rid' => array('rid'),
+            'c_u_r_void_ticket_report_p_permission' => array('permission'),
+            'c_u_r_void_ticket_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_payment_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_payment_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_payment_report_p_rid' => array('rid'),
+            'c_u_r_payment_report_p_permission' => array('permission'),
+            'c_u_r_payment_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_general_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_general_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_general_report_p_rid' => array('rid'),
+            'c_u_r_general_report_p_permission' => array('permission'),
+            'c_u_r_general_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_balance_report_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_balance_report_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_balance_report_p_rid' => array('rid'),
+            'c_u_r_balance_report_p_permission' => array('permission'),
+            'c_u_r_balance_report_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_issue_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_issue_history_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_issue_history_p_rid' => array('rid'),
+            'c_u_r_issue_history_p_permission' => array('permission'),
+            'c_u_r_issue_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_gift_history_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_gift_history_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_gift_history_p_rid' => array('rid'),
+            'c_u_r_gift_history_p_permission' => array('permission'),
+            'c_u_r_gift_history_p_status' => array('status'),
+        ),
+    );
+    $schema['user_role_gift_permissions'] = array(
+        'fields' => array(
+            'status' => array(
+                'type' => 'int',
+                'size' => 'tiny',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'rid' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+            'permission' => array(
+                'type' => 'int',
+                'size' => 'big',
+                'not null' => TRUE,
+                'default' => 0,
+            ),
+        ),
+        'unique keys' => array(
+            'c_u_r_gift_p_permission_rid' => array(
+                'rid',
+                'permission'
+            ),
+        ),
+        'indexes' => array(
+            'c_u_r_gift_p_rid' => array('rid'),
+            'c_u_r_gift_p_permission' => array('permission'),
+            'c_u_r_gift_p_status' => array('status'),
+        ),
+    );
+    db_create_table('user_role_setting_permissions', $schema['user_role_setting_permissions']);
+    db_create_table('user_role_article_permissions', $schema['user_role_article_permissions']);
+    db_create_table('user_role_page_permissions', $schema['user_role_page_permissions']);
+    db_create_table('user_role_notify_permissions', $schema['user_role_notify_permissions']);
+    db_create_table('user_role_partner_permissions', $schema['user_role_partner_permissions']);
+    db_create_table('user_role_user_permissions', $schema['user_role_user_permissions']);
+    db_create_table('user_role_topup_permissions', $schema['user_role_topup_permissions']);
+    db_create_table('user_role_ticket_booking_permissions', $schema['user_role_ticket_booking_permissions']);
+    db_create_table('user_role_issue_ticket_permissions', $schema['user_role_issue_ticket_permissions']);
+    db_create_table('user_role_issue_ticket_report_permissions', $schema['user_role_issue_ticket_report_permissions']);
+    db_create_table('user_role_void_ticket_report_permissions', $schema['user_role_void_ticket_report_permissions']);
+    db_create_table('user_role_payment_report_permissions', $schema['user_role_payment_report_permissions']);
+    db_create_table('user_role_general_report_permissions', $schema['user_role_general_report_permissions']);
+    db_create_table('user_role_balance_report_permissions', $schema['user_role_balance_report_permissions']);
+    db_create_table('user_role_issue_history_permissions', $schema['user_role_issue_history_permissions']);
+    db_create_table('user_role_gift_history_permissions', $schema['user_role_gift_history_permissions']);
+    db_create_table('user_role_gift_permissions', $schema['user_role_gift_permissions']);
+}

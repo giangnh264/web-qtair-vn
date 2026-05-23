@@ -1,0 +1,12 @@
+name = Cassiopeia QT
+description = Cassiopeia QT
+
+package = Cassiopeia
+
+dependencies[] = system
+dependencies[] = entity
+dependencies[] = rules
+
+core = 7.x
+version = "7.x-1.05"
+datestamp = "1419029284"

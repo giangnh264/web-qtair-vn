@@ -1,0 +1,2064 @@
+.small-box>.inner>p:last-child {
+    margin-bottom: 10px;
+}
+
+.alert a.close {
+    text-decoration: none;
+}
+
+th.active>a>img {
+    display: inline;
+    float: right;
+}
+
+.chosen-container.form-control {
+    border: none;
+    width: 100% !important;
+    padding: 0px;
+    height: auto !important;
+}
+
+.image-widget-data .input-group {
+    float: left;
+}
+
+.image-widget-data>button {
+    margin-bottom: 15px;
+}
+
+div.admin .right {
+    margin-right: 0px;
+    width: 50%;
+    padding-left: 10px;
+}
+
+div.admin .left {
+    margin-left: 0px;
+    width: 50%;
+    padding-right: 10px;
+}
+
+div.admin-panel.panel {
+    padding: 0px;
+    margin-bottom: 20px;
+}
+
+div.admin-panel.panel .body.panel-body {
+    padding: 15px;
+}
+
+.admin-panel .item-list,
+.admin-panel .admin-list,
+.admin-list {
+    background: transparent;
+    padding: 0px;
+    border: 0px;
+}
+
+.admin-panel h3 span.icon,
+.admin-list li a span.icon {
+    position: absolute;
+    left: 10px;
+}
+
+.admin-list-compact li a span.icon {
+    top: 5px;
+}
+
+.admin-panel h3 {
+    position: relative;
+    padding: 0px 5px 0px 50px;
+    margin: 0px;
+    min-height: 30px;
+}
+
+.node-type-list li,
+.admin-list li {
+    position: relative;
+    padding: 10px 5px 9px 50px;
+    margin: 0px;
+    min-height: 30px;
+    border-bottom: 1px solid #e8e8e8;
+}
+
+.node-type-list li:last-child,
+.admin-list li:last-child {
+    border-bottom: 1px solid transparent;
+}
+
+.admin-panel h3 {
+    background: #f4f4f4;
+    line-height: 30px;
+}
+
+.content-header>.primary-local-tasks {
+    float: right;
+    padding: 0px;
+    margin: 0px;
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+.content-header>.primary-local-tasks li {
+    display: inline-block;
+    list-style: none;
+}
+
+.content-header>.primary-local-tasks li a {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    /*border: 1px solid transparent;*/
+    color: #fff;
+    background-color: #00a65a;
+    border-color: #008d4c;
+}
+
+.content-header>.primary-local-tasks li a:hover {
+    color: #fff;
+    background-color: #008d4c;
+    border-color: #398439;
+}
+
+.version-status>.icon {
+    float: right;
+}
+
+.version-links {
+    float: right;
+}
+
+.version-links ul {
+    padding: 0px;
+    margin: 0px;
+}
+
+.version-links ul>li {
+    display: inline-block;
+    list-style: none;
+    padding: 0px 5px 0px 5px;
+}
+
+.chosen-container-multi .chosen-choices {
+    border: 1px solid #d2d6de;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    background-image: none;
+    border-radius: 0px;
+    padding: 3px;
+}
+
+.chosen-container .chosen-drop {
+    margin-top: 10px;
+}
+
+.chosen-container-multi .chosen-choices li.search-field {
+    padding: 3px 20px 3px 5px;
+}
+
+.chosen-container-active .chosen-choices {
+    border: 1px solid #3c8dbc;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+@media (max-width: 991px) {
+    .content-header>.primary-local-tasks {
+        position: relative;
+        margin-top: 5px;
+        top: 0;
+        right: 0;
+        float: none;
+    }
+}
+
+#views-display-menu-tabs {
+    float: none !important;
+}
+
+.ctools-twisty {
+    width: 4px;
+}
+
+.views-ui-display-tab-bucket .ctools-button-processed button {
+    height: 18px;
+    padding: 0px 10px 0px 10px;
+    border: none;
+    background: none;
+    margin: 0px;
+    line-height: 18px;
+}
+
+#views-display-menu-tabs .action-list button {
+    width: 100%;
+}
+
+.treeTable tr.collapsed>td:first-child,
+.treeTable tr.expanded td:first-child {
+    padding-left: 19px !important;
+}
+
+#edit-options-alter-text-wrapper {
+    height: auto !important;
+}
+
+#system-image-toolkit-settings #edit-image-jpeg-quality {
+    width: calc(100% - 30px);
+    display: inline-block;
+    margin-right: 5px;
+}
+
+div.image-widget-data {
+    display: flex;
+}
+
+#modal_booking_update .booking-update-history {
+    background: #8080803d;
+    padding: 10px;
+    margin: 15px 0px;
+}
+
+#modal_booking_update textarea {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+}
+
+#modal_booking_update .button {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.page-admin-manager-booking .filter-form form label {
+    display: flex;
+}
+
+#modal_booking_mail .modal-footer {
+    display: flex;
+}
+
+#cassiopeia-booking-filter-form .form-button {
+    align-items: center;
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: space-between;
+}
+
+#cassiopeia-booking-filter-form .form-button>div {
+    display: flex;
+}
+
+#cassiopeia-booking-filter-form .form-button .form-item-uncheck {
+    margin: 0px;
+}
+
+#cassiopeia-booking-filter-form .form-button .form-item-uncheck label {
+    height: 34px;
+    display: flex;
+    align-items: center;
+    background: firebrick;
+    margin: 0;
+    color: white;
+    justify-content: center;
+    padding: 0;
+    width: 100px;
+    margin-right: 20px;
+    border-radius: 3px;
+}
+
+#cassiopeia-booking-filter-form .form-button .form-item-uncheck input {
+    display: none;
+}
+
+#cassiopeia-booking-filter-form .form-button button {
+    width: 100px;
+}
+
+#cassiopeia-booking-filter-form .form-item-from-date,
+#cassiopeia-booking-filter-form .form-item-from-date #edit-from-date,
+#cassiopeia-booking-filter-form .form-item-from-date .form-item-from-date-date,
+#cassiopeia-booking-filter-form .form-item-from-date .form-item-from-date-date input {
+    width: 100%;
+}
+
+#cassiopeia-booking-filter-form .form-item-to-date,
+#cassiopeia-booking-filter-form .form-item-to-date #edit-to-date,
+#cassiopeia-booking-filter-form .form-item-to-date .form-item-to-date-date,
+#cassiopeia-booking-filter-form .form-item-to-date .form-item-to-date-date input {
+    width: 100%;
+}
+
+.receipt-review {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    background: #00000057;
+    display: flex;
+    align-items: center;
+}
+
+.receipt-review .block-container {
+    background: white;
+    width: 600px;
+    margin: auto;
+    padding: 10px
+}
+
+.receipt-review .block-container .block-title {
+    padding: 10px;
+    border-bottom: solid thin #80808040;
+    position: relative;
+}
+
+.receipt-review .block-container .block-title h4 {
+    margin: 0;
+}
+
+.receipt-review .block-container .block-title a.close {
+    position: absolute;
+    opacity: 1;
+    right: 0;
+    top: 0;
+    font-size: 25px;
+    cursor: pointer;
+}
+
+.receipt-review .block-container .buttons {
+    display: flex;
+    justify-content: flex-end;
+}
+
+#modal_receipts_form button {
+    color: white;
+}
+
+#cassiopeia-customer-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-customer-filter-form>div>div {
+    margin: 0px;
+    margin-right: 20px;
+}
+
+#cassiopeia-ticket-manager-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-ticket-manager-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin: 20px 0px;
+}
+
+#cassiopeia-ticket-manager-filter-form>div>.form-group {
+    margin: 0;
+    margin-right: 20px;
+}
+
+td.td-partner-status>div {
+    position: relative;
+}
+
+td.td-partner-status>div .text-partner-status {
+    display: flex;
+    padding: 8px 10px;
+    cursor: pointer;
+    border: solid thin #8080802e;
+    justify-content: center;
+}
+
+td.td-partner-status>div ul {
+    padding: 0;
+    box-shadow: 0px 0px 1px #00000073;
+    position: absolute;
+    top: 36px;
+    left: 0;
+    width: 150px;
+    background: white;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s linear;
+    z-index: 9;
+}
+
+td.td-partner-status>div ul.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+td.td-partner-status>div ul li {
+    list-style: none;
+    padding: 7px 10px;
+    cursor: pointer;
+}
+
+td.td-partner-status>div ul li:hover {
+    background: #97cceb;
+}
+
+td.td-partner-status>div select {
+    display: none;
+}
+
+.partner-status-11 {
+    color: blue;
+}
+
+.partner-status-22 {
+    color: blue;
+}
+
+.partner-status-13 {
+    color: orange;
+    margin-right: 15px;
+}
+
+.partner-status-14 {
+    color: red;
+}
+
+.page-manager-partners td {
+    vertical-align: middle !important;
+}
+
+#user-register-form .input-group {
+    display: flex;
+    align-items: center;
+    position: relative;
+    border-bottom: solid thin #80808033;
+    margin-bottom: 20px;
+    width: 33%;
+}
+
+#user-register-form .input-group input {
+    border: none;
+    box-shadow: 0px 0px;
+    font-size: 16px;
+    padding-left: 0px;
+}
+
+#user-register-form .input-group img {
+    padding: 12px;
+}
+
+.form-type-password-confirm .row {
+    margin: 0;
+}
+
+.form-type-password-confirm .row .input-group-addon {
+    background: transparent;
+    border: none;
+    padding: 12px;
+    display: flex;
+    width: 40px;
+}
+
+.page-admin-manager-booking td button:hover,
+.page-admin-manager-booking td button {
+    background: none;
+    color: black;
+    border: none;
+    outline: none;
+    padding: 0;
+    margin-right: 5px;
+}
+
+.page-issue-detail .header-block {
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 20px;
+    margin-bottom: 20px;
+    border-bottom: solid thin #80808073;
+}
+
+.page-manager-ticket table button {
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.admin-manager-airports .page-button {
+    display: flex;
+}
+
+.admin-manager-airports .page-button form {
+    margin-right: 5px;
+}
+
+#cassiopeia-airport-filter-form {
+    margin: 20px 0px;
+}
+
+#cassiopeia-airport-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-airport-filter-form>div>.form-group {
+    margin: 0px 20px 0px 0px;
+}
+
+
+/*// booking form*/
+
+.page-user-manager-add-booking .box {
+    background: none;
+}
+
+.add-booking-form .contact-block,
+.add-booking-form .customer-block,
+.add-booking-form .itinerary-block {
+    margin-bottom: 30px;
+    background: white;
+    padding: 10px;
+}
+
+.add-booking-form .contact-block .block-title,
+.add-booking-form .customer-block .block-title,
+.add-booking-form .itinerary-block .block-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.add-booking-form .contact-block>div,
+.add-booking-form .customer-block>div,
+.add-booking-form .itinerary-block>div {
+    margin-bottom: 15px;
+}
+
+.add-booking-form .itinerary-block input {
+    border-radius: 5px;
+}
+
+.add-booking-form .itinerary-block .total-price>div {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.add-booking-form .itinerary-block .total-price>div span {
+    height: 34px;
+    width: 34px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid thin #80808047;
+    border-right: none;
+    font-size: 22px
+}
+
+.add-booking-form .contact-block .block-content>div {
+    margin-bottom: 15px;
+}
+
+.search-fly-form-actions button[type="submit"],
+.search-fly-form-actions button[type="submit"]:hover,
+.search-fly-form-actions button[type="submit"]:focus {
+    display: table;
+    padding-left: 30px;
+    padding-right: 30px;
+    font-family: Arial;
+    font-size: 14px;
+    background-color: #ee3b3b;
+    color: white;
+    text-transform: uppercase;
+    /*height: 33px;*/
+    margin: auto;
+}
+
+.search-fly-form-horizontal-one .search-fly-form-actions .button[type="submit"] {
+    margin-bottom: 20px;
+}
+
+.search-fly-form-horizontal-two .search-fly-form-actions button[type="submit"] {
+    margin-top: 20px;
+}
+
+.input-fn,
+.search-fly-form-departure,
+.search-fly-form-destination {
+    position: relative;
+}
+
+.sub-search {
+    top: 50px;
+    left: 0 !important;
+    position: absolute;
+    z-index: 11;
+}
+
+.sub-search .sub-search-content {
+    width: 790px;
+    padding: 15px 20px;
+    background: #fff;
+    border-radius: 3px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, .1);
+    border: 1px solid #0000003b;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+.sub-search .sub-search-content .domestic-col {
+    width: 140px;
+    margin-right: 1%;
+    float: left;
+    margin-bottom: -15px;
+}
+
+.sub-search .sub-search-content .domestic-col-lg {
+    width: 38% !important;
+    background: #80808030;
+    padding: 10px;
+    margin-right: 2%;
+}
+
+.sub-search .sub-search-content .domestic-col ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 15px;
+}
+
+.sub-search .sub-search-content .domestic-col ul li.title {
+    font-size: 15px !important;
+    font-family: Arial;
+    margin-bottom: 5px;
+    color: #ee3b3b !important;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.sub-search .sub-search-content .domestic-col ul li a {
+    padding: 4px 0px;
+    display: inline-block;
+    cursor: pointer;
+    color: #000 !important;
+    font-size: 14px !important;
+    font-weight: 400 !important;
+    text-decoration: none !important;
+}
+
+.sub-search .sub-search-content .domestic-col ul li a b {
+    font-weight: 400 !important;
+    font-family: Arial;
+    font-size: 14px;
+}
+
+.sub-search .sub-search-content .domestic-col ul li a span {
+    font-weight: 600;
+}
+
+.sub-search .sub-search-content ul.result li {
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+.sub-search .sub-search-content ul.result li a {
+    padding: 0px !important;
+}
+
+.sub-search .sub-search-content ul.result li a b {
+    font-weight: 600 !important;
+}
+
+.sub-search .sub-search-content .domestic-col ul li .desc {
+    font-size: 14px;
+    color: #333;
+    font-weight: 400;
+}
+
+.icon-add-location {
+    background-image: url(../img/icons/icon-30.png);
+    display: block;
+    width: 18px;
+    height: 18px;
+}
+
+.icon-select-location {
+    background-image: url(../img/icons/icon-31.png);
+    display: block;
+    width: 10px;
+    height: 7px;
+}
+
+.search-fly-form-departure .icon-add-location,
+.search-fly-form-destination .icon-add-location {
+    position: absolute;
+    left: 10px;
+    bottom: 17px;
+    margin-bottom: -9px;
+}
+
+.search-fly-form-departure .icon-select-location,
+.search-fly-form-destination .icon-select-location {
+    position: absolute;
+    right: 10px;
+    bottom: 17px;
+    margin-bottom: -3px;
+}
+
+.search-fly-form-departure .fake-input-text,
+.search-fly-form-destination .fake-input-text {
+    font-size: 16px;
+}
+
+.search-fly-form .loading {
+    width: 60px;
+    height: 60px;
+    margin: auto;
+}
+
+.result.departure,
+.result.destination {
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.search-fly-form-departure-date .icon-calendar,
+.search-fly-form-return-date .icon-calendar {
+    position: absolute;
+    left: 10px;
+    bottom: 12px;
+    font-size: 16px;
+    color: #D45152;
+}
+
+.Input-DepartureDate,
+.Input-ReturnDate {
+    padding-left: 32px;
+}
+
+
+/*----- End Form ---------*/
+
+#search-fly-form {
+    width: 100%;
+    background: no-repeat;
+}
+
+.page-home #search-fly-form {
+    position: absolute;
+    bottom: 100px;
+    left: 0;
+    z-index: 2;
+    height: 153px;
+}
+
+#search-fly-form .search-fly-form-container {
+    background: white;
+    padding: 0;
+    border-radius: 5px;
+    /*overflow: hidden;*/
+}
+
+#main-slider {
+    position: relative;
+}
+
+.search-fly-guest {
+    position: relative;
+    padding-right: 30px;
+}
+
+.search-fly-guest .text {
+    height: 40px;
+    display: flex;
+    align-items: center;
+    border: solid thin #80808057;
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.search-fly-guest .search-fly-form-passenger {
+    position: absolute;
+    top: 40px;
+    background: white;
+    right: 15px;
+    width: 360px;
+    padding: 15px;
+    box-shadow: 0px 1px 3px #0000006b;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s linear;
+}
+
+.search-fly-guest .search-fly-form-passenger.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.gutter {
+    padding: 0px 8px;
+}
+
+.search-fly-form-horizontal-one .search-fly-form-departure-destination .gutter:last-child {
+    /*padding-right: 0px;*/
+}
+
+.search-fly-form-date {
+    display: flex;
+    width: 30%;
+}
+
+.search-fly-form-date .search-fly-form-departure-date {
+    margin-right: 16px;
+}
+
+.search-fly-guest {
+    width: 13%;
+}
+
+.search-fly-form-actions {
+    width: 14%;
+}
+
+.search-fly-form-actions button[type="submit"] {
+    border-radius: 10px;
+    border: none;
+    height: 40px;
+    width: 100%;
+}
+
+.page-user-manager-add-booking .modal-dialog {
+    width: 790px;
+}
+
+.page-user-manager-add-booking .sub-search {
+    position: relative;
+}
+
+.page-user-manager-add-booking .sub-search .sub-search-content {
+    border: none;
+    box-shadow: 0px 0px;
+}
+
+#modal_destination .modal-body {
+    padding: 0px;
+}
+
+#modal_airline .list-of-airine {
+    height: 200px;
+    position: relative;
+    border: solid thin #80808057;
+    border-top: none;
+}
+
+#modal_airline .list-of-airine ul {
+    height: 100%;
+    position: absolute;
+    top: 0px;
+    left: 0;
+    background: white;
+    overflow: auto;
+    width: 100%;
+    padding: 0;
+}
+
+#modal_airline .list-of-airine ul li {
+    padding: 5px 15px;
+    list-style: none;
+    cursor: pointer;
+    display: none;
+}
+
+#modal_airline .list-of-airine ul li.name-active,
+#modal_airline .list-of-airine ul li.iata-active {
+    display: flex;
+}
+
+#modal_airline .list-of-airine ul li:hover {
+    background: #80808040;
+}
+
+#modal_khoan_muc .modal-title {
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 24px;
+}
+
+.ui-timepicker-standard {
+    z-index: 999999 !important;
+}
+
+.modal .modal-header {
+    background: #3c8dbc;
+    text-transform: uppercase;
+    color: white;
+    text-align: center;
+}
+
+.modal .buttons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal .buttons span {
+    /*height: 32px;*/
+    border: none;
+}
+
+.modal .buttons button {
+    margin-right: 10px;
+    border: none;
+}
+
+.modal-delete .modal-header {
+    background: #ee3b3b;
+}
+
+.modal-delete .buttons button {
+    background: #ee3b3b;
+}
+
+.modal .confirm {
+    margin-bottom: 20px;
+    text-align: center;
+    font-size: 17px;
+}
+
+.page-payment-report .general {
+    width: 500px;
+    margin-bottom: 10px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.page-payment-report .report-items {
+    border: solid thin #80808036;
+    border-top: none;
+}
+
+.page-payment-report .report-items thead {
+    background: gainsboro;
+}
+
+#cassiopeia-filter-payment-report-form>div,
+#cassiopeia-filter-issue-report-form>div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    margin: 20px 0px;
+    border: solid thin #8080802e;
+    padding: 10px;
+}
+
+#cassiopeia-filter-payment-report-form>div .form-group,
+#cassiopeia-filter-issue-report-form>div .form-group {
+    margin: 0;
+    margin-right: 20px;
+}
+
+#cassiopeia-filter-transaction-report-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin: 20px 0px;
+}
+
+#cassiopeia-filter-transaction-report-form>div .form-group {
+    margin: 0;
+    margin-right: 20px;
+}
+
+.booking-status.EXPIRED,
+.booking-status.FAIL {
+    color: red;
+    font-weight: bold;
+}
+
+.booking-status.TICKETED {
+    color: #ff9000;
+    font-weight: bold;
+}
+
+.booking-status.OK {
+    color: green;
+    font-weight: bold;
+}
+
+.page-admin-manager-booking .table>tbody>tr>td {
+    padding: 6px !important;
+}
+
+#cassiopeia-add-issue-report-form>div {
+    display: flex;
+    align-items: flex-end;
+    background: #80808014;
+    padding: 20px 10px;
+    margin-bottom: 20px;
+}
+
+#cassiopeia-add-issue-report-form>div>.form-group {
+    margin: -0;
+    margin-right: 15px;
+}
+
+#cassiopeia-add-issue-report-form .form-item-airline .chosen-container.form-control {
+    width: 200px !important;
+}
+
+#cassiopeia-add-issue-report-form .form-item-pnr {
+    width: 200px;
+}
+
+#cassiopeia-add-issue-report-form .form-item-quantity {
+    width: 100px;
+}
+
+#cassiopeia-add-issue-report-form .form-item-pnr input {
+    text-transform: uppercase;
+}
+
+#cassiopeia-filter-payment-report-form .form-item-pnr {
+    width: 150px;
+}
+
+#cassiopeia-add-payment-report-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-add-payment-report-form>div .form-group {
+    margin: 0;
+    margin-right: 15px;
+}
+
+#cassiopeia-add-payment-report-form>div .form-item-value {
+    width: 200px;
+}
+
+#cassiopeia-detail-report-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 20px;
+}
+
+td.plus {
+    font-weight: bold;
+}
+
+td.minus {
+    font-weight: bold;
+    color: red;
+}
+
+#cassiopeia-agent-report-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 25px;
+}
+
+#cassiopeia-agent-report-filter-form>div .form-group {
+    margin: 0;
+    margin-right: 15px;
+}
+
+#cassiopeia-agent-report-filter-form>div .form-item-code {
+    width: 200px;
+}
+
+#cassiopeia-agent-report-filter-form>div .form-item-name {
+    width: 250px;
+}
+
+#cassiopeia-agent-report-filter-form>div .form-item-tel {
+    width: 200px;
+}
+
+#cassiopeia-agent-report-filter-form>div .form-item-mail {
+    width: 250px;
+}
+
+#cassiopeia-detail-report-tab-3-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+#cassiopeia-detail-report-tab-3-filter-form>div .form-group {
+    margin: 0;
+    margin-right: 15px;
+}
+
+td.PNR {
+    text-transform: uppercase;
+}
+
+
+/*.container-inline-date,*/
+
+.container-inline-date>div,
+.container-inline-date>div>div,
+.container-inline-date>div>div>div,
+.container-inline-date>div>div>div>input {
+    width: 100% !important;
+}
+
+.page-admin-manager-booking {
+    font-size: 12px;
+}
+
+#cassiopeia-booking-filter-form>div {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+#cassiopeia-booking-filter-form>div .form-item {
+    margin-bottom: 5px;
+}
+
+#cassiopeia-detail-report-filter-form {
+    width: 500px;
+}
+
+#cassiopeia-detail-report-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-detail-report-filter-form .container-inline-date {
+    margin-right: 15px;
+}
+
+.form-item-quantity {
+    width: 73px;
+}
+
+#sort_by~span {
+    height: 100%;
+    cursor: pointer;
+}
+
+#sort_by~span:after {
+    content: "\f175";
+    font-family: FontAwesome;
+}
+
+#sort_by:checked~span:after {
+    content: "\f176";
+    font-family: FontAwesome;
+}
+
+#cassiopeia-detail-report-tab-3-filter-form .container-inline-date {
+    width: unset !important;
+    margin-right: 15px;
+}
+
+#cassiopeia-detail-report-tab-3-filter-form .form-item-sort-by,
+#cassiopeia-detail-report-tab-3-filter-form .form-item-order-by {
+    /*display: none;*/
+}
+
+#cassiopeia-manager-partners-filter-form>div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    padding: 10px;
+    border: solid thin #80808024;
+    margin-bottom: 20px;
+}
+
+#cassiopeia-manager-partners-filter-form>div .form-group {
+    margin: 0;
+    margin-right: 15px;
+    width: calc(20% - 15px);
+}
+
+#cassiopeia-manager-partners-filter-form>div .bottoms {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+    margin: 15px 0px;
+}
+
+#cassiopeia-manager-partners-filter-form>div .bottoms .form-item-item-per-page {
+    width: 136px;
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-manager-partners-filter-form>div .bottoms .form-item-item-per-page label {
+    width: 100px;
+}
+
+.report-items tbody>tr:nth-child(even) {
+    /*display: none !important;*/
+}
+
+.report-items tbody>tr:nth-child(even).active {
+    /*display: block !important;*/
+}
+
+.report-items tbody>tr:nth-child(odd)>td,
+.report-items tbody>tr:nth-child(even)>td,
+.report-items thead>tr>th {
+    /*text-align: center !important;*/
+}
+
+
+/*.report-items tbody > tr:nth-child(even) > td*/
+
+.td-partner-status {
+    /*text-align: center;*/
+}
+
+.bold {
+    font-weight: bold;
+}
+
+
+/*loading*/
+
+@keyframes lds-spin {
+    0% {
+        opacity: 1;
+        -webkit-transform: scale(1.1, 1.1);
+        transform: scale(1.1, 1.1);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: scale(1, 1);
+        transform: scale(1, 1);
+    }
+}
+
+@-webkit-keyframes lds-spin {
+    0% {
+        opacity: 1;
+        -webkit-transform: scale(1.1, 1.1);
+        transform: scale(1.1, 1.1);
+    }
+    100% {
+        opacity: 0;
+        -webkit-transform: scale(1, 1);
+        transform: scale(1, 1);
+    }
+}
+
+.lds-spin {
+    position: relative;
+}
+
+.lds-spin div>div {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #cd5657;
+    -webkit-animation: lds-spin 1s linear infinite;
+    animation: lds-spin 1s linear infinite;
+}
+
+.lds-spin div:nth-child(1)>div {
+    left: 140px;
+    top: 80px;
+    -webkit-animation-delay: -0.875s;
+    animation-delay: -0.875s;
+}
+
+.lds-spin>div:nth-child(1) {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+    -webkit-transform-origin: 160px 100px;
+    transform-origin: 160px 100px;
+}
+
+.lds-spin div:nth-child(2)>div {
+    left: 122.42640685999999px;
+    top: 122.42640685999999px;
+    -webkit-animation-delay: -0.75s;
+    animation-delay: -0.75s;
+}
+
+.lds-spin>div:nth-child(2) {
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+    -webkit-transform-origin: 142.42640686px 142.42640686px;
+    transform-origin: 142.42640686px 142.42640686px;
+}
+
+.lds-spin div:nth-child(3)>div {
+    left: 80px;
+    top: 140px;
+    -webkit-animation-delay: -0.625s;
+    animation-delay: -0.625s;
+}
+
+.lds-spin>div:nth-child(3) {
+    -webkit-transform: rotate(90deg);
+    transform: rotate(90deg);
+    -webkit-transform-origin: 100px 160px;
+    transform-origin: 100px 160px;
+}
+
+.lds-spin div:nth-child(4)>div {
+    left: 37.57359314px;
+    top: 122.42640685999999px;
+    -webkit-animation-delay: -0.5s;
+    animation-delay: -0.5s;
+}
+
+.lds-spin>div:nth-child(4) {
+    -webkit-transform: rotate(135deg);
+    transform: rotate(135deg);
+    -webkit-transform-origin: 57.57359314px 142.42640686px;
+    transform-origin: 57.57359314px 142.42640686px;
+}
+
+.lds-spin div:nth-child(5)>div {
+    left: 20px;
+    top: 80px;
+    -webkit-animation-delay: -0.375s;
+    animation-delay: -0.375s;
+}
+
+.lds-spin>div:nth-child(5) {
+    -webkit-transform: rotate(180deg);
+    transform: rotate(180deg);
+    -webkit-transform-origin: 40px 100px;
+    transform-origin: 40px 100px;
+}
+
+.lds-spin div:nth-child(6)>div {
+    left: 37.57359314px;
+    top: 37.57359314px;
+    -webkit-animation-delay: -0.25s;
+    animation-delay: -0.25s;
+}
+
+.lds-spin>div:nth-child(6) {
+    -webkit-transform: rotate(225deg);
+    transform: rotate(225deg);
+    -webkit-transform-origin: 57.57359314px 57.57359314px;
+    transform-origin: 57.57359314px 57.57359314px;
+}
+
+.lds-spin div:nth-child(7)>div {
+    left: 80px;
+    top: 20px;
+    -webkit-animation-delay: -0.125s;
+    animation-delay: -0.125s;
+}
+
+.lds-spin>div:nth-child(7) {
+    -webkit-transform: rotate(270deg);
+    transform: rotate(270deg);
+    -webkit-transform-origin: 100px 40px;
+    transform-origin: 100px 40px;
+}
+
+.lds-spin div:nth-child(8)>div {
+    left: 122.42640685999999px;
+    top: 37.57359314px;
+    -webkit-animation-delay: 0s;
+    animation-delay: 0s;
+}
+
+.lds-spin>div:nth-child(8) {
+    -webkit-transform: rotate(315deg);
+    transform: rotate(315deg);
+    -webkit-transform-origin: 142.42640686px 57.57359314px;
+    transform-origin: 142.42640686px 57.57359314px;
+}
+
+.lds-spin div:nth-child(9)>div {
+    left: 140px;
+    top: 80px;
+    -webkit-animation-delay: 0.125s;
+    animation-delay: 0.125s;
+}
+
+.lds-spin>div:nth-child(9) {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+    -webkit-transform-origin: 160px 100px;
+    transform-origin: 160px 100px;
+}
+
+.lds-spin {
+    width: 108px !important;
+    height: 108px !important;
+    -webkit-transform: translate(-54px, -54px) scale(0.54) translate(54px, 54px);
+    transform: translate(-54px, -54px) scale(0.54) translate(54px, 54px);
+}
+
+
+/*end loading*/
+
+.loading-block {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #80808017;
+    z-index: 9999999999999;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.loading-block.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+#cassiopeia-manager-partners-filter-form>div .bottoms div {
+    display: flex;
+    align-items: center;
+}
+
+#cassiopeia-detail-report-tab-6-filter-form>div {
+    display: flex;
+}
+
+.color-red {
+    color: red;
+}
+
+.ajax-pagination ul {
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.ajax-pagination ul li {
+    list-style: none;
+}
+
+.ajax-pagination ul span {
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: solid thin #80808026;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+span.ajax-item.active {
+    background: #ee3b3b;
+    color: white;
+}
+
+.sidebar-mini.sidebar-collapse .sidebar-menu>li:hover>.treeview-menu {
+    top: 40px;
+}
+
+#cassiopeia-manager-log-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+
+#cassiopeia-manager-log-filter-form>div>div {
+    margin: 0;
+    margin-right: 15px;
+}
+
+#notify-node-form .field-name-field-users {
+    display: none !important;
+}
+
+.text-right {
+    text-align: right;
+}
+
+#cassiopeia-filter-issue-report-form .form-item-pnr {
+    width: 200px;
+}
+
+#cassiopeia-filter-issue-report-form select[name='month'] {
+    padding: 0px;
+}
+
+#cassiopeia-filter-payment-report-form .form-item-content {
+    width: 200px;
+}
+
+.page-issue-report .add-form,
+.page-payment-report .add-form,
+.page-void-report .filter-form,
+.page-payment-report .filter-form,
+.page-issue-report .filter-form {
+    display: flex;
+    align-items: flex-end;
+    /*flex-wrap: wrap;*/
+}
+
+.page-issue-report .add-form label,
+.page-void-report .filter-form label,
+.page-payment-report .filter-form label,
+.page-payment-report .add-form label,
+.page-issue-report .filter-form label {
+    width: 100%;
+    display: flex;
+    margin: 0;
+}
+
+.page-issue-report .add-form>div,
+.page-payment-report .add-form>div,
+.page-void-report .filter-form>div,
+.page-payment-report .filter-form>div,
+.page-issue-report .filter-form>div {
+    margin-right: 15px;
+}
+
+.page-void-report .filter-form,
+.page-payment-report .filter-form,
+.page-issue-report .filter-form {
+    padding: 20px;
+    background: gainsboro;
+    margin: 20px 0px;
+}
+
+.page-payment-report .add-form,
+.page-issue-report .add-form {
+    box-shadow: 0px 0px 3px gainsboro;
+    padding: 20px;
+}
+
+.page-payment-report .text-right {
+    width: 100px;
+    padding-right: 50px;
+}
+
+.tr-issue-tran-kind-4,
+.tr-issue-tran-kind-11 {
+    /*background: grey;*/
+}
+
+.tr-issue-tran-kind-12,
+.tr-issue-tran-kind-13 {
+    color: red;
+}
+
+.page-issue-report .revenue,
+.page-issue-report .PNR {
+    font-weight: bold;
+}
+
+.page-void-report div.from-date,
+.page-payment-report div.from-date,
+.page-void-report div.to-date,
+.page-payment-report div.to-date {
+    display: none;
+}
+
+.page-issue-report div.from-date,
+.page-issue-report div.to-date {
+    display: block;
+}
+
+.page-void-report div.from-date.active,
+.page-payment-report div.from-date.active,
+.page-void-report div.to-date.active,
+.page-payment-report div.to-date.active {
+    display: block;
+}
+
+#cassiopeia-detail-report-filter-form .form-group {
+    margin: 0;
+}
+
+#cassiopeia-detail-report-tab-2-filter-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+.page-detail-report>ul {
+    display: flex;
+    padding: 0;
+}
+
+.page-detail-report>ul li {
+    list-style: none;
+    display: flex;
+    padding: 12px 15px;
+    cursor: pointer;
+}
+
+.page-detail-report>ul li.active {
+    background: #3c8dbc;
+    color: white;
+}
+
+.page-detail-report>ul li.active a {
+    color: white;
+}
+
+.page-payment-report .add-form>div.quantity {
+    width: 60px;
+    white-space: nowrap;
+}
+
+.page-detail-report .block-menu ul {
+    display: flex;
+    padding: 0;
+}
+
+.page-detail-report .block-menu ul li {
+    list-style: none;
+}
+
+.page-detail-report .block-menu ul li a {
+    display: flex;
+    padding: 10px;
+    color: black;
+}
+
+.page-detail-report .block-menu ul li.active a {
+    background: #3c8dbc;
+    color: white;
+}
+
+.page-issue-report .add-form>div.airline {
+    width: 110px;
+}
+
+.page-payment-report table.report-items th {
+    cursor: pointer;
+}
+
+table th {
+    cursor: pointer;
+}
+
+table th.ASC:after {
+    content: "\f077";
+    font-family: FontAwesome;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+table th.DESC:after {
+    content: "\f078";
+    font-family: FontAwesome;
+    font-size: 10px;
+    margin-left: 10px;
+}
+
+#detail-report-tab-7-form .date-picker {
+    display: none;
+}
+
+.page-issue-report,
+.page-payment-report {
+    /*font-size: 13px;*/
+}
+
+#cassiopeia-open-pnr-form>div {
+    display: flex;
+    align-items: flex-end;
+}
+
+#cassiopeia-open-pnr-form>div .form-group {
+    margin: 0;
+    margin-right: 15px;
+}
+
+#cassiopeia-open-pnr-form>div .form-item-code {
+    width: 160px;
+}
+
+.page-manager-ticket-review .pnr-form {
+    margin-bottom: 20px;
+}
+
+#modalUpdateReport {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #000000a8;
+    z-index: 11;
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s linear;
+}
+
+#modalUpdateReport.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+#modalUpdateReport .block-dialog {
+    width: 500px;
+    background: white;
+    padding: 0;
+    box-shadow: 0px 0px 3px #0000008f;
+}
+
+#modalUpdateReport .block-dialog .block-header {
+    position: relative;
+}
+
+#modalUpdateReport .block-dialog .block-header .close {
+    opacity: 1;
+    text-shadow: 0px 0px;
+    font-size: 35px;
+    margin-right: 0px;
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    color: white;
+}
+
+#modalUpdateReport .block-dialog .block-title {
+    margin: 0;
+    padding: 15px;
+    text-transform: uppercase;
+    text-align: center;
+    font-size: 20px;
+    background: #3c8dbc;
+    color: white;
+}
+
+#modalUpdateReport .block-dialog .block-body {
+    padding: 0px 15px;
+}
+
+#modalUpdateReport .block-dialog .block-body .item {
+    margin-bottom: 10px;
+}
+
+#modalUpdateReport .block-dialog .block-footer {
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+}
+
+.page-admin-manager-ticketreview .box {
+    background: none;
+}
+
+.page-manager-ticket-review .pnr-form {
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 3px #00000042;
+}
+
+.page-manager-ticket-review .ticket-review-result {
+    background: white;
+    padding: 20px;
+    box-shadow: 0px 0px 3px #00000042;
+}
+
+.page-manager-ticket-review .ticket-review-result .block-title h2 {
+    margin: 0;
+    font-size: 22px;
+    padding-bottom: 10px;
+    border-bottom: solid thin #80808024;
+    margin-bottom: 10px;
+}
+
+.page-manager-ticket-issue .block-title h2 {
+    font-size: 22px;
+    margin: 0;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: solid thin #80808059;
+}
+
+.page-manager-ticket-issue form {
+    display: flex;
+}
+
+.page-manager-ticket-issue form .item {
+    display: flex;
+    margin-bottom: 20px;
+    margin-right: 20px;
+}
+
+.page-manager-ticket-issue form .item {}
+
+.page-manager-airline .filter-form {
+    padding: 20px;
+    background: gainsboro;
+    margin: 20px 0px;
+    display: flex;
+}
+
+.page-manager-ticket-issue {
+    display: none;
+    margin-top: 30px;
+}
+
+.page-manager-ticket-issue.active {
+    display: block;
+}
+
+.form-item-num-per-page {
+    position: absolute;
+    right: 0;
+}
+
+.page-manager-partners .container-inline-date {
+    display: none;
+}
+
+.page-manager-partners .container-inline-date.active {
+    display: flex;
+}
+
+.booking-view {
+    width: 100% !important;
+}
+
+table.table.totalPrice th {
+    width: 25%;
+}
+
+.mobile-detail-row {
+    display: none;
+}
+
+#autic-family-node-form .form-actions #edit-delete {
+    display: none !important;
+}
+
+.room-price-group>div {
+    display: flex;
+    margin-bottom: 20px;
+}
+
+.room-price-group>div>div {
+    margin-right: 20px;
+}
+
+.teaRoomPriceItemRemove {
+    position: relative;
+    width: 40px;
+    overflow: hidden;
+}
+
+.teaRoomPriceItemRemove:after {
+    content: "\f014";
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+#roomContainer .room-group>div {
+    display: flex;
+    margin: 0px -8px;
+    position: relative;
+    flex-wrap: wrap;
+}
+
+#roomContainer .room-group>div>div.roomExtraBed {
+    width: 100%;
+}
+
+#roomContainer .room-group>div>div {
+    padding: 0px 8px;
+    width: 20%;
+}
+
+.cassiopeia-room-booking-form h2 {
+    display: none;
+}
+
+#roomContainer .room-group>div>div.numberOfNight {
+    width: unset;
+}
+
+#roomContainer .numberOfNight input {
+    width: 75px;
+}
+
+.input-group .input-group-addon {
+    display: none;
+}
+
+#roomContainer .room-group-age>div {
+    margin: 0px -8px;
+    display: flex;
+}
+
+#roomContainer .room-group-age>div>div {
+    padding: 0px 8px;
+}
+
+#roomContainer .roomGroupTitle {
+    text-transform: uppercase;
+}
+
+#cassiopeia-room-booking-form .customerInformation {
+    margin-top: 20px;
+}
+
+#cassiopeia-room-booking-form .customerInformation label {
+    text-transform: uppercase;
+}
+
+#cassiopeia-room-booking-form .customerInformation>div {
+    display: flex;
+    margin: 0px -8px;
+}
+
+#cassiopeia-room-booking-form .customerInformation>div>div {
+    padding: 0px 8px;
+    width: 33.3333%;
+}
+
+#cassiopeia-room-booking-form .orderInformationGroup>div>div {
+    display: flex;
+}
+
+#cassiopeia-room-booking-form .orderInformationGroup>div>div>div {
+    width: 300px;
+}
+
+#cassiopeia-room-booking-form .form-item-roomtotalpricevalue span {
+    display: flex;
+    align-items: center;
+}
+
+#cassiopeia-room-booking-form #roomTotalPriceGroup span img {
+    margin-right: 10px;
+}
+
+#cassiopeia-room-booking-fee-form .room-group>.form-group {
+    display: flex;
+    margin: 0px -8px;
+}
+
+#cassiopeia-room-booking-fee-form .room-group>.form-group>div {
+    padding: 0px 8px;
+}
+
+#cassiopeia-room-booking-fee-form .form-buttons {
+    margin-top: 20px;
+}
+
+.page-manager-ticket-issue select {
+    width: 300px;
+    margin-right: 30px;
+}
+
+#edit_field_hotel_nid_chosen {
+    width: 300px !important;
+}
+
+#cassiopeia-booking-filter-form .container-inline-date {
+    display: none;
+}
+
+#cassiopeia-booking-filter-form .container-inline-date.active {
+    display: block;
+}
+
+.room-booking-1 {
+    color: green;
+    font-weight: bold;
+}
+
+.room-booking-2 {
+    color: blue;
+    font-weight: bold;
+}
+
+.room-booking-3 {
+    color: orange;
+    font-weight: bold;
+}
+
+.room-booking-4 {
+    color: red;
+    font-weight: bold;
+}
+
+.page-manager-edit-room-booking #roomContainer .room-group>div {
+    display: flex;
+    margin: 0px -8px;
+    flex-wrap: wrap;
+}
+
+.page-manager-edit-room-booking #roomContainer .room-group>div>div.roomExtraBed {
+    width: 100%;
+    display: flex;
+    align-items: flex-end;
+}
+
+.page-manager-edit-room-booking #roomContainer .room-group>div>div.roomExtraBed .form-item {
+    margin: 0;
+}
+
+.page-manager-edit-room-booking #roomContainer .room-group>div>div.roomExtraBed span {
+    font-size: 16px;
+    color: red;
+    margin-left: 100px;
+}
+
+.page-manager-edit-room-booking .room-group {
+    margin-bottom: 20px;
+    border-bottom: solid thin #8080804a;
+    padding-bottom: 20px;
+}
+
+.cassiopeia-room-booking-form .close {
+    width: 40px;
+    overflow: hidden;
+    position: absolute;
+    top: 10px;
+    right: 0px;
+    color: #ff5c5c;
+    opacity: 1;
+}
+
+.cassiopeia-room-booking-form .close:after {
+    font-family: 'FontAwesome';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+    content: "\f00d";
+}

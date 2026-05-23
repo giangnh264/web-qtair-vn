@@ -1,0 +1,80 @@
+<?php
+function cassiopeia_permission_schema(){
+    try{
+        $schema['tbl_module'] = array(
+            'description' => 'The table for storing the products data.',
+            'fields' => array(
+                'id' => array(
+                    'description' => 'The primary identifier for product.',
+                    'type' => 'serial',
+                    'not null' => TRUE,
+                    'unsigned' => TRUE,
+                ),
+                'title' => array(
+                    'type' => 'varchar',
+                    'length' => 255,
+                    'not null' => TRUE,
+                    'default' => '',
+                ),
+                'p_name' => array(
+                    'type' => 'varchar',
+                    'length' => 255,
+                    'not null' => TRUE,
+                    'default' => '',
+                ),
+            ),
+            'primary key' => array('id'),
+        );
+        $schema['tbl_permissions'] = array(
+            'description' => 'The table for storing the products data.',
+            'fields' => array(
+                'id' => array(
+                    'description' => 'The primary identifier for product.',
+                    'type' => 'serial',
+                    'not null' => TRUE,
+                    'unsigned' => TRUE,
+                ),
+                'created' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'role' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'module' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'p_view' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'p_add' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'p_edit' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+                'p_delete' => array( 
+                    'type' => 'int',
+                    'unsigned' => TRUE,
+                    'not null' => TRUE,
+                ),
+            ),
+            'primary key' => array('id'),
+        );
+        return $schema;
+    }catch(Exception $e){
+        print_r($e);
+
+    }
+}

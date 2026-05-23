@@ -1,0 +1,111 @@
+<?php
+
+function cassiopeia_contact_menu(){
+    $items = array();
+    ##contact
+    $items['lien-he'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_contact_page_callback',
+        'title' => t('Liên hệ'),
+        'access arguments' => array('access content'),
+        'file' => 'cassiopeia_contact.inc',
+    );
+    $items['admin/config/cassiopeia/contact-page'] = array(
+        'type' => MENU_NORMAL_ITEM,
+        'title' => t('Trang liên hệ'),
+        'page callback' => array('drupal_get_form'),
+        'page arguments' => array('cassiopeia_config_contact_form'),
+        'access arguments' => array('cassiopeia module'),
+        'file' => 'cassiopeia_contact.inc',
+    );
+    ##contact
+    return $items;
+}
+
+function cassiopeia_contact_form($form,&$form_state){
+    $form = array();
+    $form['contact-fullname'] = array(
+        '#title'        => 'Họ và tên',
+        '#type'         => 'textfield',
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#attributes'   => array("placeholder"=>"Nhập họ tên của bạn",),
+    );
+
+    $form['contact-phone'] = array(
+        '#title'        => 'Số điện thoại',
+        '#type'         => 'textfield',
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#attributes'   => array("placeholder"=>"Số điện thoại",),
+    );
+    $form['contact-mail'] = array(
+        '#title'        => 'Email',
+        '#type'         => 'textfield',
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#attributes'   => array("placeholder"=>"Email",),
+    );
+    $form['contact-message'] = array(
+        '#title'        => 'Nội dung',
+        '#type'         => 'textarea',
+        '#size'         => 60,
+        '#maxlength'    => 128,
+        '#attributes'   => array("placeholder"=>"Nội dụng",),
+    );
+    $form["contact-submit"] = array(
+        "#type"         => "submit",
+        "#value"        => "Gửi thông tin",
+        "#attributes"   => array("class" => array("ff-bold clr-white bg-secondary radius-36")),
+        '#prefix'       => "<div class='form-buttons'>",
+        '#suffix'       => "</div>",
+    );
+    return $form;
+}
+function cassiopeia_contact_form_submit($form,&$form_state){
+    $contact_data = array();
+    if (!empty($form_state['values']['contact-fullname']) && !(empty($form_state['values']['contact-mail'])) && !empty($form_state['values']['contact-phone'])) {
+        $contact_data['fullname'] = $form_state['values']['contact-fullname'];
+        $contact_data['email'] = $form_state['values']['contact-mail'];
+        $contact_data['phone'] = $form_state['values']['contact-phone'];
+        $contact_data['address'] = $form_state['values']['contact-address'];
+        if (!empty($form_state['values']['contact-message'])) {
+            $contact_data['message'] = $form_state['values']['contact-message'];
+        }else {
+            $contact_data['message'] = '';
+        }
+        $contact_data['created'] = REQUEST_TIME;
+        $contact_data['status'] = 0;
+    }
+    if (!empty($contact_data)) {
+        try {
+            $node = new stdClass();
+            $node->contact_name = $contact_data['fullname'];
+            $node->contact_mail = $contact_data['email'];
+            $node->contact_tel = $contact_data['phone'];
+            $node->contact_content = $contact_data['message'];
+            $node->contact_created = REQUEST_TIME;
+
+            drupal_write_record("tbl_contact",$node);
+            drupal_set_message('Cảm ơn quý khách, chúng tôi sẽ liên hệ với quý khách trong thời gian sớm nhất.');
+
+        }catch ( Exception $e) {
+            drupal_set_message('Hệ thống đang bận vui lòng quay lại sau it phút.');
+            throw ($e);
+        }
+    }else {
+        drupal_set_message('Vui lòng điền đầy đủ thông tin.');
+    }
+}
+function cassiopeia_contact_load($id){
+    try{
+        $query = db_select("tbl_contact","tbl");
+        $query->fields("tbl");
+        $query->condition("contact_id",$id);
+        $contact = $query->execute()->fetchObject();
+        return $contact;
+    }catch (Exception $e){
+        return null;
+    }
+}
+?>
