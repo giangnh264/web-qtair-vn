@@ -25,10 +25,6 @@ $Passengers = $booking->passengers;
 $tickets = $booking->tickets;
 $B_status = $booking->status;
 $total_price = 0;
-// Ghi log thông tin $booking vào file .log
-$log_file = dirname(__FILE__) . '/booking_mail.log';
-$log_message = "[" . date('Y-m-d H:i:s') . "] booking_code: " . $booking_code . " | " . print_r($booking, true) . "\n";
-file_put_contents($log_file, $log_message, FILE_APPEND);
 
 ?>
 <div class="container" id="printContent">

@@ -93,6 +93,24 @@ if(!empty($kind)){ // tạm ẩn đặt hành lý cho các chuyến quốc tế
                                                 </div>
                                               </div>
                                               <?php endif; ?>
+                                                <?php if (in_array("VN", $airlines)) : ?>
+                                                    <div class="row vn-adult-fields">
+                                                        <div class="col-md-4 date-of-birth form-item page-booking-content-left-item">
+                                                            <div class="date-of-birth-left">
+                                                                <span class="icon"></span>
+                                                            </div>
+                                                            <div class="date-of-birth-right">
+                                                                <input readonly="readonly" type="text" class="dateTimePicker required adult" placeholder="NGÀY SINH *" value="">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-4 cccd-number form-item page-booking-content-left-item">
+                                                            <input class="cccd-number required" type="text" inputmode="numeric" pattern="[0-9]{1,12}" maxlength="12" placeholder="Số CCCD *">
+                                                        </div>
+                                                        <div class="col-md-4 cccd-expiry form-item page-booking-content-left-item">
+                                                            <input readonly="readonly" class="cccd-expiry required" type="text" placeholder="Ngày hết hạn CCCD *">
+                                                        </div>
+                                                    </div>
+                                                <?php endif; ?>
                                                 <?php if(!empty($baggages)): ?>
                                                     <?php foreach($baggages as $Itinerary => $baggage): ?>
                                                         <?php
@@ -317,6 +335,13 @@ if(!empty($kind)){ // tạm ẩn đặt hành lý cho các chuyến quốc tế
 
 
             // minDate: new Date('2001-12-5')
+        });
+        jQuery("input.cccd-expiry").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            minDate: new Date(),
+            yearRange: new Date().getFullYear() + ":2100",
+            dateFormat: 'dd/mm/yy'
         });
     });
 </script>

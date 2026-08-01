@@ -16,3 +16,12 @@ cacert.pem
 
 # Runtime log artifacts.
 *.log
+
+# Local planning documents.
+docs/ANTIGRAVITY.md
+docs/Task_List.md
+docs/*
+
+# Local PHP test scripts.
+*_test.php
+AGENTS.md

@@ -6768,6 +6768,16 @@ h2.form-page-booking-1-title {
   width: 37%;
 }
 
+.page-booking-content-left-items .vn-adult-fields .date-of-birth {
+  width: 33.33333333%;
+}
+
+@media (max-width: 991px) {
+  .page-booking-content-left-items .vn-adult-fields .page-booking-content-left-item {
+    width: 100%;
+  }
+}
+
 .page-booking-content-left-items .date-of-birth .date-of-birth-left {
   /*width: 25%;*/
 }

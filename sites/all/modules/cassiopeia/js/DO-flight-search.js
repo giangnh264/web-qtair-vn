@@ -1,5 +1,18 @@
 (function ($) {
     //var _airlines = new Array("VN"); //,"VJ","VU","QH"
+    function validate_cccd_inputs() {
+        var valid = true;
+        $("input.cccd-number").each(function () {
+            if (!/^[0-9]{1,12}$/.test($(this).val())) {
+                alert("Số CCCD chỉ được nhập số và tối đa 12 ký tự.");
+                $(this).focus().addClass("border-red");
+                valid = false;
+                return false;
+            }
+        });
+        return valid;
+    }
+
     function render_flights(i,airline,itinerary){
         var session_key = $("#session_key").val();
         $.ajax({
@@ -198,6 +211,9 @@
         $("body").click(function(e) {
             $(".page-flight-search .flights .item .price span ul").removeClass("active");
         });
+        $("body").on("input", "input.cccd-number", function () {
+            this.value = this.value.replace(/[^0-9]/g, "");
+        });
         $("body").on("click", ".btn-payment-method", function(e) {
             var _flag = true;
             $(".page-booking-content-left-items .page-booking-content-left-item input.required").each(function(e) {
@@ -211,6 +227,9 @@
                 }
             });
             if (_flag == false) {
+                return false;
+            }
+            if (!validate_cccd_inputs()) {
                 return false;
             }
             $(".loading-block").addClass("active");
@@ -249,6 +268,8 @@
                 _temp['khtx_VN'] = khtx_VN;
                 _temp['gender'] = _gender;
               _temp['birth_day'] = _birth_day;
+                _temp['cccd_number'] = _this.find("input.cccd-number").val();
+                _temp['cccd_expiry'] = _this.find("input.cccd-expiry").val();
                 _temp['baggages'] = _baggages;
                 _Adt.push(_temp);
             });
@@ -352,6 +373,9 @@
             if(_flag==false){
                 return false;
             }
+            if (!validate_cccd_inputs()) {
+                return false;
+            }
             $(".loading-block").addClass("active");
             var _contact_full_name     = $(".page-booking-content-left-items .page-booking-content-left-item.contact-full-name input").val();
             var _contact_tel            = $(".page-booking-content-left-items .page-booking-content-left-item.contact-tel input").val();
@@ -368,6 +392,7 @@
                 var _temp = {};
                 var _full_name = _this.find(".full-name input.full_name").val();
                 var _gender = _this.find(".unisex input:checked").val();
+                var _birth_day = _this.find(".date-of-birth input.adult").val();
                 var _baggages = {};
                 _this.find("select[name='select-baggage']").each(function(){
                     if($(this).val()!=0){
@@ -380,6 +405,9 @@
                 });
                 _temp['full_name'] = _full_name;
                 _temp['gender'] = _gender;
+                _temp['birth_day'] = _birth_day;
+                _temp['cccd_number'] = _this.find("input.cccd-number").val();
+                _temp['cccd_expiry'] = _this.find("input.cccd-expiry").val();
                 _temp['baggages'] = _baggages;
                 _Adt.push(_temp);
             });
