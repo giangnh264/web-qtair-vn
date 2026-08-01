@@ -1,5 +1,41 @@
 <?php
 drupal_session_start();
+
+function cassiopeia_vn_adult_identity_fields($adult, $today = NULL, $departure_date = NULL) {
+    $birthday = trim(isset($adult->birth_day) ? $adult->birth_day : '');
+    $number = trim(isset($adult->cccd_number) ? $adult->cccd_number : '');
+    $expiry = trim(isset($adult->cccd_expiry) ? $adult->cccd_expiry : '');
+
+    $birthday_date = DateTime::createFromFormat('!d/m/Y', $birthday);
+    if (!$birthday_date || $birthday_date->format('d/m/Y') !== $birthday) {
+        throw new InvalidArgumentException('Ngày sinh không hợp lệ.');
+    }
+    if (!preg_match('/^[0-9]{1,12}$/', $number)) {
+        throw new InvalidArgumentException('Số CCCD chỉ được nhập số và tối đa 12 ký tự.');
+    }
+    $expiry_date = DateTime::createFromFormat('!d/m/Y', $expiry);
+    if (!$expiry_date || $expiry_date->format('d/m/Y') !== $expiry) {
+        throw new InvalidArgumentException('Ngày hết hạn CCCD không hợp lệ.');
+    }
+
+    $today_date = $today === NULL ? new DateTime('today') : DateTime::createFromFormat('!d/m/Y', $today);
+    if (!$today_date || $expiry_date < $today_date) {
+        throw new InvalidArgumentException('CCCD đã hết hạn.');
+    }
+    if ($departure_date !== NULL) {
+        $departure = DateTime::createFromFormat('!d/m/Y', $departure_date);
+        if (!$departure || $birthday_date >= $departure || $birthday_date->diff($departure)->y < 12) {
+            throw new InvalidArgumentException('Hành khách người lớn phải đủ 12 tuổi vào ngày khởi hành.');
+        }
+    }
+
+    return array(
+        'Birthday' => $birthday,
+        'PassportNumber' => $number,
+        'PassportExpiryDate' => $expiry,
+    );
+}
+
 function cassiopeia_room_booking_complete_page_callback($booking) {
     return _cassiopeia_render_theme("module","cassiopeia","templates/pages/page-hotel-room-booking-complete.tpl.php",array("booking"=>$booking));
 }
@@ -2746,6 +2782,25 @@ function cassiopeia_ajax_page() {
                 if($RT!=true){
                     $Point_2_fee = 0;
                 }
+                $requiresVnIdentity = $DepartureFlight->AirlineCode === 'VN'
+                    || (!empty($ReturnFlight) && $ReturnFlight->AirlineCode === 'VN');
+                $vnAdultIdentity = array();
+                if ($requiresVnIdentity) {
+                    try {
+                        foreach ($_Adt as $adultIndex => $adult) {
+                            $vnAdultIdentity[$adultIndex] = cassiopeia_vn_adult_identity_fields(
+                                $adult,
+                                date('d/m/Y'),
+                                date('d/m/Y', strtotime($DepartureFlight->StartDate))
+                            );
+                        }
+                    }
+                    catch (InvalidArgumentException $exception) {
+                        $data['status'] = 'FAIL';
+                        $data['message'] = 'Hành khách người lớn ' . ($adultIndex + 1) . ': ' . $exception->getMessage();
+                        break;
+                    }
+                }
                 if(!empty($_SESSION['booking'])){
                     //UPDATE PRICE!!!
                     if (!empty($_data->DepartureFlightSession) && $DepartureFlight->AirlineCode == 'VN') {
@@ -2780,7 +2835,7 @@ function cassiopeia_ajax_page() {
                     }
                     
                     if (!empty($_Adt)) {
-                        foreach ($_Adt as $item) {
+                        foreach ($_Adt as $adultIndex => $item) {
                             $_array = explode(" ", $item->full_name);
                             $_first_name = $_array[0];
                             $_last_name = "";
@@ -2791,7 +2846,7 @@ function cassiopeia_ajax_page() {
                             }
                             $_last_name = trim($_last_name);
 //                            $_Baggage_Return = !empty()
-                            $_data->ListPassengers[] = array(
+                            $passenger = array(
                                 "Index"             => $stt,
                                 "FirstName"         => vn_to_str($_first_name),
                                 "LastName"          => vn_to_str($_last_name),
@@ -2806,6 +2861,10 @@ function cassiopeia_ajax_page() {
                                 "PassportIssueCountry"=> "",
                                 "PassportNumber"=> "",
                             );
+                            if ($requiresVnIdentity) {
+                                $passenger = array_merge($passenger, $vnAdultIdentity[$adultIndex]);
+                            }
+                            $_data->ListPassengers[] = $passenger;
                             $stt++;
                             $total_price += !empty($baggageDeparture)?$baggageDeparture->amount:0; // hành lý chiều đi
                             $total_price += !empty($baggageReturn)?$baggageReturn->amount:0; // hành lý chiều về
@@ -3079,6 +3138,26 @@ function cassiopeia_ajax_page() {
                     $TotalPriceReturn = 0;
                     $Expired_Date = 0;
 
+                    $requiresVnIdentity = $DepartureFlight->AirlineCode === 'VN'
+                        || (!empty($ReturnFlight) && $ReturnFlight->AirlineCode === 'VN');
+                    $vnAdultIdentity = array();
+                    if ($requiresVnIdentity) {
+                        try {
+                            foreach ($_Adt as $adultIndex => $adult) {
+                                $vnAdultIdentity[$adultIndex] = cassiopeia_vn_adult_identity_fields(
+                                    $adult,
+                                    date('d/m/Y'),
+                                    date('d/m/Y', strtotime($DepartureFlight->StartDate))
+                                );
+                            }
+                        }
+                        catch (InvalidArgumentException $exception) {
+                            $data['status'] = 'FAIL';
+                            $data['message'] = 'Hành khách người lớn ' . ($adultIndex + 1) . ': ' . $exception->getMessage();
+                            break;
+                        }
+                    }
+
                     if(!empty($_SESSION['booking'])) {
                         $_data = new stdClass();
                         $_data->booking_code = $booking_code;
@@ -3101,7 +3180,7 @@ function cassiopeia_ajax_page() {
                         $guest_index = 1;
                         $guest_mail = "";
                         if (!empty($_Adt)) {
-                            foreach ($_Adt as $item) {
+                            foreach ($_Adt as $adultIndex => $item) {
                                 $baggageReturn = null;
                                 $baggageDeparture = null;
                                 if(!empty($item->baggages->ReturnFlights)&&!empty($item->baggages->ReturnFlights->id)){
@@ -3122,7 +3201,7 @@ function cassiopeia_ajax_page() {
                                 if(!empty($user->uid)){
                                     $guest_mail = $_contact->email;
                                 }
-                                $_data->ListPassengers[] = array(
+                                $passenger = array(
                                     "Email" => "",
                                     "Phone" => $_contact->tel,
                                     "Index" => $stt,
@@ -3134,6 +3213,10 @@ function cassiopeia_ajax_page() {
                                     "BaggageDeparture"  => !empty($baggageDeparture)?$baggageDeparture->weight:0,
                                     "BaggageReturn"     => !empty($baggageReturn)?$baggageReturn->weight:0,
                                 );
+                                if ($requiresVnIdentity) {
+                                    $passenger = array_merge($passenger, $vnAdultIdentity[$adultIndex]);
+                                }
+                                $_data->ListPassengers[] = $passenger;
 
                                 $stt++;
                                 $total_price += !empty($baggageDeparture)?$baggageDeparture->amount:0; // hành lý chiều đi
