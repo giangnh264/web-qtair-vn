@@ -1,10 +1,9 @@
 <?php
 drupal_session_start();
 
-function cassiopeia_vn_adult_identity_fields($adult, $today = NULL, $departure_date = NULL) {
+function cassiopeia_vn_adult_identity_fields($adult, $departure_date = NULL) {
     $birthday = trim(isset($adult->birth_day) ? $adult->birth_day : '');
     $number = trim(isset($adult->cccd_number) ? $adult->cccd_number : '');
-    $expiry = trim(isset($adult->cccd_expiry) ? $adult->cccd_expiry : '');
 
     $birthday_date = DateTime::createFromFormat('!d/m/Y', $birthday);
     if (!$birthday_date || $birthday_date->format('d/m/Y') !== $birthday) {
@@ -12,15 +11,6 @@ function cassiopeia_vn_adult_identity_fields($adult, $today = NULL, $departure_d
     }
     if (!preg_match('/^[0-9]{1,12}$/', $number)) {
         throw new InvalidArgumentException('Số CCCD chỉ được nhập số và tối đa 12 ký tự.');
-    }
-    $expiry_date = DateTime::createFromFormat('!d/m/Y', $expiry);
-    if (!$expiry_date || $expiry_date->format('d/m/Y') !== $expiry) {
-        throw new InvalidArgumentException('Ngày hết hạn CCCD không hợp lệ.');
-    }
-
-    $today_date = $today === NULL ? new DateTime('today') : DateTime::createFromFormat('!d/m/Y', $today);
-    if (!$today_date || $expiry_date < $today_date) {
-        throw new InvalidArgumentException('CCCD đã hết hạn.');
     }
     if ($departure_date !== NULL) {
         $departure = DateTime::createFromFormat('!d/m/Y', $departure_date);
@@ -32,7 +22,6 @@ function cassiopeia_vn_adult_identity_fields($adult, $today = NULL, $departure_d
     return array(
         'Birthday' => $birthday,
         'PassportNumber' => $number,
-        'PassportExpiryDate' => $expiry,
     );
 }
 
@@ -2790,7 +2779,6 @@ function cassiopeia_ajax_page() {
                         foreach ($_Adt as $adultIndex => $adult) {
                             $vnAdultIdentity[$adultIndex] = cassiopeia_vn_adult_identity_fields(
                                 $adult,
-                                date('d/m/Y'),
                                 date('d/m/Y', strtotime($DepartureFlight->StartDate))
                             );
                         }
@@ -2857,7 +2845,6 @@ function cassiopeia_ajax_page() {
                                 "Birthday"          => "16/05/1995",
                                 "BaggageDeparture"  => "",
                                 "BaggageReturn"     => "",
-                                "PassportExpiryDate"=> "",
                                 "PassportIssueCountry"=> "",
                                 "PassportNumber"=> "",
                             );
@@ -3146,7 +3133,6 @@ function cassiopeia_ajax_page() {
                             foreach ($_Adt as $adultIndex => $adult) {
                                 $vnAdultIdentity[$adultIndex] = cassiopeia_vn_adult_identity_fields(
                                     $adult,
-                                    date('d/m/Y'),
                                     date('d/m/Y', strtotime($DepartureFlight->StartDate))
                                 );
                             }

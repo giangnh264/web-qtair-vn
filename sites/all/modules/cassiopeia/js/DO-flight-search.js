@@ -269,7 +269,6 @@
                 _temp['gender'] = _gender;
               _temp['birth_day'] = _birth_day;
                 _temp['cccd_number'] = _this.find("input.cccd-number").val();
-                _temp['cccd_expiry'] = _this.find("input.cccd-expiry").val();
                 _temp['baggages'] = _baggages;
                 _Adt.push(_temp);
             });
@@ -407,7 +406,6 @@
                 _temp['gender'] = _gender;
                 _temp['birth_day'] = _birth_day;
                 _temp['cccd_number'] = _this.find("input.cccd-number").val();
-                _temp['cccd_expiry'] = _this.find("input.cccd-expiry").val();
                 _temp['baggages'] = _baggages;
                 _Adt.push(_temp);
             });
