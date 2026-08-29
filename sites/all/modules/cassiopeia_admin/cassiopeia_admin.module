@@ -1482,7 +1482,7 @@ function cassiopeia_admin_general_report_revenue_form_theme($form,&$form_state,$
         $daily_sub_query = Database::getConnection()
             ->select($issue_query->union($room_query))
             ->fields(NULL, array("date","type","partner_price","price"));
-        if(!empty($date_filter && $date_filter!="all")){
+        if(!empty($date_filter) && $date_filter!="all"){
             $first_day_of_moth = strtotime(date('Y-m-01 00:00:00',strtotime("01-".$date_filter)));
             $last_day_of_moth = strtotime(date("Y-m-t 23:59:59",strtotime("01-".$date_filter)));
             $daily_sub_query ->condition("date",array($first_day_of_moth,$last_day_of_moth),"BETWEEN");
@@ -1709,6 +1709,7 @@ function cassiopeia_room_booking_fee_form($form, &$form_state){
         '#maxlength' => 128,
         '#default_value' => !empty($default_values[0])?$default_values[0]->amount:0,
     );
+    $room_booking_fee_by_star = variable_get("room_booking_fee_by_start", 0);
     $form['by_star'] = array(
         '#type' =>'checkbox',
         '#title' => t('Thiết lập riêng'),
@@ -1718,9 +1719,9 @@ function cassiopeia_room_booking_fee_form($form, &$form_state){
             'method' => 'replace',
             'effect' => 'fade',
         ),
-        '#default_value' => !empty(variable_get("room_booking_fee_by_start"))?variable_get("room_booking_fee_by_start"):0,
+        '#default_value' => !empty($room_booking_fee_by_star)?$room_booking_fee_by_star:0,
     );
-    $by_star = !empty(variable_get("room_booking_fee_by_start"))?variable_get("room_booking_fee_by_start"):0;
+    $by_star = !empty($room_booking_fee_by_star)?$room_booking_fee_by_star:0;
     $form['#by_star'] = $form_stare['#by_star'] = $by_star = isset($form_state['values']['by_star'])?$form_state['values']['by_star']:$by_star;
 
     for($i=1;$i<=5;$i++){
@@ -2577,7 +2578,7 @@ function cassiopeia_issue_report_export_call_back(){
         $query2 -> addExpression("COUNT(partner_price)","total_items");
         if(!empty($caches)){
 //        _print_r($datas);
-            if(!empty($caches['date_filter']&& $caches['date_filter']!="all")){
+            if(!empty($caches['date_filter']) && $caches['date_filter']!="all"){
                 switch ($caches['date_filter']){
                     case "today" :
                         $query2->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME)),strtotime(date("d-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
@@ -2603,15 +2604,15 @@ function cassiopeia_issue_report_export_call_back(){
                         break;
                 }
             }
-            if(!empty($caches['airline'] && $caches['airline']!="all")){
+            if(!empty($caches['airline']) && $caches['airline']!="all"){
                 $query->condition("airline",$caches['airline']);
                 $query2->condition("airline",$caches['airline']);
             }
-            if(!empty($caches['tran_kind']&& $caches['tran_kind']!="all")){
+            if(!empty($caches['tran_kind']) && $caches['tran_kind']!="all"){
                 $query->condition("tran_kind",$caches['tran_kind']);
                 $query2->condition("tran_kind",$caches['tran_kind']);
             }
-            if(!empty($caches['profit_filter']&& $caches['profit_filter']!="all")){
+            if(!empty($caches['profit_filter']) && $caches['profit_filter']!="all"){
                 switch ($datas['profit_filter']){
                     case "morethanZero":
                         $query->condition("revenue",0,">");
@@ -2631,7 +2632,7 @@ function cassiopeia_issue_report_export_call_back(){
                 $query->condition("PNR",$caches['PNR']);
                 $query2->condition("PNR",$caches['PNR']);
             }
-            if(!empty($caches['content']&& $caches['content']!="all")){
+            if(!empty($caches['content']) && $caches['content']!="all"){
                 $query->condition("content","%".$caches['content']."%","LIKE");
                 $query2->condition("content","%".$caches['content']."%","LIKE");
             }

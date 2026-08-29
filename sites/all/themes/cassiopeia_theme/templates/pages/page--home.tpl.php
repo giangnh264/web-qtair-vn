@@ -300,7 +300,8 @@ if (!empty($_SESSION["popup_stt"])) {
     $stt_popup = $_SESSION["popup_stt"];
 }
 
-if (!empty($logo_home) && !empty(variable_get("link_popup")) && $stt_popup !== "OFF") {
+$link_popup = variable_get("link_popup", 0);
+if (!empty($logo_home) && !empty($link_popup) && $stt_popup !== "OFF") {
 
     $url_popup = '123';
     if (!empty($logo_home)) {

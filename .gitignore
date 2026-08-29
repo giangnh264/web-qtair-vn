@@ -25,3 +25,9 @@ docs/*
 # Local PHP test scripts.
 *_test.php
 AGENTS.md
+.vscode/
+.antigravity/
+Dockerfile
+private/sitename-2026-08-13T10-47-05.mysql.gz
+private/sitename-2026-08-13T10-47-05.mysql.gz.info
+sites/all/modules/cassiopeia/templates/mail/agency-ticket-pdf/vendor/*

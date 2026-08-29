@@ -1,0 +1,17 @@
+{
+  "name": "qtair/agency-ticket-pdf",
+    "description": "Runtime dependencies for QTair agency ticket PDFs",
+    "config": {
+        "platform": {
+            "php": "5.4.16",
+            "ext-gd": "1.0",
+            "ext-mbstring": "1.0",
+            "ext-iconv": "1.0"
+        }
+    },
+    "require": {
+        "php": ">=5.4",
+        "mpdf/mpdf": "6.1.0",
+        "bacon/bacon-qr-code": "1.0.3"
+    }
+}

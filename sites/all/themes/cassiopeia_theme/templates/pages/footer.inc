@@ -105,21 +105,21 @@ global $user;
                             class="nav-sci"
                             style="--color: #ffffff99; --border-color: #ffffff99"
                     >
-                        <?php if(!empty(variable_get("instagram_url"))): ?>
+                        <?php $instagram_url = variable_get("instagram_url", ""); if(!empty($instagram_url)): ?>
                             <li>
                                 <a href="<?php echo variable_get("instagram_url"); ?>" rel="nofollow ">
                                     <i class="fab fa-instagram fa-fw"></i>
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if(!empty(variable_get("facebook_url"))): ?>
+                        <?php $facebook_url = variable_get("facebook_url", ""); if(!empty($facebook_url)): ?>
                             <li>
                                 <a href="<?php echo variable_get("facebook_url"); ?>" rel="nofollow ">
                                     <i class="fab fa-facebook-f fa-fw"></i>
                                 </a>
                             </li>
                         <?php endif; ?>
-                        <?php if(!empty(variable_get("youtobe_url"))): ?>
+                        <?php $youtobe_url = variable_get("youtobe_url", ""); if(!empty($youtobe_url)): ?>
                             <li>
                                 <a href="<?php echo variable_get("youtobe_url"); ?>" rel="nofollow ">
                                     <i class="fab fa-youtube fa-fw"></i>

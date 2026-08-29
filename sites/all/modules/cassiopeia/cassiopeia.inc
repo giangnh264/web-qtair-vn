@@ -2863,10 +2863,10 @@ function cassiopeia_ajax_page() {
                     }
                     if (!empty($_Chd)) {
                         foreach ($_Chd as $item) {
-                            if(!empty(($item->baggages->ReturnFlights->id))){
+                            if(!empty($item->baggages->ReturnFlights->id)){
                                 $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                             }
-                            if(!empty(($item->baggages->DepartureFlights->id))){
+                            if(!empty($item->baggages->DepartureFlights->id)){
                                 $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                             }
                             $_array = explode(" ", $item->full_name);
@@ -3172,7 +3172,7 @@ function cassiopeia_ajax_page() {
                                 if(!empty($item->baggages->ReturnFlights)&&!empty($item->baggages->ReturnFlights->id)){
                                     $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                                 }
-                                if(!empty($item->baggages->DepartureFlights)&&!empty(($item->baggages->DepartureFlights->id))){
+                                if(!empty($item->baggages->DepartureFlights)&&!empty($item->baggages->DepartureFlights->id)){
                                     $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                                 }
                                 $_array = explode(" ", $item->full_name);
@@ -3230,10 +3230,10 @@ function cassiopeia_ajax_page() {
                             foreach ($_Chd as $item) {
                                 $baggageReturn = null;
                                 $baggageDeparture = null;
-                                if(!empty($item->baggages->ReturnFlights)&&!empty(($item->baggages->ReturnFlights->id))){
+                                if(!empty($item->baggages->ReturnFlights)&&!empty($item->baggages->ReturnFlights->id)){
                                     $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                                 }
-                                if(!empty($item->baggages->DepartureFlights)&&!empty(($item->baggages->DepartureFlights->id))){
+                                if(!empty($item->baggages->DepartureFlights)&&!empty($item->baggages->DepartureFlights->id)){
                                     $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                                 }
                                 $_array = explode(" ", $item->full_name);
@@ -3717,7 +3717,7 @@ function cassiopeia_ajax_page() {
                                     if(!empty($item->baggages->ReturnFlights)&&!empty($item->baggages->ReturnFlights->id)){
                                         $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                                     }
-                                    if(!empty($item->baggages->DepartureFlights)&&!empty(($item->baggages->DepartureFlights->id))){
+                                    if(!empty($item->baggages->DepartureFlights)&&!empty($item->baggages->DepartureFlights->id)){
                                         $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                                     }
                                     $_array = explode(" ", $item->full_name);
@@ -3736,8 +3736,8 @@ function cassiopeia_ajax_page() {
                                         "Type" => "ADT",
                                         "Gender" => $item->gender,
                                         "Birthday" => "01/01/1995",
-                                        "BaggageDeparture" => !empty(cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights))?cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id)->weight:"",
-                                        "BaggageReturn" => !empty(cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights))?cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id)->weight:"",
+                                        "BaggageDeparture" => cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights)?cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id)->weight:"",
+                                        "BaggageReturn" => cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights)?cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id)->weight:"",
                                     );
 
                                     $stt++;
@@ -3766,10 +3766,10 @@ function cassiopeia_ajax_page() {
                                 foreach ($_Chd as $item) {
                                     $baggageReturn = null;
                                     $baggageDeparture = null;
-                                    if(!empty($item->baggages->ReturnFlights)&&!empty(($item->baggages->ReturnFlights->id))){
+                                    if(!empty($item->baggages->ReturnFlights)&&!empty($item->baggages->ReturnFlights->id)){
                                         $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                                     }
-                                    if(!empty($item->baggages->DepartureFlights)&&!empty(($item->baggages->DepartureFlights->id))){
+                                    if(!empty($item->baggages->DepartureFlights)&&!empty($item->baggages->DepartureFlights->id)){
                                         $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                                     }
                                     $_array = explode(" ", $item->full_name);
@@ -3786,8 +3786,8 @@ function cassiopeia_ajax_page() {
                                         "Type" => "CHD",
                                         "Gender" => $item->gender,
                                         "Birthday" => date("Y-m-d",strtotime(str_replace("/", "-", $item->birth_day)))."T".date("H:i:s",strtotime(str_replace("/", "-", $item->birth_day))),
-                                        "BaggageDeparture" => !empty(cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights))?cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id)->weight:"",
-                                        "BaggageReturn" => !empty(cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights))?cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id)->weight:"",
+                                        "BaggageDeparture" => cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights)?cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id)->weight:"",
+                                        "BaggageReturn" => cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights)?cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id)->weight:"",
                                     );
                                     $stt++;
                                     $total_price += !empty($baggageDeparture)?$baggageDeparture->amount:0; // hành lý chiều đi

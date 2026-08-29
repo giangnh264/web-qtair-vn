@@ -71,6 +71,13 @@ $arg = arg();
                 <?php print drupal_render($form['account']['mail']); ?>
             </div>
         </div>
+        <?php if (isset($form['field_agent_ticket_pdf'])): ?>
+            <div class="form-item row agent-ticket-pdf-option">
+                <div class="col-xs-12">
+                    <?php print drupal_render($form['field_agent_ticket_pdf']); ?>
+                </div>
+            </div>
+        <?php endif; ?>
         <div class="form-item row">
             <div class="col-md-8">
                 <?php print drupal_render($form['field_address']); ?>

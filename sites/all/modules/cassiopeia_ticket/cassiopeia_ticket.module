@@ -930,8 +930,9 @@ function cassiopeia_ticket_issue_review($form, &$form_state)
                   $paymentTableTbodyTr = $paymentTableTbody->childNodes;
                   foreach ($paymentTableTbodyTr as $item) {
                     $itineraryTableTbodyTrTd = $item->childNodes;
-                    if (!empty($itineraryTableTbodyTrTd->item(2)->nodeValue)) {
-                      $TotalPrice += str_replace("VND", "", str_replace(".", "", $itineraryTableTbodyTrTd->item(2)->nodeValue));
+                    $itineraryPriceCell = $itineraryTableTbodyTrTd->item(2);
+                    if ($itineraryPriceCell && !empty($itineraryPriceCell->nodeValue)) {
+                      $TotalPrice += str_replace("VND", "", str_replace(".", "", $itineraryPriceCell->nodeValue));
                     }
                   }
 //                  _print_r($TotalPrice);
@@ -1257,7 +1258,23 @@ function cassiopeia_ticket_issue_form_submit($form, &$form_state)
                                         "status" => "TICKETED"
                                     ))->condition("booking_code", $booking->booking_code)->execute();
                                 }
-                                cassiopeia_send_booking_mail($booking->booking_code, $_agent->mail, $booking->DO);
+                                $attachments = array();
+                                module_load_include('inc', 'cassiopeia', 'cassiopeia_agency_ticket_pdf');
+                                if (!empty($_agent->mail) && cassiopeia_agency_ticket_pdf_enabled($_agent)) {
+                                    try {
+                                        $attachments[] = cassiopeia_agency_ticket_pdf_attachment($booking, $Airline, $_agent);
+                                    }
+                                    catch (Exception $e) {
+                                        watchdog(
+                                            'cassiopeia',
+                                            'Agency ticket PDF generation failed; the original booking email was sent without an attachment.',
+                                            array(),
+                                            WATCHDOG_WARNING
+                                        );
+                                        $attachments = array();
+                                    }
+                                }
+                                cassiopeia_send_booking_mail($booking->booking_code, $_agent->mail, $booking->DO, '', $attachments);
                             }
                         } catch (Exception $e) {
                         }
@@ -1546,7 +1563,7 @@ function cassiopeia_ticket_booking_form($form, &$form_state)
     $form['#prefix'] = "<div id='" . $form_wrapper . "'>";
     $form['#suffix'] = "</div>";
     $form['#attributes']['class'][] = "cassiopeia-ticket-booking-form";
-    $balance = $_user->field_account_balance['und'][0]['value'] ?? 0;
+    $balance = isset($_user->field_account_balance['und'][0]['value']) ? $_user->field_account_balance['und'][0]['value'] : 0;
     $TotalPrice = $_SESSION['TotalPrice'];
     $TotalServiceFee = $_SESSION['TotalServiceFee'];
     if (!empty($user->uid)) {
@@ -1561,7 +1578,7 @@ function cassiopeia_ticket_booking_form($form, &$form_state)
         $text = "<div class=\"color-orange\">( Bấm tiếp tục để thực hiện xuất vé ngay! )</div>";
     }
     $options = array();
-    if (empty(!$user->uid)) {
+    if (!empty($user->uid)) {
         $_options[PAYMENT_HOLD] = "Giữ chỗ";
         $_options[QT_CREDIT] = "Quang Trang Credit";
     } else {
@@ -1909,7 +1926,7 @@ function cassiopeia_ticket_booking_form_submit($form, &$form_state)
                     if (!empty($item->baggages->ReturnFlights) && !empty($item->baggages->ReturnFlights->id)) {
                         $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                     }
-                    if (!empty($item->baggages->DepartureFlights) && !empty(($item->baggages->DepartureFlights->id))) {
+                    if (!empty($item->baggages->DepartureFlights) && !empty($item->baggages->DepartureFlights->id)) {
                         $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                     }
                     $_array = explode(" ", $item->full_name);
@@ -1964,10 +1981,10 @@ function cassiopeia_ticket_booking_form_submit($form, &$form_state)
                 foreach ($_Chd as $item) {
                     $baggageReturn = null;
                     $baggageDeparture = null;
-                    if (!empty($item->baggages->ReturnFlights) && !empty(($item->baggages->ReturnFlights->id))) {
+                    if (!empty($item->baggages->ReturnFlights) && !empty($item->baggages->ReturnFlights->id)) {
                         $baggageReturn = cassiopeia_get_baggage_by_id($item->baggages->ReturnFlights->id);
                     }
-                    if (!empty($item->baggages->DepartureFlights) && !empty(($item->baggages->DepartureFlights->id))) {
+                    if (!empty($item->baggages->DepartureFlights) && !empty($item->baggages->DepartureFlights->id)) {
                         $baggageDeparture = cassiopeia_get_baggage_by_id($item->baggages->DepartureFlights->id);
                     }
                     $_array = explode(" ", $item->full_name);
@@ -2382,9 +2399,10 @@ function cassiopeia_ticket_booking_form_submit($form, &$form_state)
                     $saved = cassiopeia_qt_ticket_booking_save($fbooking);
                     cassiopeia_send_booking_mail($booking_code, $_data->ContactInfo['Email'], $fbooking->DO);
                     cassiopeia_send_booking_mail($booking_code, variable_get("site_mail"), $fbooking->DO);
-                    if (!empty(trim(variable_get("mod_accountant_email"))) && !empty($fbooking->bill_company) && !empty($fbooking->bill_tax_number) && !empty($fbooking->bill_mail)) {
+                    $accountant_email = trim(variable_get("mod_accountant_email"));
+                    if ($accountant_email !== '' && !empty($fbooking->bill_company) && !empty($fbooking->bill_tax_number) && !empty($fbooking->bill_mail)) {
                         $custom_subject = $fbooking->bill_company . " - " . $fbooking->bill_tax_number . ": Yêu cầu cung cấp hóa đơn";
-                        cassiopeia_send_booking_mail($booking_code, variable_get("mod_accountant_email"), $fbooking->DO, $custom_subject);
+                        cassiopeia_send_booking_mail($booking_code, $accountant_email, $fbooking->DO, $custom_subject);
                     }
 
                     $data['return_url'] = "/booking/view/" . $booking_code;

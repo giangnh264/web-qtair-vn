@@ -1,0 +1,354 @@
+<?php
+
+/**
+ * @file
+ * Tests for agency ticket PDF email helpers.
+ */
+
+class CassiopeiaAgencyTicketPdfUnitTestCase extends DrupalUnitTestCase {
+
+  public static function getInfo() {
+    return array(
+      'name' => 'Agency ticket PDF helpers',
+      'description' => 'Checks airline mapping, QR payload and PDF attachment contracts.',
+      'group' => 'Cassiopeia',
+    );
+  }
+
+  public function setUp() {
+    parent::setUp();
+    module_load_include('inc', 'cassiopeia', 'cassiopeia_agency_ticket_pdf');
+    module_load_include('module', 'cassiopeia_user', 'cassiopeia_user');
+  }
+
+  public function testAirlineMapping() {
+    $expected = array(
+      'VN' => array('display_code' => 'VNA', 'color' => '#006885', 'header' => 1, 'icon' => 1),
+      'VJ' => array('display_code' => 'VJ', 'color' => '#db2427', 'header' => 2, 'icon' => 2),
+      'QH' => array('display_code' => 'QH', 'color' => '#3fa034', 'header' => 3, 'icon' => 3),
+      'SPA' => array('display_code' => 'SPA', 'color' => '#d0181e', 'header' => 4, 'icon' => 4),
+      'VU' => array('display_code' => 'VU', 'color' => '#0368b3', 'header' => 5, 'icon' => 5),
+    );
+
+    $this->assertTrue(function_exists('cassiopeia_agency_ticket_pdf_airline_config'), 'Airline mapping helper exists.');
+    foreach ($expected as $code => $values) {
+      if (!function_exists('cassiopeia_agency_ticket_pdf_airline_config')) {
+        return;
+      }
+      $config = cassiopeia_agency_ticket_pdf_airline_config($code);
+      $this->assertEqual($config['display_code'], $values['display_code'], $code . ' QR display code.');
+      $this->assertEqual($config['color'], $values['color'], $code . ' brand color.');
+      $this->assertEqual($config['header'], $values['header'], $code . ' header index.');
+      $this->assertEqual($config['icon'], $values['icon'], $code . ' icon index.');
+    }
+
+    if (function_exists('cassiopeia_agency_ticket_pdf_airline_config')) {
+      $fallback = cassiopeia_agency_ticket_pdf_airline_config('UNKNOWN');
+      $this->assertTrue(!empty($fallback['fallback']), 'Unknown airline uses neutral fallback.');
+    }
+  }
+
+  public function testQrPayloadIncludesAllPassengersAndFullPnr() {
+    $passengers = array(
+      (object) array('FirstName' => 'Hoàng Giang', 'LastName' => 'Nguyễn'),
+      (object) array('FirstName' => 'Thị B', 'LastName' => 'Trần'),
+    );
+
+    $this->assertTrue(function_exists('cassiopeia_agency_ticket_pdf_qr_payload'), 'QR payload helper exists.');
+    if (!function_exists('cassiopeia_agency_ticket_pdf_qr_payload')) {
+      return;
+    }
+
+    $this->assertEqual(
+      cassiopeia_agency_ticket_pdf_qr_payload('VN', 'ABC-DEF', $passengers),
+      'VNA | ABC-DEF | NGUYEN HOANG GIANG, TRAN THI B',
+      'QR payload preserves airline, full PNR and all passenger names.'
+    );
+  }
+
+  public function testPassengerNameUsesSurnameCommaGivenName() {
+    $passenger = (object) array(
+      'FirstName' => 'NGUYEN',
+      'LastName' => 'HUY HOANG',
+    );
+
+    $this->assertTrue(
+      function_exists('cassiopeia_agency_ticket_pdf_passenger_display_name'),
+      'Passenger display-name helper exists.'
+    );
+    if (!function_exists('cassiopeia_agency_ticket_pdf_passenger_display_name')) {
+      return;
+    }
+
+    $this->assertEqual(
+      cassiopeia_agency_ticket_pdf_passenger_display_name($passenger),
+      'NGUYEN, HUY HOANG',
+      'Passenger name is displayed as surname, given name.'
+    );
+  }
+
+  public function testTicketStatusReflectsIssuanceState() {
+    $this->assertEqual(
+      cassiopeia_agency_ticket_pdf_status_label((object) array('status' => 'TICKETED')),
+      'ĐÃ THANH TOÁN',
+      'Issued booking is shown as paid.'
+    );
+    $this->assertEqual(
+      cassiopeia_agency_ticket_pdf_status_label((object) array('status' => 'OK')),
+      'CHƯA THANH TOÁN',
+      'Booking not yet issued is shown as unpaid.'
+    );
+  }
+
+  public function testTicketReviewFormOffersOpenAndPdfDownloadActions() {
+    $form_state = array();
+    $form = cassiopeia_open_pnr_form(array(), $form_state, array(
+      'isReview' => TRUE,
+      'redirect' => 'user/manager/ticketReview',
+    ));
+
+    $this->assertEqual($form['submit']['#value'], 'Mở lại vé', 'Existing ticket review action remains available.');
+    $this->assertEqual($form['download_pdf']['#value'], 'Tải mặt vé', 'Ticket review form offers PDF download.');
+    $this->assertEqual(
+      $form['download_pdf']['#submit'],
+      array('cassiopeia_open_pnr_form_download_pdf_submit'),
+      'PDF button uses the download-only submit handler.'
+    );
+  }
+
+  public function testAgencyCanOnlyDownloadOwnBooking() {
+    $booking = (object) array('uid' => 19276);
+    $owner = (object) array('uid' => 19276, 'roles' => array(4 => 'đại lý'));
+    $other_agent = (object) array('uid' => 19283, 'roles' => array(4 => 'đại lý'));
+    $admin = (object) array('uid' => 1, 'roles' => array(3 => 'administrator'));
+    $ticket_staff = (object) array('uid' => 8, 'roles' => array(8 => 'ticket staff'));
+    $ticket_partner = (object) array('uid' => 10, 'roles' => array(10 => 'ticket partner'));
+    $unprivileged_user = (object) array('uid' => 2, 'roles' => array(2 => 'authenticated user'));
+
+    $this->assertTrue(cassiopeia_ticket_pdf_download_access($booking, $owner), 'Agency can download its own booking.');
+    $this->assertFalse(cassiopeia_ticket_pdf_download_access($booking, $other_agent), 'Agency cannot download another agency booking.');
+    $this->assertTrue(cassiopeia_ticket_pdf_download_access($booking, $admin), 'Administrator can download an agency booking.');
+    $this->assertTrue(cassiopeia_ticket_pdf_download_access($booking, $ticket_staff), 'Ticket staff can download a booking.');
+    $this->assertTrue(cassiopeia_ticket_pdf_download_access($booking, $ticket_partner), 'Ticket partner can download a booking.');
+    $this->assertFalse(cassiopeia_ticket_pdf_download_access($booking, $unprivileged_user), 'Authenticated users without ticket-review permission cannot download a booking.');
+  }
+
+  public function testAgentOptionDefaultsToOff() {
+    $agent = (object) array();
+    $this->assertTrue(function_exists('cassiopeia_agency_ticket_pdf_enabled'), 'Agent option helper exists.');
+    if (!function_exists('cassiopeia_agency_ticket_pdf_enabled')) {
+      return;
+    }
+
+    $this->assertFalse(cassiopeia_agency_ticket_pdf_enabled($agent), 'Missing option defaults to OFF.');
+    $agent->field_agent_ticket_pdf = array('und' => array(array('value' => 1)));
+    $this->assertTrue(cassiopeia_agency_ticket_pdf_enabled($agent), 'Enabled option returns TRUE.');
+  }
+
+  public function testAgentOptionIsAdminOnlyForAgencyAccounts() {
+    global $user;
+    $original_user = $user;
+    $agency = (object) array('roles' => array(4 => 'đại lý'));
+    $form = array('#user' => $agency);
+
+    $user = (object) array('roles' => array(3 => 'administrator'));
+    $this->assertTrue(
+      cassiopeia_user_can_edit_agent_ticket_pdf($form),
+      'Administrator can edit the agency PDF option.'
+    );
+
+    $user = (object) array('roles' => array(5 => 'sale'));
+    $this->assertFalse(
+      cassiopeia_user_can_edit_agent_ticket_pdf($form),
+      'Non-administrator cannot edit the agency PDF option.'
+    );
+
+    $form['#user']->roles = array(5 => 'sale');
+    $user = (object) array('roles' => array(3 => 'administrator'));
+    $this->assertFalse(
+      cassiopeia_user_can_edit_agent_ticket_pdf($form),
+      'The option is hidden for non-agency accounts.'
+    );
+
+    $form['#user']->roles = array(4 => 'đại lý');
+    $user = (object) array('roles' => array(5 => 'sale'));
+    $form_state = array('values' => array('field_agent_ticket_pdf' => array('und' => array(array('value' => 1)))));
+    cassiopeia_user_form_user_profile_form_validate($form, $form_state);
+    $this->assertFalse(
+      isset($form_state['values']['field_agent_ticket_pdf']),
+      'Non-administrator POST values are discarded.'
+    );
+
+    $user = $original_user;
+  }
+
+  public function testTemplateMatchesReferenceLayout() {
+    $path = drupal_get_path('module', 'cassiopeia') . '/templates/mail/agency-ticket-pdf.tpl.php';
+    $template = file_get_contents($path);
+
+    $this->assertTrue($template !== FALSE, 'Agency ticket PDF template is readable.');
+    $this->assertTrue(strpos($template, 'qtair-logo') === FALSE, 'Footer does not include the QTair logo.');
+    $this->assertTrue(strpos($template, '<svg class="info-icon"') !== FALSE, 'Notes use the reference information icon.');
+    $this->assertTrue(strpos($template, '<table class="flight-path-table">') !== FALSE, 'Flight path uses the reference layout.');
+    $this->assertTrue(strpos($template, 'path-line-cell') !== FALSE, 'Flight path includes dashed line cells.');
+    $this->assertTrue(strpos($template, '<div class="duration-pill">') !== FALSE, 'Flight duration uses the reference pill markup.');
+    $this->assertTrue(strpos($template, '>Ghế<') === FALSE, 'Passenger table omits the seat column.');
+  }
+
+  public function testDefaultBaggageMatchesExistingFareRules() {
+    $cases = array(
+      array('VN', 'E', '12Kg xách tay + 23Kg ký gửi'),
+      array('VN', 'J', '18Kg xách tay + 32Kg ký gửi'),
+      array('VJ', 'Eco', '7Kg xách tay'),
+      array('VJ', 'Deluxe', '7Kg xách tay + 20Kg ký gửi'),
+      array('VJ', 'SkyBOSS', '10Kg xách tay + 30Kg ký gửi'),
+      array('QH', 'ECONOMYSMARTFLEX', '7Kg xách tay + 20Kg ký gửi'),
+      array('QH', 'BUSINESSSMART', '7Kg xách tay + 40Kg ký gửi'),
+      array('VU', 'Eco', '7Kg xách tay'),
+      array('SPA', 'Eco', 'Theo điều kiện vé'),
+    );
+
+    $this->assertTrue(function_exists('cassiopeia_agency_ticket_pdf_default_baggage'), 'Default baggage helper exists.');
+    if (!function_exists('cassiopeia_agency_ticket_pdf_default_baggage')) {
+      return;
+    }
+
+    foreach ($cases as $case) {
+      $ticket = (object) array('AirlineCode' => $case[0], 'Class' => $case[1]);
+      $this->assertEqual(
+        cassiopeia_agency_ticket_pdf_default_baggage($ticket),
+        $case[2],
+        $case[0] . ' ' . $case[1] . ' default baggage.'
+      );
+    }
+  }
+
+  public function testZeroBaggageFallsBackToFareRule() {
+    $passenger = (object) array('BaggageDeparture' => '0', 'BaggageReturn' => '0');
+    $tickets = array((object) array('AirlineCode' => 'VJ', 'Class' => 'Eco'));
+
+    $this->assertEqual(
+      cassiopeia_agency_ticket_pdf_baggage($passenger, $tickets),
+      '7Kg xách tay',
+      'Zero baggage values use the basic fare baggage rule.'
+    );
+  }
+
+  public function testBookingCodeMatchesReferenceLayout() {
+    $path = drupal_get_path('module', 'cassiopeia') . '/templates/mail/agency-ticket-pdf.tpl.php';
+    $template = file_get_contents($path);
+
+    $this->assertTrue(strpos($template, 'booking-code-status') !== FALSE, 'Booking code uses a dedicated status layout.');
+    $this->assertTrue(strpos($template, 'booking-code-badge') !== FALSE, 'Booking code uses the reference badge.');
+    $this->assertTrue(strpos($template, '.booking-heading { font-size: 22px;') !== FALSE, 'Booking heading matches the reference size.');
+    $this->assertTrue(strpos($template, '.booking-code-badge-svg {') !== FALSE, 'Booking badge styles are present.');
+    $this->assertTrue(strpos($template, 'booking-code-badge-svg') !== FALSE, 'Booking badge uses the SVG renderer.');
+    $this->assertTrue(strpos($template, '<rect') !== FALSE && strpos($template, 'rx="6"') !== FALSE, 'Booking badge has rounded corners.');
+    $this->assertTrue(strpos($template, 'x="15"') !== FALSE, 'Booking badge uses the reference horizontal padding.');
+    $this->assertTrue(strpos($template, 'font-size="18"') !== FALSE, 'Booking badge uses the reference font size.');
+    $this->assertTrue(strpos($template, 'booking-status') !== FALSE, 'Booking status uses a dedicated style.');
+    $this->assertTrue(strpos($template, 'booking-status-gap') !== FALSE, 'Booking status uses the reference gap.');
+    $this->assertTrue(strpos($template, '.booking-table { margin-bottom: 0;') !== FALSE, 'Booking layout does not create an extra PDF page.');
+  }
+
+  public function testAttachmentContract() {
+    try {
+      cassiopeia_agency_ticket_pdf_load_dependencies();
+    }
+    catch (Exception $e) {
+      $this->pass('Attachment generation skipped because PDF/QR dependencies are not installed.');
+      return;
+    }
+
+    $this->assertTrue(function_exists('cassiopeia_agency_ticket_pdf_attachment'), 'Attachment helper exists.');
+    if (!function_exists('cassiopeia_agency_ticket_pdf_attachment')) {
+      return;
+    }
+
+    $booking = (object) array(
+      'booking_code' => 'booking-test',
+      'pnr_code' => 'ABC-DEF',
+      'DO' => 1,
+      'status' => 'TICKETED',
+      'passengers' => array((object) array('FirstName' => 'Hoang Giang', 'LastName' => 'Nguyen')),
+      'tickets' => array((object) array(
+        'AirlineCode' => 'VN',
+        'FlightNumber' => 'VN001',
+        'StartPoint' => 'HAN',
+        'EndPoint' => 'SGN',
+        'StartDate' => '2026-08-11 08:00:00',
+        'EndDate' => '2026-08-11 10:00:00',
+        'Class' => 'Y',
+      )),
+    );
+    $agent = (object) array(
+      'name' => '0900000000',
+      'mail' => 'test@example.invalid',
+      'field_account_transaction_name' => array('und' => array(array('value' => 'Test Agency'))),
+      'field_address' => array('und' => array(array('value' => 'Test Address'))),
+      'field_agent_ticket_pdf' => array('und' => array(array('value' => 1))),
+    );
+
+    $attachment = cassiopeia_agency_ticket_pdf_attachment($booking, 'VN', $agent);
+    $this->assertEqual($attachment['filemime'], 'application/pdf', 'Attachment MIME is PDF.');
+    $this->assertTrue(strpos($attachment['filename'], 've-') === 0, 'Attachment filename uses the ve- prefix.');
+    $this->assertEqual(substr($attachment['filecontent'], 0, 4), '%PDF', 'Attachment contains PDF bytes.');
+  }
+
+  public function testAttachmentRestoresVietnamTimezoneAfterPdfRuntimeLoad() {
+    $original_timezone = date_default_timezone_get();
+    $original_ini_timezone = ini_get('date.timezone');
+
+    $booking = (object) array(
+      'booking_code' => 'booking-timezone-test',
+      'pnr_code' => 'TIMEZONE-TEST',
+      'DO' => 1,
+      'status' => 'TICKETED',
+      'passengers' => array(),
+      'tickets' => array((object) array(
+        'AirlineCode' => 'VJ',
+        'FlightNumber' => 'VJ451',
+        'StartPoint' => 'HAN',
+        'EndPoint' => 'PQC',
+        'StartDate' => 1787460300,
+        'EndDate' => 1787468100,
+        'Class' => 'Eco',
+      )),
+    );
+    $agent = (object) array(
+      'name' => '0900000000',
+      'mail' => 'test@example.invalid',
+      'field_agent_ticket_pdf' => array('und' => array(array('value' => 1))),
+    );
+
+    try {
+      ini_set('date.timezone', '');
+      date_default_timezone_set('Europe/London');
+      cassiopeia_agency_ticket_pdf_load_dependencies();
+    }
+    catch (Exception $e) {
+      date_default_timezone_set($original_timezone);
+      ini_set('date.timezone', $original_ini_timezone);
+      $this->pass('Attachment timezone test skipped because PDF dependencies are unavailable.');
+      return;
+    }
+
+    ini_set('date.timezone', '');
+    date_default_timezone_set('Europe/London');
+    try {
+      cassiopeia_agency_ticket_pdf_attachment($booking, 'VJ', $agent);
+    }
+    catch (Exception $e) {
+      date_default_timezone_set($original_timezone);
+      ini_set('date.timezone', $original_ini_timezone);
+      throw $e;
+    }
+
+    $context = cassiopeia_agency_ticket_pdf_build_context($booking, 'VJ', $agent);
+    $this->assertEqual($context['flights'][0]['start_time'], '11:45', 'PDF attachment restores Vietnam start time.');
+    $this->assertEqual($context['flights'][0]['end_time'], '13:55', 'PDF attachment restores Vietnam end time.');
+
+    date_default_timezone_set($original_timezone);
+    ini_set('date.timezone', $original_ini_timezone);
+  }
+}

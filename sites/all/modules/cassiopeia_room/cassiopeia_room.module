@@ -1680,7 +1680,8 @@ function cassiopeia_room_room_booking_fee_load_by_star($star) {
 
 function cassiopeia_room_room_booking_fee_load_by_hotel($hotel, $price) {
 	try {
-		if (!empty(variable_get("room_booking_fee_by_start"))) {
+		$room_booking_fee_by_star = variable_get("room_booking_fee_by_start", 0);
+		if (!empty($room_booking_fee_by_star)) {
 			$star = $hotel->field_hotel_ranking['und'][0]['value'];
 		}
 		else {

@@ -43,6 +43,12 @@ $availablePoint = $totalPoint - $usedPoint;
                             <?php echo l("<span class=\"icon\"><i class=\"fa-light fa-ticket-airline\"></i></span><span>Xuất vé</span>", "user/manager/ticketIssue", array("html" => TRUE)); ?>
                         </li>
                     <?php endif; ?>
+                    <?php $menu_item = menu_get_item("user/manager/ticketReview"); ?>
+                    <?php if (!empty($menu_item) && !empty($menu_item['access'])): ?>
+                        <li>
+                            <?php echo l("<span class=\"icon\"><i class=\"fa-light fa-file-pdf\"></i></span><span>Mở mặt vé</span>", "user/manager/ticketReview", array("html" => TRUE)); ?>
+                        </li>
+                    <?php endif; ?>
                     <?php $menu_item = menu_get_item("admin/manager/ticketVoid"); ?>
                     <?php /*if (!empty($menu_item) && !empty($menu_item['access'])): */?>
                         <li>

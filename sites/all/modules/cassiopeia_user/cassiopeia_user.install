@@ -2286,3 +2286,82 @@ function cassiopeia_user_update_7102() {
     db_create_table('user_role_gift_history_permissions', $schema['user_role_gift_history_permissions']);
     db_create_table('user_role_gift_permissions', $schema['user_role_gift_permissions']);
 }
+
+/**
+ * Add the per-agency PDF attachment preference.
+ */
+function cassiopeia_user_update_7103() {
+    $field_name = 'field_agent_ticket_pdf';
+
+    if (!field_info_field($field_name)) {
+        field_create_field(array(
+            'field_name' => $field_name,
+            'type' => 'list_boolean',
+            'cardinality' => 1,
+            'translatable' => 0,
+            'settings' => array(
+                'allowed_values' => array(
+                    0 => 'Tắt',
+                    1 => 'Bật',
+                ),
+            ),
+        ));
+        field_info_cache_clear();
+    }
+
+    if (!field_info_instance('user', $field_name, 'user')) {
+        field_create_instance(array(
+            'field_name' => $field_name,
+            'entity_type' => 'user',
+            'bundle' => 'user',
+            'label' => 'Gửi email Đại lý kèm PDF',
+            'description' => 'Đính kèm PDF vé vào email xuất vé hiện tại của đại lý.',
+            'required' => FALSE,
+            'default_value' => array(
+                array('value' => 0),
+            ),
+            'widget' => array(
+                'type' => 'options_onoff',
+                'weight' => 20,
+            ),
+        ));
+    }
+}
+
+/**
+ * Define storage values for the agency PDF checkbox.
+ */
+function cassiopeia_user_update_7104() {
+    $field_name = 'field_agent_ticket_pdf';
+    $field = field_info_field($field_name);
+    $allowed_values = array(
+        0 => 'Tắt',
+        1 => 'Bật',
+    );
+
+    if (!empty($field) && $field['type'] === 'list_boolean') {
+        if (empty($field['settings']['allowed_values']) || $field['settings']['allowed_values'] !== $allowed_values) {
+            $field['settings']['allowed_values'] = $allowed_values;
+            field_update_field($field);
+        }
+        field_info_cache_clear();
+
+        if (!field_info_instance('user', $field_name, 'user')) {
+            field_create_instance(array(
+                'field_name' => $field_name,
+                'entity_type' => 'user',
+                'bundle' => 'user',
+                'label' => 'Gửi email Đại lý kèm PDF',
+                'description' => 'Đính kèm PDF vé vào email xuất vé hiện tại của đại lý.',
+                'required' => FALSE,
+                'default_value' => array(
+                    array('value' => 0),
+                ),
+                'widget' => array(
+                    'type' => 'options_onoff',
+                    'weight' => 20,
+                ),
+            ));
+        }
+    }
+}

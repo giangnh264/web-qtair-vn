@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 global $user;
 
 define("AGENTMAIL", "booking@autic.vn");
@@ -1049,7 +1049,7 @@ function cassiopeia_variable_info($options)
     $variables['cassiopeia_config_benefits_group_1_title'] = array(
         'type' => 'string',
         'title' => t('Contact content'),
-        'default' => !empty(variable_get("cassiopeia_config_benefits_group_1_title")) ? variable_get("cassiopeia_config_benefits_group_1_title") : "",
+        'default' => variable_get("cassiopeia_config_benefits_group_1_title", ""),
         'required' => TRUE,
         'localize' => TRUE,
 
@@ -4545,7 +4545,7 @@ function cassiopeia_partner_register_form_submit($form, &$form_state)
     }
 }
 
-function cassiopeia_send_booking_mail($booking_code, $_mail,$DO=0, $custom_subject = "")
+function cassiopeia_send_booking_mail($booking_code, $_mail, $DO = 0, $custom_subject = "", $attachments = array())
 {
     $booking = cassiopeia_qt_ticket_booking_load_by_code($booking_code);
 //    print_r($booking_code);
@@ -4554,7 +4554,7 @@ function cassiopeia_send_booking_mail($booking_code, $_mail,$DO=0, $custom_subje
         $site_mail = "";
         $subject_mail = "Booking ".ucfirst(SITE_DOMAIN)." cho mã đặt chỗ ".$booking->pnr_code;
         
-        if (!empty(trim($custom_subject))) {
+        if (trim($custom_subject) !== '') {
             $subject_mail = $custom_subject;
         }
         
@@ -4573,6 +4573,9 @@ function cassiopeia_send_booking_mail($booking_code, $_mail,$DO=0, $custom_subje
             'subject' => $subject_mail,
             'headers' => $headers,
         );
+        if (!empty($attachments)) {
+            $params['attachments'] = $attachments;
+        }
 //        _print_r($body);
 //        _print_r($_mail);
 //        die;
@@ -7851,8 +7854,19 @@ function cassiopeia_open_pnr_form($form, &$form_state, $caches = null)
         '#type' => 'submit',
         '#value' =>  $txtBtnSubmit,
         '#prefix'   => "<div class='form-actions'>",
+        '#suffix' => "</div>",
         '#attributes' => array("class" => array("btn-default")),
     );
+    if (!empty($caches['isReview'])) {
+        $form['download_pdf'] = array(
+            '#type' => 'submit',
+            '#value' => t('Tải mặt vé'),
+            '#prefix' => "<div class='form-actions'>",
+            '#suffix' => "</div>",
+            '#attributes' => array('class' => array('btn-default', 'btn-download-ticket-pdf')),
+            '#submit' => array('cassiopeia_open_pnr_form_download_pdf_submit'),
+        );
+    }
     return $form;
 }
 
@@ -7865,6 +7879,77 @@ function cassiopeia_open_pnr_form_submit($form, &$form_state)
         )
     );
     $form_state['redirect'] = array($form_state['#cache']['redirect'], "data" => $options);
+}
+
+function cassiopeia_ticket_pdf_download_access($booking, $account) {
+    if (empty($booking) || empty($account->uid)) {
+        return FALSE;
+    }
+    if (!empty($account->roles[4])) {
+        return !empty($booking->uid) && (int) $booking->uid === (int) $account->uid;
+    }
+    return user_has_role(3, $account) || user_has_role(8, $account) || user_has_role(10, $account);
+}
+
+function cassiopeia_ticket_pdf_download_booking_load($pnr_code, $airline_code, $account) {
+    $query = db_select('tbl_booking', 'b');
+    $query->fields('b');
+    $query->join('tbl_ticket', 't', 't.bid = b.id');
+    $query->condition('t.pnr_code', $pnr_code);
+    $query->condition('t.AirlineCode', $airline_code);
+    if (!empty($account->roles[4])) {
+        $query->condition('b.uid', $account->uid);
+    }
+    $query->orderBy('b.id', 'DESC');
+    $query->range(0, 1);
+    $booking = $query->execute()->fetchObject();
+    if (!empty($booking)) {
+        $booking->tickets = cassiopeia_qt_ticket_load_by_bid($booking->id);
+        $booking->passengers = cassiopeia_qt_passenger_load_by_bid($booking->id);
+    }
+    return $booking;
+}
+
+function cassiopeia_open_pnr_form_download_pdf_submit($form, &$form_state) {
+    global $user;
+
+    $pnr_code = strtoupper(trim($form_state['values']['code']));
+    $airline_code = strtoupper(trim($form_state['values']['airline']));
+    $booking = cassiopeia_ticket_pdf_download_booking_load($pnr_code, $airline_code, $user);
+    if (empty($booking)) {
+        form_set_error('code', t('Không tìm thấy dữ liệu đặt chỗ để tạo mặt vé.'));
+        return;
+    }
+    if (!cassiopeia_ticket_pdf_download_access($booking, $user)) {
+        form_set_error('code', t('Bạn không có quyền tải mặt vé của mã đặt chỗ này.'));
+        return;
+    }
+
+    $agent = !empty($booking->uid) ? user_load($booking->uid) : user_load($user->uid);
+    if (empty($agent)) {
+        form_set_error('code', t('Không tìm thấy thông tin đại lý để tạo mặt vé.'));
+        return;
+    }
+
+    module_load_include('inc', 'cassiopeia', 'cassiopeia_agency_ticket_pdf');
+    try {
+        $attachment = cassiopeia_agency_ticket_pdf_attachment($booking, $airline_code, $agent);
+    }
+    catch (Exception $e) {
+        form_set_error('code', t('Không thể tạo mặt vé lúc này, vui lòng thử lại sau.'));
+        return;
+    }
+
+    while (ob_get_level() > 0) {
+        ob_end_clean();
+    }
+    drupal_add_http_header('Content-Type', $attachment['filemime']);
+    drupal_add_http_header('Content-Disposition', 'attachment; filename="' . $attachment['filename'] . '"');
+    drupal_add_http_header('Content-Length', strlen($attachment['filecontent']));
+    drupal_add_http_header('Cache-Control', 'private, no-store');
+    drupal_add_http_header('X-Content-Type-Options', 'nosniff');
+    print $attachment['filecontent'];
+    drupal_exit();
 }
 
 function cassiopeia_get_booking_by_pnr($PNR)
@@ -8536,7 +8621,7 @@ function cassiopeia_manger_payment_export()
         ->fields(NULL, array("created", "airline", "tran_kind", "PNR", "quantity", "partner_price", "agent", "tran_user", "content", "balance", "date", "tran_code"))
         ->orderBy("created", "DESC");
     $query->join("tbl_tran_kind", "tbl_tran_kind", "tbl_tran_kind.id=tran_kind");
-    if (!empty($caches['date_filter'] && $caches['date_filter'] != "all")) {
+    if (!empty($caches['date_filter']) && $caches['date_filter'] != "all") {
         switch ($caches['date_filter']) {
             case "today" :
                 $query->condition("date", array(strtotime(date("d-m-Y 00:00", REQUEST_TIME)), strtotime(date("d-m-Y 23:59", REQUEST_TIME))), "BETWEEN");
@@ -8557,21 +8642,21 @@ function cassiopeia_manger_payment_export()
                 break;
         }
     } elseif ($caches['date_filter'] == "other") {
-        if (!empty($caches['payment_report_from_date'] && $caches['payment_report_from_date'] != "")) {
+        if (!empty($caches['payment_report_from_date']) && $caches['payment_report_from_date'] != "") {
             $query->condition("date", strtotime(date("d-m-Y 00:00", strtotime($caches['payment_report_from_date']))), ">=");
         }
-        if (!empty($caches['payment_report_to_date'] && $caches['payment_report_to_date'] != "")) {
+        if (!empty($caches['payment_report_to_date']) && $caches['payment_report_to_date'] != "") {
             $query->condition("date", strtotime(date("d-m-Y 23:59", strtotime($caches['payment_report_to_date']))), "<=");
         }
     }
-    if (!empty($caches['tran_kind'] && $caches['tran_kind'] != "all")) {
+    if (!empty($caches['tran_kind']) && $caches['tran_kind'] != "all") {
         $query->condition("tran_kind", $caches['tran_kind']);
     }
-    if (!empty($caches['PNR'] && $caches['PNR'] != "all")) {
+    if (!empty($caches['PNR']) && $caches['PNR'] != "all") {
         $query->condition("PNR", $caches['PNR']);
 
     }
-    if (!empty($caches['content'] && $caches['content'] != "")) {
+    if (!empty($caches['content']) && $caches['content'] != "") {
         $query->condition("content", "%" . $caches['content'] . "%", "LIKE");
     }
     if (!empty($caches['tran_user']) && $caches['tran_user'] != "all") {
@@ -8713,7 +8798,7 @@ function cassiopeia_manger_issue_export()
         $query2->addExpression("SUM(revenue)", "total_revenue");
         $query2->addExpression("COUNT(partner_price)", "total_items");
         if (!empty($caches)) {
-            if(!empty($caches['date_filter']&& $caches['date_filter']!="all")){
+            if(!empty($caches['date_filter']) && $caches['date_filter']!="all"){
                 switch ($caches['date_filter']){
                     case "today" :
                         $query2->condition("date",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME)),strtotime(date("d-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
@@ -8739,11 +8824,11 @@ function cassiopeia_manger_issue_export()
                         break;
                 }
             }
-            if (!empty($caches['airline'] && $caches['airline'] != "all")) {
+            if (!empty($caches['airline']) && $caches['airline'] != "all") {
                 $query->condition("airline", $caches['airline']);
                 $query2->condition("airline", $caches['airline']);
             }
-            if (!empty($caches['tran_kind'] && $caches['tran_kind'] != "all")) {
+            if (!empty($caches['tran_kind']) && $caches['tran_kind'] != "all") {
                 $query->condition("tran_kind", $caches['tran_kind']);
                 $query2->condition("tran_kind", $caches['tran_kind']);
             }
@@ -8751,7 +8836,7 @@ function cassiopeia_manger_issue_export()
                 $query->condition("PNR", $caches['PNR']);
                 $query2->condition("PNR", $caches['PNR']);
             }
-            if (!empty($caches['content'] && $caches['content'] != "all")) {
+            if (!empty($caches['content']) && $caches['content'] != "all") {
                 $query->condition("content", "%" . $caches['content'] . "%", "LIKE");
                 $query2->condition("content", "%" . $caches['content'] . "%", "LIKE");
             }
@@ -8935,7 +9020,7 @@ function cassiopeia_manger_agents_balance_report_export(){
         $query->leftJoin($quer1y,"tbl_rank","tbl_rank.agent=tbl_user.uid");
         $query->addField("tbl_rank","total_price","total_price");
         $query->addExpression("FLOOR(tbl_rank.total_price/1000000)","total_rank_point");
-        if(!empty($caches['rank']&& $caches['rank']!="all")){
+        if(!empty($caches['rank']) && $caches['rank']!="all"){
             switch ($caches['rank']){
                 case 500 :
                     $query->where('FLOOR(tbl_rank.total_price/1000000)<:rank', array(':rank' => $caches['rank']));
@@ -8967,16 +9052,16 @@ function cassiopeia_manger_agents_balance_report_export(){
             }
         }
     
-        if(!empty($caches['code']&& $caches['code']!="all")){
+        if(!empty($caches['code']) && $caches['code']!="all"){
             $query->condition("field_account_code.field_account_code_value","%".$caches['code']."%","LIKE");
         }
-        if(!empty($caches['name']&& $caches['name']!="all")){
+        if(!empty($caches['name']) && $caches['name']!="all"){
             $query->condition("field_account_transaction_name.field_account_transaction_name_value","%".$caches['name']."%","LIKE");
         }
-        if(!empty($caches['tel']&& $caches['tel']!="all")){
+        if(!empty($caches['tel']) && $caches['tel']!="all"){
             $query->condition("tbl_user.name","%".$caches['tel']."%","LIKE");
         }
-        if(!empty($caches['mail']&& $caches['mail']!="all")){
+        if(!empty($caches['mail']) && $caches['mail']!="all"){
             $query->condition("tbl_user.mail","%".$caches['mail']."%","LIKE");
         }
         if(isset($caches['status'])&& $caches['status']!="all"){
@@ -8985,7 +9070,7 @@ function cassiopeia_manger_agents_balance_report_export(){
         if(!empty($caches['sale'])&& $caches['sale']!="all"){
             $query->condition("tbl_sale.field_account_sale_target_id",$caches['sale'],"=");
         }
-        if(!empty($caches['profit_filter']&& $caches['profit_filter']!="all")){
+        if(!empty($caches['profit_filter']) && $caches['profit_filter']!="all"){
             switch ($caches['profit_filter']){
                 case "morethanZero":
                     $query->condition("tbl_balance.field_account_balance_value",0,">");
