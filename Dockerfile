@@ -1,26 +1,24 @@
-FROM php:7.4-apache
+FROM webdevops/php-apache:debian-7
 
-# Drupal 7 typically needs these PHP extensions.
+COPY --from=composer:2.2 /usr/bin/composer /usr/bin/composer
+COPY --from=composer:2.2 /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
+
+# webdevops/php-apache:debian-7 provides PHP 5.4, Apache, GD, mbstring,
+# iconv, mysqli, PDO MySQL, zip and Composer-compatible system tools.
+ENV WEB_DOCUMENT_ROOT=/var/www/html
+
+COPY sites/all/libraries/qtair-pdf/composer.json sites/all/libraries/qtair-pdf/composer.lock /tmp/qtair-pdf/
 RUN set -eux; \
-    apt-get update; \
-    apt-get install -y --no-install-recommends \
-      default-mysql-client \
-      libfreetype6-dev \
-      libjpeg62-turbo-dev \
-      libpng-dev \
-      libzip-dev \
-      unzip \
-      zip; \
-    docker-php-ext-configure gd --with-freetype --with-jpeg; \
-    docker-php-ext-install -j"$(nproc)" \
-      gd \
-      mysqli \
-      pdo_mysql \
-      zip \
-      opcache; \
-    a2enmod rewrite headers expires; \
-    rm -rf /var/lib/apt/lists/*
+    composer install \
+      --working-dir=/tmp/qtair-pdf \
+      --no-dev \
+      --no-interaction \
+      --no-progress \
+      --prefer-dist; \
+    mkdir -p /opt/qtair-pdf/tmp; \
+    cp -R /tmp/qtair-pdf/vendor /opt/qtair-pdf/vendor; \
+    chown -R application:application /opt/qtair-pdf
 
-COPY .docker/php.ini /usr/local/etc/php/conf.d/zz-drupal.ini
+COPY .docker/php.ini /opt/docker/etc/php/php.ini
 
 WORKDIR /var/www/html
