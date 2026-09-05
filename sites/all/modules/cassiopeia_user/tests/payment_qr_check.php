@@ -21,7 +21,11 @@ qr_check(!cassiopeia_user_payment_qr_booking_allowed($b, 7, 2000), 'expiry bound
 $b->ExpiryDt = 0;
 qr_check(!cassiopeia_user_payment_qr_booking_allowed($b, 7, 1000), 'missing expiry');
 $b->status = 'TICKETED';
-qr_check(cassiopeia_user_payment_qr_booking_allowed($b, 7, 3000), 'issued ignores hold expiry');
+$b->created = 100000;
+qr_check(cassiopeia_user_payment_qr_booking_allowed($b, 7, 100000 + 86400), 'issued within 24h allowed');
+qr_check(!cassiopeia_user_payment_qr_booking_allowed($b, 7, 100000 + 86401), 'issued older than 24h denied');
+$b->changed = 100000 + 86400;
+qr_check(cassiopeia_user_payment_qr_booking_allowed($b, 7, 100000 + 86400 + 3600), 'issued recently changed within 24h allowed');
 foreach (array('FAIL', 'CANCELED', 'EXPIRED', 'PAID', 'HOLD') as $status) {
   $b->status = $status;
   qr_check(!cassiopeia_user_payment_qr_booking_allowed($b, 7, 1000), 'disallowed status');

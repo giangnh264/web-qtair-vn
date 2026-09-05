@@ -14,11 +14,33 @@ $saved = !empty($variables['saved']) ? $variables['saved'] : FALSE;
     <form id="qr-form" class="qr-panel" autocomplete="off">
       <section>
         <h3><span>1</span> Thông tin vé</h3>
-        <label for="qr-passenger">Hành khách / người thanh toán <span style="color:#c00;">*</span></label>
-        <input id="qr-passenger" name="passenger" maxlength="300" required placeholder="Ví dụ: NGUYEN VAN A">
-        <label for="qr-pnr">Mã đặt chỗ</label>
-        <input id="qr-pnr" name="pnr" maxlength="6" autocapitalize="characters" placeholder="Ví dụ: ABC123">
-        <p class="qr-hint">Nhập thông tin hành khách và mã đặt chỗ để tự động tạo nội dung chuyển khoản.</p>
+        <fieldset class="qr-choices"><legend>Nguồn thông tin</legend>
+          <label><input type="radio" name="source" value="booking" checked> Chọn vé trong hệ thống</label>
+          <label><input type="radio" name="source" value="manual"> Nhập thủ công</label>
+        </fieldset>
+        <div id="qr-booking-fields">
+          <p class="qr-hint" style="color:#176454;font-weight:600;background:#e8f4f0;padding:10px 12px;border-radius:6px;margin:0 0 14px;">📌 Danh sách vé đã đặt chỗ còn thời gian và vé đã xuất trong vòng 24h.</p>
+          <label for="qr-search">Tìm vé</label>
+          <input id="qr-search" type="search" maxlength="150" placeholder="PNR, mã đơn hoặc tên hành khách">
+          <div id="qr-results" class="qr-results" aria-live="polite"></div>
+          <div class="qr-pagination"><button type="button" id="qr-prev" disabled>Trước</button><span id="qr-page">Trang 1</span><button type="button" id="qr-next" disabled>Sau</button></div>
+          <div id="qr-selected" class="qr-selected" hidden>
+            <div class="qr-result-header">
+              <strong id="qr-selected-code"></strong>
+              <span class="qr-done-badge"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> Đã chọn</span>
+            </div>
+            <p id="qr-selected-names"></p>
+            <p id="qr-selected-flights"></p>
+            <small id="qr-selected-expiry"></small>
+          </div>
+        </div>
+        <div id="qr-manual-fields" hidden>
+          <label for="qr-passenger">Hành khách / người thanh toán <span style="color:#c00;">*</span></label>
+          <input id="qr-passenger" name="passenger" maxlength="300" placeholder="Ví dụ: NGUYEN VAN A">
+          <label for="qr-pnr">Mã đặt chỗ</label>
+          <input id="qr-pnr" name="pnr" maxlength="6" autocapitalize="characters" placeholder="Ví dụ: ABC123">
+          <p class="qr-hint">Nhập thông tin hành khách và mã đặt chỗ để tự động tạo nội dung chuyển khoản.</p>
+        </div>
       </section>
       <section>
         <h3><span>2</span> Tài khoản nhận tiền</h3>
@@ -49,6 +71,8 @@ $saved = !empty($variables['saved']) ? $variables['saved'] : FALSE;
         <h3><span>3</span> Nội dung thu tiền</h3>
         <div class="qr-row"><div><label for="qr-amount">Số tiền cần thu (VND)</label><input id="qr-amount" name="amount" inputmode="numeric" maxlength="17" required placeholder="Ví dụ: 1.500.000"></div>
         <div><label for="qr-invoice">Lấy hóa đơn</label><select id="qr-invoice" name="invoice_option" required><option value="">-- Chọn hóa đơn --</option><option value="CHD">Có hóa đơn</option><option value="KHD">Không hóa đơn</option></select></div></div>
+        <p id="qr-sale" class="qr-hint">Chọn vé để lấy giá bán tham chiếu.</p>
+        <button type="button" id="qr-reset-price" class="qr-link-button" disabled>Lấy lại giá bán gốc</button>
         <label for="qr-content">Nội dung chuyển khoản</label><input id="qr-content" name="base_content" maxlength="50" required placeholder="Ví dụ: CODE CHD DL TENDAILY hoặc CODE VMB CHD NGUYEN VAN A">
         <p class="qr-hint">Tối đa 50 ký tự. Quang Trang: [Mã vé] [CHD/KHD] DL [Tên đại lý]. Khách chuyển: [Mã vé] VMB [CHD/KHD] [Tên khách].</p>
         <p class="qr-final-content">Nội dung cuối: <strong id="qr-final-description">—</strong></p>

@@ -8,8 +8,8 @@
     });
     var root = $('.qt-payment-qr'), config = Drupal.settings.paymentQr;
     if (!root.length || !config) { return; }
-    var draftVersion = 0;
-    var snapshot = null, summaryText = '', preparing = false;
+    var selected = null, draftVersion = 0, searchVersion = 0, page = 1;
+    var snapshot = null, summaryText = '', searchTimer, preparing = false;
     var canvas = document.getElementById('qr-canvas');
     function message(text) { $('#qr-message').text(text); }
     function money(raw) {
@@ -24,11 +24,24 @@
       return $.trim(text).replace(/\s+/g, ' ').toUpperCase();
     }
     function getCurrentCode() {
-      return $.trim($('#qr-pnr').val());
+      if ($('input[name=source]:checked').val() === 'manual') {
+        return $.trim($('#qr-pnr').val());
+      }
+      if (selected) {
+        return selected.ticket_code || selected.pnrs || selected.booking_code || '';
+      }
+      return '';
     }
     function getCurrentCustomer() {
-      var rawName = ascii($('#qr-passenger').val());
-      return rawName.split(',')[0].trim();
+      if ($('input[name=source]:checked').val() === 'manual') {
+        var rawName = ascii($('#qr-passenger').val());
+        return rawName.split(',')[0].trim();
+      }
+      if (selected) {
+        var raw = selected.passenger_name || selected.passenger_summary || '';
+        return ascii(raw).split(',')[0].trim();
+      }
+      return '';
     }
     function formatContent(code, invoice, mode, customer) {
       if (!mode) {
@@ -117,34 +130,102 @@
       setHidden('#qr-saved', mode !== 'saved');
       $('#qr-bank, #qr-account, #qr-owner').prop('required', personal).prop('disabled', !personal);
     }
-    function fillBooking(item) {
-      if (!item) { return; }
-      if (item.passenger_name || item.passenger_summary) {
-        var pName = item.passenger_name || item.passenger_summary.split(',')[0].trim();
-        $('#qr-passenger').val(pName);
+    function selectBooking(item) {
+      selected = item;
+      invalidate();
+      $('#qr-results .qr-result').removeClass('is-selected').find('.qr-done-badge').remove();
+      var activeBtn = $('#qr-results .qr-result[data-booking-id="' + item.booking_id + '"]');
+      if (activeBtn.length) {
+        activeBtn.addClass('is-selected');
+        $('<span class="qr-done-badge"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> Đã chọn</span>').appendTo(activeBtn.find('.qr-result-header'));
       }
-      var code = item.ticket_code || item.pnrs || item.booking_code || '';
-      if (code) {
-        code = code.replace(/[^A-Z0-9]/gi, '').slice(0, 6).toUpperCase();
-        $('#qr-pnr').val(code);
-      }
-      if (item.sale_amount) {
-        $('#qr-amount').val(formatMoney(item.sale_amount));
-      }
-      $('#qr-content').val(formatContent(code, $('#qr-invoice').val(), null, $('#qr-passenger').val()));
+      setHidden('#qr-selected', false);
+      $('#qr-selected-code').text(item.booking_code + ' · PNR ' + (item.pnrs || '—'));
+      $('#qr-selected-names').text(item.passenger_summary);
+      $('#qr-selected-flights').text(item.itinerary_summary);
+      $('#qr-selected-expiry').text(item.expires_at ? 'Hạn giữ chỗ: ' + item.expires_at : '');
+      $('#qr-amount').val(item.sale_amount ? formatMoney(item.sale_amount) : '');
+      $('#qr-sale').text(item.sale_amount ? 'Giá bán tham chiếu: ' + formatMoney(item.sale_amount) + ' VND. Có thể chỉnh số tiền cần thu.' : 'Chưa xác định được giá bán. Vui lòng nhập số tiền cần thu.');
+      $('#qr-reset-price').prop('disabled', !item.sale_amount);
+      var code = item.ticket_code || item.pnrs || item.booking_code;
+      $('#qr-content').val(formatContent(code, $('#qr-invoice').val(), null, item.passenger_name || item.passenger_summary));
       updateDescription();
     }
+    function search() {
+      var version = ++searchVersion, requestedPage = page;
+      var q = $.trim($('#qr-search').val());
+      $('#qr-prev, #qr-next').prop('disabled', true);
+      if (q.length === 1) { $('#qr-results').text('Nhập ít nhất 2 ký tự để tìm vé.'); return; }
+      $('#qr-results').text('Đang tìm vé…');
+      $.ajax({url: config.searchUrl, dataType: 'json', data: {keyword: q, page: requestedPage}})
+        .done(function (result) {
+          if (version !== searchVersion) { return; }
+          var list = $('#qr-results').empty();
+          if (!result.items || !result.items.length) { list.text('Không tìm thấy vé hợp lệ.'); }
+          $.each(result.items || [], function (_, item) {
+            var isCurSelected = selected && String(selected.booking_id) === String(item.booking_id);
+            var button = $('<button type="button" class="qr-result"></button>');
+            button.attr('data-booking-id', item.booking_id);
+            if (isCurSelected) {
+              button.addClass('is-selected');
+            }
+            var header = $('<div class="qr-result-header"></div>');
+            $('<strong>').text(item.booking_code + ' · ' + (item.pnrs || '—')).appendTo(header);
+            if (isCurSelected) {
+              $('<span class="qr-done-badge"><svg viewBox="0 0 20 20" fill="currentColor" width="16" height="16"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg> Đã chọn</span>').appendTo(header);
+            }
+            header.appendTo(button);
+            $('<small>').text(item.passenger_summary).appendTo(button);
+            $('<small>').text(item.itinerary_summary).appendTo(button);
+            if (item.sale_amount) {
+              $('<small>').css({'color': '#176454', 'font-weight': '600'}).text(formatMoney(item.sale_amount) + ' VND').appendTo(button);
+            }
+            button.on('click', function () { selectBooking(item); message('Đã chọn vé. Kiểm tra số tiền và người nhận trước khi tạo QR.'); });
+            list.append(button);
+          });
+          $('#qr-page').text('Trang ' + requestedPage);
+          $('#qr-prev').prop('disabled', requestedPage <= 1);
+          $('#qr-next').prop('disabled', !result.has_more || requestedPage >= 999);
+        }).fail(function () {
+          if (version === searchVersion) { $('#qr-results').text('Không tải được vé. Thử tìm lại hoặc tải lại trang.'); }
+        });
+    }
+    $('#qr-search').on('input', function () {
+      ++searchVersion; clearTimeout(searchTimer); page = 1; searchTimer = setTimeout(search, 300);
+    });
+    $('#qr-prev').on('click', function () { if (page > 1) { page -= 1; search(); } });
+    $('#qr-next').on('click', function () { page += 1; search(); });
+    $('input[name=source]').on('change', function () {
+      var manual = this.value === 'manual';
+      selected = null;
+      setHidden('#qr-booking-fields', manual);
+      setHidden('#qr-manual-fields', !manual);
+      $('#qr-passenger').prop('required', manual);
+      setHidden('#qr-selected', true);
+      $('#qr-reset-price').prop('disabled', true);
+      $('#qr-sale').text(manual ? 'Nhập số tiền muốn thu từ khách.' : 'Chọn vé để lấy giá bán tham chiếu.');
+      $('#qr-amount').val('');
+      var code = manual ? $('#qr-pnr').val() : '';
+      $('#qr-content').val(formatContent(code, $('#qr-invoice').val()));
+      invalidate();
+      if (!manual) {
+        page = 1;
+        search();
+      }
+    });
     $('#qr-pnr').on('input blur', function () {
       var start = this.selectionStart, end = this.selectionEnd;
       this.value = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 6);
       if (this.setSelectionRange) {
         this.setSelectionRange(Math.min(start, 6), Math.min(end, 6));
       }
-      $('#qr-content').val(formatContent(this.value, $('#qr-invoice').val(), null, getCurrentCustomer()));
-      updateDescription();
+      if ($('input[name=source]:checked').val() === 'manual') {
+        $('#qr-content').val(formatContent(this.value, $('#qr-invoice').val(), null, getCurrentCustomer()));
+        updateDescription();
+      }
     });
     $('#qr-passenger').on('input', function () {
-      if ($('input[name=mode]:checked').val() !== 'company') {
+      if ($('input[name=source]:checked').val() === 'manual' && $('input[name=mode]:checked').val() !== 'company') {
         $('#qr-content').val(formatContent(getCurrentCode(), $('#qr-invoice').val(), null, this.value));
         updateDescription();
       }
@@ -158,6 +239,12 @@
       var code = getCurrentCode();
       $('#qr-content').val(formatContent(code, $('#qr-invoice').val(), this.value));
       updateDescription();
+    });
+    $('#qr-reset-price').on('click', function () {
+      if (selected && selected.sale_amount) {
+        $('#qr-amount').val(formatMoney(selected.sale_amount));
+        invalidate();
+      }
     });
     $('#qr-form').on('input change', 'input[name], select[name], textarea[name]', invalidate);
     var amountPrevious = '';
@@ -228,13 +315,20 @@
     $('#qr-form').on('submit', function (event) {
       event.preventDefault();
       if (preparing) { return; }
-      var passenger = $.trim($('#qr-passenger').val());
-      if (!passenger) { message('Vui lòng nhập tên hành khách / người thanh toán.'); $('#qr-passenger').focus(); return; }
-      var pnr = $.trim($('#qr-pnr').val()).toUpperCase().replace(/[^A-Z0-9]/g, '');
-      if (pnr.length > 6) {
-        message('Mã đặt chỗ tối đa 6 ký tự.');
-        $('#qr-pnr').focus();
-        return;
+      var source = $('input[name=source]:checked').val() || 'manual';
+      var bookingId = '', passenger = '', pnr = '';
+      if (source === 'booking') {
+        if (!selected) { message('Vui lòng chọn vé trong danh sách.'); return; }
+        bookingId = selected.booking_id;
+      } else {
+        passenger = $.trim($('#qr-passenger').val());
+        if (!passenger) { message('Vui lòng nhập tên hành khách / người thanh toán.'); $('#qr-passenger').focus(); return; }
+        pnr = $.trim($('#qr-pnr').val()).toUpperCase().replace(/[^A-Z0-9]/g, '');
+        if (pnr.length > 6) {
+          message('Mã đặt chỗ tối đa 6 ký tự.');
+          $('#qr-pnr').focus();
+          return;
+        }
       }
       var amount = money($('#qr-amount').val());
       if (!amount) { message('Nhập số tiền VND nguyên dương, tối đa 13 chữ số.'); $('#qr-amount').focus(); return; }
@@ -255,7 +349,7 @@
         base = ascii($('#qr-content').val());
       }
       invalidate();
-      var version = draftVersion, input = {token: config.token, source: 'manual', booking_id: '', amount: amount,
+      var version = draftVersion, input = {token: config.token, source: source, booking_id: bookingId, amount: amount,
         mode: $('input[name=mode]:checked').val(), invoice_option: $('#qr-invoice').val(), base_content: base,
         bank_bin: $('#qr-bank').val(), account_no: $('#qr-account').val(), account_name: $('#qr-owner').val(),
         passenger: passenger, pnr: pnr, itinerary: ''};
@@ -311,7 +405,12 @@
       }, 'image/png');
     });
     modeFields();
-    if (config.selected) { fillBooking(config.selected); }
+    if (config.selected) {
+      selectBooking(config.selected);
+    }
+    if ($('input[name=source]:checked').val() === 'booking') {
+      search();
+    }
     updateDescription();
   });
 })(jQuery);

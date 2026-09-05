@@ -5,9 +5,17 @@
  */
 
 function cassiopeia_user_payment_qr_booking_allowed($booking, $uid, $now) {
-  return $uid > 0 && !empty($booking->uid) && (int) $booking->uid === (int) $uid
-    && ($booking->status === 'TICKETED' || ($booking->status === 'OK'
-      && !empty($booking->ExpiryDt) && (int) $booking->ExpiryDt > $now));
+  if ($uid <= 0 || empty($booking->uid) || (int) $booking->uid !== (int) $uid) {
+    return FALSE;
+  }
+  if ($booking->status === 'OK') {
+    return !empty($booking->ExpiryDt) && (int) $booking->ExpiryDt > $now;
+  }
+  if ($booking->status === 'TICKETED') {
+    $timestamp = max((int) (isset($booking->created) ? $booking->created : 0), (int) (isset($booking->changed) ? $booking->changed : 0));
+    return $timestamp >= ($now - 86400);
+  }
+  return FALSE;
 }
 
 function cassiopeia_user_payment_qr_amount($raw) {
@@ -280,9 +288,22 @@ function cassiopeia_user_payment_qr_search() {
     return cassiopeia_user_payment_qr_error('Bộ lọc tìm kiếm không hợp lệ.');
   }
   try {
+    $now = time();
+    $since_24h = $now - 86400;
     $query = db_select('tbl_booking', 'b')->fields('b', array('id'))->condition('b.uid', $user->uid);
-    $query->condition(db_or()->condition('b.status', 'TICKETED')->condition(db_and()
-      ->condition('b.status', 'OK')->condition('b.ExpiryDt', time(), '>')));
+    $query->condition(db_or()
+      ->condition(db_and()
+        ->condition('b.status', 'OK')
+        ->condition('b.ExpiryDt', $now, '>')
+      )
+      ->condition(db_and()
+        ->condition('b.status', 'TICKETED')
+        ->condition(db_or()
+          ->condition('b.created', $since_24h, '>=')
+          ->condition('b.changed', $since_24h, '>=')
+        )
+      )
+    );
     if ($status !== '') { $query->condition('b.status', $status); }
     if (trim($q) !== '') {
       $like = '%' . db_like(trim($q)) . '%';
