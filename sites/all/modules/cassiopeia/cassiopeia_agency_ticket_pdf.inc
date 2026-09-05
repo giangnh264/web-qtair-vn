@@ -316,7 +316,7 @@ function cassiopeia_agency_ticket_pdf_status_label($booking) {
     if ($status === 'TICKETED') {
         return 'ĐÃ THANH TOÁN';
     }
-    return 'CHƯA THANH TOÁN';
+    return '';
 }
 
 function cassiopeia_agency_ticket_pdf_airport($ticket, $property) {

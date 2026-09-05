@@ -1,6 +1,6 @@
 (function ($) {
     $("document").ready(function(e){
-        $("#cassiopeia-open-pnr-form button:not(.btn-download-ticket-pdf)").click(function(e){
+        $("#cassiopeia-open-pnr-form button:not(.btn-preview-ticket-pdf)").click(function(e){
             $(".loading-block").addClass("active");
         })
         var last_row;

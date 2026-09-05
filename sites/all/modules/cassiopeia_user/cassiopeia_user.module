@@ -669,6 +669,12 @@ function cassiopeia_user_menu() {
         'access arguments' => array('cassiopeia content'),
         'file' => 'cassiopeia_user.inc',
     );
+    $items['user/manager/ticketReview/pdf/%/%'] = array(
+        'type' => MENU_CALLBACK,
+        'page callback' => 'cassiopeia_ticket_pdf_response',
+        'page arguments' => array(4, 5),
+        'access callback' => 'cassiopeia_ticket_issue_accept',
+    );
     $items['user/manager/bao-cao-tich-diem'] = array(
         'type' => MENU_CALLBACK,
         'page callback' => 'cassiopeia_user_agent_point_report_callback',

@@ -95,8 +95,8 @@ class CassiopeiaAgencyTicketPdfUnitTestCase extends DrupalUnitTestCase {
     );
     $this->assertEqual(
       cassiopeia_agency_ticket_pdf_status_label((object) array('status' => 'OK')),
-      'CHƯA THANH TOÁN',
-      'Booking not yet issued is shown as unpaid.'
+      '',
+      'Booking not yet issued does not show a payment status.'
     );
   }
 
@@ -108,11 +108,11 @@ class CassiopeiaAgencyTicketPdfUnitTestCase extends DrupalUnitTestCase {
     ));
 
     $this->assertEqual($form['submit']['#value'], 'Mở lại vé', 'Existing ticket review action remains available.');
-    $this->assertEqual($form['download_pdf']['#value'], 'Tải mặt vé', 'Ticket review form offers PDF download.');
+    $this->assertEqual($form['preview_pdf']['#value'], 'Xem mặt vé', 'Ticket review form offers PDF preview.');
     $this->assertEqual(
-      $form['download_pdf']['#submit'],
-      array('cassiopeia_open_pnr_form_download_pdf_submit'),
-      'PDF button uses the download-only submit handler.'
+      $form['preview_pdf']['#submit'],
+      array('cassiopeia_open_pnr_form_preview_pdf_submit'),
+      'PDF button uses the preview submit handler.'
     );
   }
 

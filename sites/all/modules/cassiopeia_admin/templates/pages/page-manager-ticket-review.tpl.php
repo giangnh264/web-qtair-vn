@@ -5,6 +5,9 @@ drupal_add_js(drupal_get_path('module', 'cassiopeia') . '/js/ticket-review.js', 
 $caches = !empty($_REQUEST['data'])?$_REQUEST['data']:null;
 $caches['isReview'] = true;
 $caches['redirect'] = "admin/manager/ticketReview";
+$pdf = !empty($_GET['pdf']) && is_array($_GET['pdf']) ? $_GET['pdf'] : array();
+$pdf_airline = !empty($pdf['airline']) ? strtoupper(trim($pdf['airline'])) : '';
+$pdf_code = !empty($pdf['code']) ? strtoupper(trim($pdf['code'])) : '';
 ?>
 <!--<div class="manager-links-tabs">-->
 <!--    <div class="manager-links-tabs-content">-->
@@ -57,6 +60,19 @@ $caches['redirect'] = "admin/manager/ticketReview";
             <?php endif; ?>
         <?php endif; ?>
     </div>
+    <?php if ($pdf_airline !== '' && $pdf_code !== ''): ?>
+        <?php
+        $pdf_path = 'user/manager/ticketReview/pdf/' . $pdf_airline . '/' . $pdf_code;
+        $pdf_preview_url = url($pdf_path);
+        $pdf_download_url = url($pdf_path, array('query' => array('download' => 1)));
+        ?>
+        <div class="ticket-pdf-preview" style="max-width: 1000px; margin: 20px auto 0;">
+            <iframe title="Mặt vé" src="<?php print check_plain($pdf_preview_url); ?>" style="display: block; width: 100%; height: 720px; border: 1px solid #ddd;"></iframe>
+            <div style="margin-top: 15px; text-align: right;">
+                <a href="<?php print check_plain($pdf_download_url); ?>" style="display: inline-block; padding: 10px 24px; background: #ffa51f; color: #fff; text-decoration: none;">Tải mặt vé</a>
+            </div>
+        </div>
+    <?php endif; ?>
     <?php if(!empty($_REQUEST['data'])): ?>
         <div class="ticket-info" data-pnr="<?php print($_REQUEST['data']['code']); ?>" data-airline="<?php print($_REQUEST['data']['airline']); ?>"></div>
     <?php endif; ?>

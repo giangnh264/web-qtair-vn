@@ -7858,13 +7858,13 @@ function cassiopeia_open_pnr_form($form, &$form_state, $caches = null)
         '#attributes' => array("class" => array("btn-default")),
     );
     if (!empty($caches['isReview'])) {
-        $form['download_pdf'] = array(
+        $form['preview_pdf'] = array(
             '#type' => 'submit',
-            '#value' => t('Tải mặt vé'),
+            '#value' => t('Xem mặt vé'),
             '#prefix' => "<div class='form-actions'>",
             '#suffix' => "</div>",
-            '#attributes' => array('class' => array('btn-default', 'btn-download-ticket-pdf')),
-            '#submit' => array('cassiopeia_open_pnr_form_download_pdf_submit'),
+            '#attributes' => array('class' => array('btn-default', 'btn-preview-ticket-pdf')),
+            '#submit' => array('cassiopeia_open_pnr_form_preview_pdf_submit'),
         );
     }
     return $form;
@@ -7910,7 +7910,7 @@ function cassiopeia_ticket_pdf_download_booking_load($pnr_code, $airline_code, $
     return $booking;
 }
 
-function cassiopeia_open_pnr_form_download_pdf_submit($form, &$form_state) {
+function cassiopeia_open_pnr_form_preview_pdf_submit($form, &$form_state) {
     global $user;
 
     $pnr_code = strtoupper(trim($form_state['values']['code']));
@@ -7925,10 +7925,27 @@ function cassiopeia_open_pnr_form_download_pdf_submit($form, &$form_state) {
         return;
     }
 
+    $form_state['redirect'] = array(
+        'user/manager/ticketReview',
+        array('query' => array('pdf' => array('airline' => $airline_code, 'code' => $pnr_code))),
+    );
+}
+
+function cassiopeia_ticket_pdf_response($airline_code, $pnr_code) {
+    global $user;
+
+    $airline_code = strtoupper(trim($airline_code));
+    $pnr_code = strtoupper(trim($pnr_code));
+    $booking = cassiopeia_ticket_pdf_download_booking_load($pnr_code, $airline_code, $user);
+    if (empty($booking) || !cassiopeia_ticket_pdf_download_access($booking, $user)) {
+        drupal_access_denied();
+        drupal_exit();
+    }
+
     $agent = !empty($booking->uid) ? user_load($booking->uid) : user_load($user->uid);
     if (empty($agent)) {
-        form_set_error('code', t('Không tìm thấy thông tin đại lý để tạo mặt vé.'));
-        return;
+        drupal_not_found();
+        drupal_exit();
     }
 
     module_load_include('inc', 'cassiopeia', 'cassiopeia_agency_ticket_pdf');
@@ -7936,15 +7953,17 @@ function cassiopeia_open_pnr_form_download_pdf_submit($form, &$form_state) {
         $attachment = cassiopeia_agency_ticket_pdf_attachment($booking, $airline_code, $agent);
     }
     catch (Exception $e) {
-        form_set_error('code', t('Không thể tạo mặt vé lúc này, vui lòng thử lại sau.'));
-        return;
+        drupal_add_http_header('Status', '500 Internal Server Error');
+        print t('Không thể tạo mặt vé lúc này, vui lòng thử lại sau.');
+        drupal_exit();
     }
 
     while (ob_get_level() > 0) {
         ob_end_clean();
     }
     drupal_add_http_header('Content-Type', $attachment['filemime']);
-    drupal_add_http_header('Content-Disposition', 'attachment; filename="' . $attachment['filename'] . '"');
+    $disposition = !empty($_GET['download']) ? 'attachment' : 'inline';
+    drupal_add_http_header('Content-Disposition', $disposition . '; filename="' . $attachment['filename'] . '"');
     drupal_add_http_header('Content-Length', strlen($attachment['filecontent']));
     drupal_add_http_header('Cache-Control', 'private, no-store');
     drupal_add_http_header('X-Content-Type-Options', 'nosniff');

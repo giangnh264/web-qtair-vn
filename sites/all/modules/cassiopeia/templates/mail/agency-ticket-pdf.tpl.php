@@ -99,8 +99,10 @@ $esc = function ($value) {
                                 <text x="15" y="25" fill="#ffffff" font-family="DejaVu Sans" font-size="18" font-weight="bold" letter-spacing="1"><?php print $esc($pnr_code); ?></text>
                             </svg>
                         </td>
-                        <td class="booking-status-gap"></td>
-                        <td class="booking-status">• <?php print $esc(!empty($context['status']) ? $context['status'] : ''); ?></td>
+                        <?php if (!empty($context['status'])): ?>
+                            <td class="booking-status-gap"></td>
+                            <td class="booking-status">• <?php print $esc($context['status']); ?></td>
+                        <?php endif; ?>
                     </tr>
                 </table>
             </td>
