@@ -2,6 +2,11 @@
 global $user;
 $arg = arg();
 $menuItems = array(
+    'payment-qr' => array(
+        "url" => "user/manager/payment-qr",
+        "anchor" => '<i class="fa fa-qrcode"></i>Tạo QR thu tiền',
+        "activeSign" => "payment-qr",
+    ),
     0 => array(
         "url"       => "user/manager/create-booking",
         "anchor"    => "<i class=\"fa fa-plus-square-o\"></i>Đặt chỗ",

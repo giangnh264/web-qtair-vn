@@ -20,6 +20,11 @@ $availablePoint = $totalPoint - $usedPoint;
                     <li>
                         <?php echo l("<span class=\"icon\"><i class=\"fa-light fa-chair-office\"></i></span><span>Danh sách đặt chỗ</span>", "user/manager/booking", array("html" => TRUE)); ?>
                     </li>
+                    <?php if (cassiopeia_user_payment_qr_access()): ?>
+                        <li>
+                            <?php echo l('<span class="icon"><i class="fa-light fa-qrcode" aria-hidden="true"></i></span><span>Tạo QR thu tiền</span>', 'user/manager/payment-qr', array('html' => TRUE)); ?>
+                        </li>
+                    <?php endif; ?>
                     <?php $menu_item = menu_get_item("user/manager/bao-cao-xuat-ve"); ?>
                     <?php if (!empty($menu_item) && !empty($menu_item['access'])): ?>
                         <li>

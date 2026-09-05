@@ -1,5 +1,6 @@
 <?php
 drupal_add_js(drupal_get_path('module', 'cassiopeia') . '/js/booking.js', ['weight' => 1000]);  
+module_load_include('inc', 'cassiopeia_user', 'cassiopeia_user_payment_qr');
 global $user;
 $_conditions = array();
 if(!empty($_REQUEST['data'])){
@@ -25,7 +26,7 @@ try{
     $query = db_select("tbl_booking","tbl_booking");
     $query -> fields("tbl_booking",array("id"));
     $query->condition("tbl_booking.uid",$user->uid);
-    if(!empty($_conditions['date_filter']&& $_conditions['date_filter']!="all")){
+    if(!empty($_conditions['date_filter']) && $_conditions['date_filter']!="all"){
         switch ($_conditions['date_filter']){
             case "today" :
                 $query->condition("tbl_booking.created",array(strtotime(date("d-m-Y 00:00",REQUEST_TIME)),strtotime(date("d-m-Y 23:59",REQUEST_TIME))),"BETWEEN");
@@ -146,6 +147,9 @@ try{
                         <td></td>
                         <td rowspan="2">
                             <div class="qt-ticket-face-price">
+                                <?php if (cassiopeia_user_payment_qr_access() && cassiopeia_user_payment_qr_booking_allowed($booking, $user->uid, REQUEST_TIME)): ?>
+                                    <a class="btn btn-default" href="<?php echo check_plain(url('user/manager/payment-qr', array('query' => array('booking_id' => $booking->id)))); ?>"><i class="fa fa-qrcode" aria-hidden="true"></i> Tạo QR</a>
+                                <?php endif; ?>
                                 <p>Tổng tiền thanh toán</p>
                                 <b><?php echo number_format($booking->price,0,",","."); ?> đ</b>
 <!--                                <a class="btn bg-secondary clr-white ff-medium radius-36 mt-2" href="/booking/view/--><?php //echo $booking->booking_code; ?><!--">Xem chi tiết</a>-->

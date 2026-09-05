@@ -511,6 +511,22 @@ function cassiopeia_user_user_accep_pprofile() {
 }
 
 
+/** Access to the agency payment QR tool. */
+function cassiopeia_user_payment_qr_access() {
+  global $user;
+  return !empty($user->uid) && user_has_role(4, $user);
+}
+
+function cassiopeia_user_payment_qr_json($result) {
+  drupal_page_is_cacheable(FALSE);
+  drupal_add_http_header('Cache-Control', 'private, no-store');
+  if ($result === MENU_ACCESS_DENIED || $result === MENU_NOT_FOUND) {
+    drupal_add_http_header('Status', $result === MENU_ACCESS_DENIED ? '403 Forbidden' : '404 Not Found');
+    $result = array('error' => t('Bạn không có quyền truy cập hoặc đường dẫn không tồn tại.'));
+  }
+  drupal_json_output($result);
+}
+
 /**
  * Implements hook_menu().
  */
@@ -682,6 +698,18 @@ function cassiopeia_user_menu() {
         'access callback' => 'cassiopeia_agent_accept',
         'file' => 'cassiopeia_user.inc',
     );
+  foreach (array('' => 'page', '/search' => 'search', '/prepare' => 'prepare') as $suffix => $callback) {
+    $items['user/manager/payment-qr' . $suffix] = array(
+      'type' => MENU_CALLBACK,
+      'title' => 'Tạo QR thu tiền',
+      'page callback' => 'cassiopeia_user_payment_qr_' . $callback,
+      'access callback' => 'cassiopeia_user_payment_qr_access',
+      'file' => 'cassiopeia_user_payment_qr.inc',
+    );
+    if ($suffix !== '') {
+      $items['user/manager/payment-qr' . $suffix]['delivery callback'] = 'cassiopeia_user_payment_qr_json';
+    }
+  }
   return $items;
 }
 
@@ -1170,6 +1198,8 @@ function cassiopeia_user_form_user_profile_form_alter(&$form, &$form_state, $for
     $form['field_birthday']['und'][0]['#theme_wrappers'] = array();
     $form['#submit'][] = "cassiopeia_user_form_user_profile_form_alter_submit";
     $form['#validate'][] = 'cassiopeia_user_form_user_profile_form_validate';
+    module_load_include('inc', 'cassiopeia_user', 'cassiopeia_user_payment_qr');
+    cassiopeia_user_payment_qr_profile_form($form);
 }
 function cassiopeia_user_login_with_form($form,&$form_state,$data = array("uid")){
   $form_state['user'] = user_load($data['uid']);
